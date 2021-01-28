@@ -1,0 +1,23 @@
+{
+  "name": "koi_tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "koi-tools.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-koi/koi_tools.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/open-koi/koi_tools/issues"
+  },
+  "homepage": "https://github.com/open-koi/koi_tools#readme",
+  "dependencies": {
+    "arweave": "^1.10.3",
+    "jsonfile": "^6.1.0"
+  }
+}
