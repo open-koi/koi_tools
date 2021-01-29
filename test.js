@@ -20,7 +20,7 @@ async function start () {
         await testWrite()
 
     } catch ( err ) {
-        throw Error (err)
+        console.log(err)
     }
 
 }

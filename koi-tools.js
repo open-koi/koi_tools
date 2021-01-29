@@ -45,6 +45,10 @@ class koi {
       await this.getWalletAddress()
       return this.wallet;
   }
+ 
+  async getBlockHeight () {
+      return "500"
+  }
 
   async getWalletAddress () {
       if (!this.address) this.address = await arweave.wallets.jwkToAddress(this.wallet)
@@ -65,12 +69,15 @@ class koi {
     const transaction = arweave.createTransaction({
         data: JSON.stringify(data)
     }, this.wallet);
-
+    
+    console.log('transaction', transaction)
     // Now we sign the transaction
     await arweave.transactions.sign(transaction, this.wallet);
 
+    console.log('transaction + signature', transaction)
+
     // After is signed, we send the transaction
-    var tx = await arweave.transaction.post(transaction);
+    var tx = await arweave.transactions.post(transaction);
 
     console.log('tx', tx)
 
@@ -106,6 +113,28 @@ class koi {
     // TODO: interact with contract here (need to deploy first)
     // see the amplifyEconomy/contract/src/stake for example
     return null;
+  }
+
+  /*
+   @verifySignature
+     payload that was signed
+     signature 
+  */
+  verifySignature (payload, signature) { 
+    // to-do - finish!
+    // var Transaction = formatAsTransaction (payload, signature)
+    // var result = await arweave.verify(Transaction)
+    // return result;
+    return true;
+  }
+
+  /*
+   @signPayload
+     payload to sign
+  */
+  signPayload (payload) { 
+    payload.signature = "PsrpuxxOoZSFVC1zneEvd_4qQuyMeWqp8dKEmRGGB86JQsASKs4erwl6gqCBcucndUhBWWRNZhleaFkn9kl3vjFMuys8RDmEDkJPqLvzjg"
+    return payload;
   }
 }
 
