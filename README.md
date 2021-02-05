@@ -2,7 +2,7 @@
 The Koi.js library enables node.js and typescript applications to easily interact with the open Koi network. 
 
 ## Content Rewards
-The Koi consensus process releases 1000 KOI tokens per day to reward the best content that has been registered. 
+The Koi consensus process releases 1,000 KOI tokens per day to reward the best content that has ever been registered, proportional to the attention it receives in that time period. 
 
 Register arweave content like so:
 
