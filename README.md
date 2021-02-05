@@ -14,15 +14,15 @@ var result = await koi.registerContent(< arweaveTxId >, burnAmount ? optional)
 console.log('registered:', result)
 ```
 
-Once this has been completed, your wallet will now receive some of the daily KOI tokens every time your content is viewed.
+Once this has been completed, your wallet will receive a portion of the daily KOI tokens every time your content is viewed.
 
 If you do not have a KOI balance, you cannot participate. Your KOI will be burned to register the content.
 
 ## KOI Tasks
-In order to make sure everyone has open access to the network, we've made it possible for nodes to also run 'tasks' for eachother to earn tokens. 
+In order to ensure everyone has open access to the network, we've made it possible for nodes to run 'tasks' for each other to earn tokens. 
 
 ### Earning KOI
-The default task is called StoreCat, and gathers web data onto the permaweb archive. To run StoreCat, you can use a similar implementation to the one above.
+The default task is called StoreCat, which gathers web data and stores it on the permaweb archive. To run StoreCat, you can use a similar implementation to the one above.
 
 ```
 var koiTools = require('koiTools');
@@ -31,10 +31,10 @@ var result = await koi.runTaskByRegisteredName('getstorecat')
 console.log('task:', result)
 ```
 
-Note: Some tasks take awhile to execute, so the best way to run them is usually with the desktop node client. 
+Note: Some tasks take a while to execute, so the best way to run them is with the desktop node client. 
 
 ### Requesting Tasks
-It is also possible to tap into the Koi network to request work. Once you have KOI tokens, you can set a bounty for a new task.
+It is possible to tap into the Koi network to request work. Once you have KOI tokens, you can set a bounty for a new task.
 
 ```
 var koiTools = require('koiTools');
