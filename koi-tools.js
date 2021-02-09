@@ -75,8 +75,6 @@ class koi {
   /*
   @getWalletAddress // get walllet key address.
   Returns address as a string;
-  
-   
   */
 
   async getWalletAddress () {
@@ -88,8 +86,6 @@ class koi {
    /*
   @getWalletBalance // gets wallet balance Note, this is arweave bakance, not kOI balance.
   Returns balance.
-  
-   
   */
 
   async getWalletBalance () {
@@ -103,8 +99,6 @@ class koi {
   @postData // posts data on arweave.
   Returns transaction id.
   data: object // data
-  
-   
   */
 
 
@@ -154,8 +148,7 @@ class koi {
   @batchAction // Interact with contract to add the votes 
    Returns the transaction id. 
     param1 : String, // the votes transaction id in arweave
-   
-  */
+   */
 
    async batchAction (txId){
 
@@ -179,8 +172,7 @@ class koi {
    Returns the transaction id. 
    param1 : Object, // it has batchFile/value(string) and stakeamount/value(int) as properties 
     // batchFile is the traffilc logs transaction id in arweave and stakeamount is min staked kOI to vote  
-   
-*/
+  */
 
 
 
@@ -198,13 +190,10 @@ class koi {
 
 
   /*
-
    @registerData //  interact with contract to register data
    Returns the transaction id. 
    param1 : txId, // it has batchFile/value(string) and stakeamount/value(int) as properties 
-   
-   
-  */
+   */
 
 
 
@@ -220,14 +209,10 @@ class koi {
    
 
   /*
-
-
-   @registerData //  interact with contract to distribute daily rewards
+  @registerData //  interact with contract to distribute daily rewards
    Returns the transaction id. 
-   
-   
-   
-*/
+   */
+
 
   async distributeDailyRewards () { 
     let input = {
@@ -240,12 +225,9 @@ class koi {
   
 
   /*
-
    @vote //  submit vote to bundle server or direct to contract
    Returns the transaction id. 
    arg : Object, // it has direct(boolean),  voteId(string) and useVote(String)
-   
-   
   */
   
 
@@ -271,13 +253,10 @@ class koi {
   }
 
 
-/*
-
+  /*
    @stake //  interact with contract to stake
    Returns the transaction id. 
    qty : integer, //  quantity to stake
-   
-   
   */
 
   
@@ -299,15 +278,14 @@ class koi {
   }
   
 
- /*
 
+
+ /*
    @transfer //  interact with contract to transfer koi 
    Returns the transaction id. 
    qty : integer, //  quantity to transfer
    target : string, //  reciever address 
-   
-   
-  */
+*/
 
 
   async transfer(qty,target){
@@ -325,15 +303,16 @@ class koi {
   }
 
 
- /*
 
-   @withDraw //  interact with contract to transfer koi 
+
+ /*
+  @withDraw //  interact with contract to transfer koi 
    Returns the transaction id. 
    qty : integer, //  quantity to transfer
    target : string, //  reciever address 
-   
-   
-  */
+*/
+
+
 
 
   async withDraw(qty){
@@ -353,14 +332,13 @@ class koi {
 
 
 /*
-
    @verifySignature //  verify signed payload
    Returns boolean. 
    payload : object, //  payload 
    signature : string, //  signature
-   
-   
-  */
+*/
+
+
 
   verifySignature (payload, signature) { 
     // to-do - finish!
@@ -383,18 +361,17 @@ class koi {
   }
 
 
+
+
     
   /*
-
    @_bundlerNode // internal function, submits a playload to server 
    Returns the a promise
    payload: // a payload to be submited. 
-   
-   
-   
-  */
+ */
 
-  
+
+ 
   async _bundlerNode(payload){
 
     payload = this.signPayload(payload)
@@ -415,16 +392,17 @@ class koi {
     });
      
   }
+
+
   
   /*
-
    @_interactWrite //  internal function, writes to contract
    Returns the a promise
    input: // Object, passes to smartweave write function, in order to excute a contract function.
-   
-   
-   
-  */
+   */
+
+
+
   async _interactWrite(input){
     let wallet = this.wallet;
    return new Promise(function (resolve, reject){
