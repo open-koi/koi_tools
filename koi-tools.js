@@ -267,10 +267,10 @@ class koi {
       throw Error('Invalid value for "qty". Must be an integer');
   }
 
-    let input = {
+    var input = {
       "function": 'stake',
        "qty" : qty
-    };
+    }
 
     let result = await this._interactWrite(input)
 

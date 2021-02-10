@@ -83,7 +83,7 @@ async function testWrite () {
     }
     var transaction =  await ktools.postData(data)
 
-    console.log('transaction', transaction)
+    console.log('transaction........', transaction)
 
     if ( typeof(address) === "undefined" || address === null ) {
         throw Error ('Failed while attempting to upload payload')
@@ -94,12 +94,13 @@ async function testWrite () {
 
 async function testStake () {
     // test 3 - write to arweave
-    var qty = 777;
+    var qty = 2;
+
     var result =  await ktools.stake(qty);
     
      let data = await arweave.transactions.getData(result, { decode: true, string: true });
 
-    console.log('transaction', data)
+    console.log('transaction.............', data)
 
     if ( typeof(data) === "undefined" || data === null ) {
         throw Error ('Failed while attempting to stake')
