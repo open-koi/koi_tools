@@ -1,6 +1,12 @@
 // tests koi-tools.js 
 const tools       = require('./koi-tools')
 var ktools        = new tools()
+const Arweave = require ('arweave/node')
+const arweave = Arweave.init({
+    host: 'arweave.net',
+    protocol: 'https',
+    port: 443
+  });
 
 var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
 
@@ -17,23 +23,26 @@ async function start () {
     
         await testBalance()
     
-        await testWrite()
+       // await testWrite()
 
-        await testStake()
+          await testStake()
 
-        await testVote ()
+       // await testVote ()
 
-        await testTransfer ()
+       // await testTransfer ()
 
-        await testRegisterdata ()
+       // await testRegisterdata ()
 
-        await testUpdatetrafficlogs ()
+       // await testUpdatetrafficlogs ()
 
-        await testWithdraw ()
+       // await testWithdraw ()
 
-        await testDistributeDailyRewards()
 
-         await testBatchAction ()
+       // await testDistributeDailyRewards()
+
+       // await testBatchAction ()
+
+       //await testGetContractState ()
 
        
 
@@ -86,11 +95,13 @@ async function testWrite () {
 async function testStake () {
     // test 3 - write to arweave
     var qty = 777;
-    var result =  await ktools.stakeToVote(qty);
+    var result =  await ktools.stake(qty);
+    
+     let data = await arweave.transactions.getData(result, { decode: true, string: true });
 
-    console.log('transaction', result)
+    console.log('transaction', data)
 
-    if ( typeof(result) === "undefined" || result === null ) {
+    if ( typeof(data) === "undefined" || data === null ) {
         throw Error ('Failed while attempting to stake')
     }
 
@@ -214,3 +225,19 @@ async function testVote () {
         }
 
     }
+
+
+    async function testGetContractState () {
+        
+    
+        var result =  await ktools.getContractState();
+     
+        console.log('transaction', result)
+    
+        if ( typeof(result) === "undefined" || result === null ) {
+            throw Error ('Failed while attempting to vote')
+        }
+
+    }
+
+

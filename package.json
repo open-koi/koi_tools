@@ -18,6 +18,7 @@
   "homepage": "https://github.com/open-koi/koi_tools#readme",
   "dependencies": {
     "arweave": "^1.10.3",
-    "jsonfile": "^6.1.0"
+    "jsonfile": "^6.1.0",
+    "smartweave": "^0.4.25"
   }
 }

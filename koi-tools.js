@@ -13,7 +13,7 @@
 */
 const Arweave = require ('arweave/node')
 const fs      = require('jsonfile')
-const smartweave = require("smartweave");
+const smartweave_1 = require("smartweave");
 const axios = require('axios');
 
 const arweave = Arweave.init({
@@ -371,7 +371,7 @@ class koi {
  */
 
 
- 
+
   async _bundlerNode(payload){
 
     payload = this.signPayload(payload)
@@ -432,10 +432,10 @@ class koi {
    
   */ 
  async _readContract(){
-  return new Promise(function (resolve, reject){
-       smartweave.interactWrite(
+    return new Promise(function (resolve, reject){
+       smartweave_1.readContract(
        arweave,
-       this.wallet,
+       koi_contract,
        ).then((state) => {
        resolve(state);
       })
@@ -444,6 +444,13 @@ class koi {
       });
   });
    
+}
+
+
+async getContractState(){
+
+ let state = await this._readContract();
+ return state;
 }
 
 
