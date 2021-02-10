@@ -25,9 +25,9 @@ async function start () {
     
        // await testWrite()
 
-          await testStake()
+        //  await testStake()
 
-       // await testVote ()
+        await testVote ()
 
        // await testTransfer ()
 
@@ -42,7 +42,7 @@ async function start () {
 
        // await testBatchAction ()
 
-       //await testGetContractState ()
+       await testGetContractState ()
 
        
 
@@ -129,8 +129,8 @@ async function testVote () {
     // test 3 - write to arweave
     //var qty = 777;
     let input = {
-      direct: "false",
-      voteId: 0,
+      direct: "true",
+      voteId: 1,
       userVote: "true"
     }
 

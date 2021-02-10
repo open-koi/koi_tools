@@ -202,7 +202,7 @@ class koi {
       "function": 'registerData',
       "txId": txId
     };
-    let result = await _interactWrite(input);
+    let result = await this._interactWrite(input);
      return result;
   }
 
@@ -239,7 +239,8 @@ class koi {
     };
     let result;
     if(arg.direct === true){
-    result = await  _interactWrite(input)  
+      console.log(input);
+    result = await  this._interactWrite(input)  
 
    }else{
     let caller = await this.getWalletAddress();
@@ -247,6 +248,7 @@ class koi {
       vote : input,
       senderAddress : caller,
      }
+     console.log(input);
        result = await this._bundlerNode(payload);
     }
     return result;
