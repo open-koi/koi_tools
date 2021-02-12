@@ -15,6 +15,8 @@ const Arweave = require ('arweave/node')
 const fs      = require('jsonfile')
 const smartweave_1 = require("smartweave");
 const axios = require('axios');
+const crypto = require('crypto');
+const jwkToPem = require('jwk-to-pem');
 
 const arweave = Arweave.init({
   host: 'arweave.net',
@@ -23,7 +25,8 @@ const arweave = Arweave.init({
 });
 
 const koi_address = "< TODO insert KOI contract address here >";
-const koi_contract = "rJa4Nlifx992N4h-KrYAP4gK_9brSTilpU4OoIZMdco";
+const koi_contract = "Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA";
+// Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA
 const bundlerNodes = "http://13.58.129.115:3000/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
 
 class koi {
@@ -147,7 +150,7 @@ class koi {
   /*
   @batchAction // Interact with contract to add the votes 
    Returns the transaction id. 
-    param1 : String, // the votes transaction id in arweave
+    txId : String, // the votes transaction id in arweave
    */
 
    async batchAction (txId){
@@ -170,7 +173,7 @@ class koi {
    /*
    @upadteTrafficlogs //  interact with contract to update traffic logs and create new vote
    Returns the transaction id. 
-   param1 : Object, // it has batchFile/value(string) and stakeamount/value(int) as properties 
+   args : Object, // it has batchFile/(string) and stakeAmount/(int) as properties 
     // batchFile is the traffilc logs transaction id in arweave and stakeamount is min staked kOI to vote  
   */
 
@@ -335,30 +338,45 @@ class koi {
 
 /*
    @verifySignature //  verify signed payload
-   Returns boolean. 
+   Returns boolean. // 
    payload : object, //  payload 
-   signature : string, //  signature
+   
 */
 
 
 
-  verifySignature (payload, signature) { 
-    // to-do - finish!
-    // var Transaction = formatAsTransaction (payload, signature)
-    // var result = await arweave.verify(Transaction)
-    // return result;
-    return true;
+  verifySignature (payload) { 
+    const publicKey = {
+      kty: "RSA",
+      e: "AQAB",
+      n: payload.owner
+       };
+
+     const pem = jwkToPem(publicKey);
+     const rawSignature = Buffer.from(payload.signature, 'base64');
+    
+    const verify = crypto.createVerify('SHA256').update(JSON.stringify(payload.vote));
+    
+    return verify.verify(pem,rawSignature);
   }
 
 
 
 
   /*
-   @signPayload
+   @signPayload: sign payload
+   return: signed payload with signature.
      payload to sign
   */
   signPayload (payload) { 
-    payload.signature = "PsrpuxxOoZSFVC1zneEvd_4qQuyMeWqp8dKEmRGGB86JQsASKs4erwl6gqCBcucndUhBWWRNZhleaFkn9kl3vjFMuys8RDmEDkJPqLvzjg"
+    let jwk = this.wallet;
+    console.log(jwk.n);
+    let publicModulus = jwk.n;
+    let pem = jwkToPem(jwk, { private: true });
+  
+    const rawSignature = crypto.createSign('SHA256').update(JSON.stringify(payload.vote)).sign(pem);
+    payload.signature = rawSignature.toString('base64');
+    payload.owner = publicModulus;
     return payload;
   }
 

@@ -19,31 +19,36 @@ async function start () {
     await ktools.loadWallet(walletKeyLocation)
 
     try {
+
+
+       await  testSignPayloadAndVerify()
+
+        /*
         await testAddress()
     
         await testBalance()
     
-       // await testWrite()
+         await testWrite()
 
-        //  await testStake()
+          await testStake()
 
-        await testVote ()
+          await testVote ()
 
-       // await testTransfer ()
+          await testTransfer ()
 
-       // await testRegisterdata ()
+          await testRegisterdata ()
 
-       // await testUpdatetrafficlogs ()
+          await testUpdatetrafficlogs ()
 
-       // await testWithdraw ()
+           await testWithdraw ()
 
 
-       // await testDistributeDailyRewards()
+          await testDistributeDailyRewards()
 
-       // await testBatchAction ()
+          await testBatchAction ()
 
-       await testGetContractState ()
-
+          await testGetContractState ()
+      */
        
 
 
@@ -238,6 +243,37 @@ async function testVote () {
         if ( typeof(result) === "undefined" || result === null ) {
             throw Error ('Failed while attempting to vote')
         }
+
+    }
+
+
+    async function testSignPayloadAndVerify() {
+
+
+        let payload = {
+            vote : {
+                "function": "vote",
+                "voteId" : 1,
+                "userVote" : "true"
+            }, 
+            senderAddress :  await ktools.getWalletAddress()
+        }
+
+        payload = ktools.signPayload(payload);
+        console.log(payload);
+
+        if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
+            throw Error ('Failed while attempting to sign')
+        }
+
+        let isValid = ktools.verifySignature(payload);
+
+        if ( typeof(isValid) === "undefined" || isValid === null ) {
+            throw Error ('Failed while attempting to verify')
+        }
+
+        console.log(isValid);
+
 
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "koi_tools",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "",
   "main": "koi-tools.js",
   "scripts": {
@@ -18,7 +18,9 @@
   "homepage": "https://github.com/open-koi/koi_tools#readme",
   "dependencies": {
     "arweave": "^1.10.3",
+    "crypto": "^1.0.1",
     "jsonfile": "^6.1.0",
+    "jwk-to-pem": "^2.0.4",
     "smartweave": "^0.4.25"
   }
 }
