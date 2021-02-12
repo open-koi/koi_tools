@@ -272,6 +272,10 @@ async function testVote () {
             throw Error ('Failed while attempting to verify')
         }
 
+
+        let address = ktools.verifyAddress(payload.owner);
+        console.log(address);
+
         console.log(isValid);
 
 

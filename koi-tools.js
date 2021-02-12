@@ -10,13 +10,22 @@
     7. Distributing daily KOI rewards (burn KOI to call distributeRewards)
     8. Participate in voting
     9. Approve Traffic Logs
+
 */
+var __importStar = (this && this.__importStar) || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+  __setModuleDefault(result, mod);
+  return result;
+};
 const Arweave = require ('arweave/node')
 const fs      = require('jsonfile')
 const smartweave_1 = require("smartweave");
 const axios = require('axios');
 const crypto = require('crypto');
 const jwkToPem = require('jwk-to-pem');
+const ArweaveUtils = __importStar(require("./node_modules/arweave/node/lib/utils.js"));
 
 const arweave = Arweave.init({
   host: 'arweave.net',
@@ -353,7 +362,7 @@ class koi {
        };
 
      const pem = jwkToPem(publicKey);
-     const rawSignature = Buffer.from(payload.signature, 'base64');
+     const rawSignature = ArweaveUtils.b64UrlToBuffer(payload.signature);
     
     const verify = crypto.createVerify('SHA256').update(JSON.stringify(payload.vote));
     
@@ -375,9 +384,17 @@ class koi {
     let pem = jwkToPem(jwk, { private: true });
   
     const rawSignature = crypto.createSign('SHA256').update(JSON.stringify(payload.vote)).sign(pem);
-    payload.signature = rawSignature.toString('base64');
+    payload.signature = ArweaveUtils.bufferTob64Url(rawSignature);
     payload.owner = publicModulus;
     return payload;
+  }
+
+
+  verifyAddress(publicKey){
+    const bufferPublickey = Buffer.from(publicKey, 'base64');
+    let rawAddress = crypto.createHash('SHA256').update(bufferPublickey).digest();
+   let address = ArweaveUtils.bufferTob64Url(rawAddress);
+    return address;
   }
 
 
