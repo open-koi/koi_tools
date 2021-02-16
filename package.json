@@ -22,5 +22,8 @@
     "jsonfile": "^6.1.0",
     "jwk-to-pem": "^2.0.4",
     "smartweave": "^0.4.25"
+  },
+  "devDependencies": {
+    "eslint": "^7.20.0"
   }
 }

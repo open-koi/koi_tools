@@ -15,8 +15,6 @@
 var __importStar = (this && this.__importStar) || function (mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
-  if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-  __setModuleDefault(result, mod);
   return result;
 };
 const Arweave = require ('arweave/node')
@@ -25,6 +23,7 @@ const smartweave_1 = require("smartweave");
 const axios = require('axios');
 const crypto = require('crypto');
 const jwkToPem = require('jwk-to-pem');
+const _ = require('underscore');
 const ArweaveUtils = __importStar(require("./node_modules/arweave/node/lib/utils.js"));
 
 const arweave = Arweave.init({
@@ -33,10 +32,11 @@ const arweave = Arweave.init({
   port: 443
 });
 
-const koi_address = "< TODO insert KOI contract address here >";
-const koi_contract = "Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA";
+
+const koi_contract = "PfNmSoFfLr5xoL14D6qXy6Gb3HVWX9vI8yLuqDEQTjY";
 // Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA
-const bundlerNodes = "http://13.58.129.115:3000/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
+// PfNmSoFfLr5xoL14D6qXy6Gb3HVWX9vI8yLuqDEQTjY
+const bundlerNodes = "http://localhost:8887/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
 
 class koi {
 
@@ -105,6 +105,8 @@ class koi {
     return this.balance;
   }
 
+  // add koi balance 
+
 
 
   /*
@@ -143,7 +145,13 @@ class koi {
   createTask (task, bounty){ // TODO:create task interface
     // TODO: create task id
     // TODO: store task, task id, and bounty in SmartWeave contract
+
+    // this means nothing
+    return {task, bounty};
   }
+
+
+  
   
 
 
@@ -151,7 +159,9 @@ class koi {
     // TODO: pass submission from human or machine agent to SmartWeave contract
     // TODO: await rewards from SmartWeave contract and send them to human or machine
     var rewards = 0;
-    return rewards;
+
+    // this means nothing
+    return {rewards, submission};
   }
 
 
@@ -171,7 +181,7 @@ class koi {
      };
 
      // interact with contract function batchAction which adds all votes and update the state
-    let result = await _interactWrite(input);
+    let result = await this._interactWrite(input);
      return result;
    }
 
@@ -180,10 +190,10 @@ class koi {
 
    
    /*
-   @upadteTrafficlogs //  interact with contract to update traffic logs and create new vote
-   Returns the transaction id. 
-   args : Object, // it has batchFile/(string) and stakeAmount/(int) as properties 
-    // batchFile is the traffilc logs transaction id in arweave and stakeamount is min staked kOI to vote  
+    * @upadteTrafficlogs //  interact with contract to update traffic logs and create new vote
+    * Returns the transaction id. 
+    * args : Object, // it has batchFile/(string) and stakeAmount/(int) as properties 
+        // batchFile is the traffilc logs transaction id in arweave and stakeamount is min staked kOI to vote  
   */
 
 
@@ -195,7 +205,7 @@ class koi {
           "batchTxId": args.batchFile,
           "stakeAmount": args.stakeAmount
        };
-      let result = await _interactWrite(input);
+      let result = await this._interactWrite(input);
       return result;
   }
    
@@ -230,7 +240,7 @@ class koi {
     let input = {
       "function": 'distributeRewards',
       };
-    let result = await _interactWrite(input);
+    let result = await this._interactWrite(input);
      return result;
   }
 
@@ -276,22 +286,22 @@ class koi {
   
 
   async stake(qty) { 
-   
+    console.log('starting.....');
     if (!Number.isInteger(qty)) {
       throw Error('Invalid value for "qty". Must be an integer');
   }
-
+  
     var input = {
       "function": 'stake',
        "qty" : qty
     }
 
     let result = await this._interactWrite(input)
-
+    console.log(result)
+    console.log('done.....');
     return result;
   }
   
-
 
 
  /*
@@ -310,7 +320,7 @@ class koi {
        "target": target
     };
 
-    let result = await _interactWrite(input)
+    let result = await this._interactWrite(input)
 
     return result;
 
@@ -337,9 +347,32 @@ class koi {
        
     };
 
-    let result = await _interactWrite(input)
+    let result = await this._interactWrite(input)
 
     return result;
+
+  }
+
+
+
+
+
+  async validateData(path) {
+    
+    // from the gate way 
+    let bundlerData = await this._getData(path);
+
+
+
+    // get trafficlog from contract
+    let contractData = { ip: '936110719',
+                ArId: 'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'}
+
+      console.log(bundlerData.data);
+
+    console.log(_.isEqual(bundlerData.data, contractData)); 
+   
+   return _.isEqual(bundlerData, contractData);
 
   }
 
@@ -390,11 +423,20 @@ class koi {
   }
 
 
+
+  
   verifyAddress(publicKey){
-    const bufferPublickey = Buffer.from(publicKey, 'base64');
+    const bufferPublickey = ArweaveUtils.b64UrlToBuffer(publicKey);
     let rawAddress = crypto.createHash('SHA256').update(bufferPublickey).digest();
    let address = ArweaveUtils.bufferTob64Url(rawAddress);
     return address;
+  }
+
+
+  async getTransaction(id){
+      let tran = await arweave.transactions.get(id);
+      
+    return tran;
   }
 
 
@@ -429,6 +471,31 @@ class koi {
     });
      
   }
+
+
+  async _getData(path){
+
+   
+    return new Promise(function (resolve, reject){
+          axios
+            .get(bundlerNodes+path)
+            .then(res => {
+             // console.log(`statusCode: ${res.statusCode}`)
+           // console.log(res)
+              resolve(res);
+            })
+            .catch(error => {
+             // console.log(error)
+             reject(error);
+            })
+     
+        
+    });
+     
+  }
+
+
+  
 
 
   
@@ -489,6 +556,10 @@ async getContractState(){
  let state = await this._readContract();
  return state;
 }
+
+
+
+
 
 
 

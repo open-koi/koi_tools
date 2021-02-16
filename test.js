@@ -20,17 +20,19 @@ async function start () {
 
     try {
 
-
+   
        await  testSignPayloadAndVerify()
+/*
+       await testValidateData();
 
-        /*
+       
         await testAddress()
     
         await testBalance()
     
          await testWrite()
 
-          await testStake()
+         
 
           await testVote ()
 
@@ -46,9 +48,11 @@ async function start () {
           await testDistributeDailyRewards()
 
           await testBatchAction ()
-
-          await testGetContractState ()
-      */
+       */
+       //  await testStake()
+     
+       //   await testGetContractState ()
+         
        
 
 
@@ -99,15 +103,16 @@ async function testWrite () {
 
 async function testStake () {
     // test 3 - write to arweave
-    var qty = 2;
+    var qty = 23;
 
     var result =  await ktools.stake(qty);
+
     
-     let data = await arweave.transactions.getData(result, { decode: true, string: true });
+    
+    
+    console.log('transaction.............', result)
 
-    console.log('transaction.............', data)
-
-    if ( typeof(data) === "undefined" || data === null ) {
+    if ( typeof(result) === "undefined" || result === null ) {
         throw Error ('Failed while attempting to stake')
     }
 
@@ -265,19 +270,31 @@ async function testVote () {
         if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
             throw Error ('Failed while attempting to sign')
         }
+     
+        payload.signature += "===";
 
         let isValid = ktools.verifySignature(payload);
 
         if ( typeof(isValid) === "undefined" || isValid === null ) {
             throw Error ('Failed while attempting to verify')
         }
+       // let tran = await ktools.getTransaction('48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM');
+       // console.log(tran);
+        //let address = ktools.verifyAddress(payload.owner);
+       // console.log(address);
+
+        console.log('here it is valid or not', isValid);
 
 
-        let address = ktools.verifyAddress(payload.owner);
-        console.log(address);
+    }
 
-        console.log(isValid);
 
+
+    async function testValidateData(){
+
+    let result = await ktools.validateData("trafficlog");
+
+    return result;
 
     }
 
