@@ -8,7 +8,9 @@ const arweave = Arweave.init({
     port: 443
   });
 
-var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
+// var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
+
+var walletKeyLocation = "/media/al/files/koi/Arweave/sec2.json";
 
 start()
 
@@ -21,7 +23,9 @@ async function start () {
     try {
 
 
-       await  testSignPayloadAndVerify()
+        await testKoiBalance()
+    
+    //    await  testSignPayloadAndVerify()
 
         /*
         await testAddress()
@@ -74,6 +78,16 @@ async function testAddress () {
 async function testBalance () {
     // test 2 - balance
     var balance =  await ktools.getWalletBalance()
+    console.log('balance is ', balance)
+    if ( balance = 0 ) {
+        throw Error ('The balance function failed to retrieve the dummy wallet.')
+    }
+
+}
+
+async function testKoiBalance () {
+    // test 2 - balance
+    var balance =  await ktools.getKoiBalance(await ktools.getWalletAddress())
     console.log('balance is ', balance)
     if ( balance = 0 ) {
         throw Error ('The balance function failed to retrieve the dummy wallet.')
@@ -205,9 +219,6 @@ async function testVote () {
 
     async function testDistributeDailyRewards () {
         
-        
-        
-    
         var result =  await ktools.distributeDailyRewards();
      
         console.log('transaction', result)

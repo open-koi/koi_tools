@@ -33,10 +33,8 @@ const arweave = Arweave.init({
   port: 443
 });
 
-const koi_address = "< TODO insert KOI contract address here >";
 const koi_contract = "Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA";
-// Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA
-const bundlerNodes = "http://13.58.129.115:3000/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
+const bundlerNodes = "http://bundler.openkoi.com:3000/" 
 
 class koi {
 
@@ -76,7 +74,8 @@ class koi {
  async loadWallet (walletFileLocation) {
       this.wallet = await loadFile(walletFileLocation)
       await this.getWalletAddress()
-      console.log(this.wallet);
+      // console.log(this.wallet);
+      console.log('wallet loaded successfully from', walletFileLocation)
       return this.wallet;
   }
 
@@ -95,14 +94,34 @@ class koi {
   }
 
 
-   /*
-  @getWalletBalance // gets wallet balance Note, this is arweave bakance, not kOI balance.
-  Returns balance.
+  /*
+    @getWalletBalance // gets wallet balance Note, this is arweave bakance, not kOI balance.
+    Returns balance.
   */
 
   async getWalletBalance () {
     this.balance = await arweave.wallets.getBalance(this.address);
     return this.balance;
+  }
+
+
+  /*
+    @getKoiBalance // this is the Koi balance
+  */
+
+  async getKoiBalance (address) {
+    console.log('getKoiBalanceTriggered ', address)
+    
+    if ( !this.state ) {
+      this.state = await this.getContractState()
+    } 
+
+    if ( !this.state.balances[address] ) {
+      return 0;
+    } else {
+      return this.state.balances[address];
+    }
+
   }
 
 
@@ -486,8 +505,9 @@ class koi {
 
 async getContractState(){
 
- let state = await this._readContract();
- return state;
+ this.state = await this._readContract();
+ return this.state;
+
 }
 
 
