@@ -1,11 +1,13 @@
 const tools       = require('./koi-tools')
 //var ktools        = new tools()
-const Arweave = require ('arweave/node')
+//const Arweave = require ('arweave/node')
+/*
 const arweave = Arweave.init({
     host: 'arweave.net',
     protocol: 'https',
     port: 443
   });
+  */
 
   var wallet1 = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
 
@@ -16,33 +18,16 @@ const arweave = Arweave.init({
   start()
 
   async function start() {
+    const arg1 = {
+            wallet:wallet1,
+            qty:20
+            }
 
-    await node.loadWallet(wallet1);
-    await vote();
-
-
-
-
-
+    await node.runNode(arg1);
+   
 }
 
 
 
-async function vote(){
-
-    let arg = {
-        voteId: 0,
-      userVote: 'false',
-      direct: false
-    }
-
-    let result = await node.vote(arg);
-
-    console.log(result);
 
 
-  
-
-
-
-}

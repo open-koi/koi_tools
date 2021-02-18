@@ -23,7 +23,7 @@ const smartweave_1 = require("smartweave");
 const axios = require('axios');
 const crypto = require('crypto');
 const jwkToPem = require('jwk-to-pem');
-const _ = require('underscore');
+//const _ = require('underscore');
 const ArweaveUtils = __importStar(require("./node_modules/arweave/node/lib/utils.js"));
 
 const arweave = Arweave.init({
@@ -33,7 +33,7 @@ const arweave = Arweave.init({
 });
 
 
-const koi_contract = "PfNmSoFfLr5xoL14D6qXy6Gb3HVWX9vI8yLuqDEQTjY";
+const koi_contract = "RWl3bimVg0Kdlr3R2vbjjxilKaJQwMcmCZ6Ho7dkv0g";
 // Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA
 // PfNmSoFfLr5xoL14D6qXy6Gb3HVWX9vI8yLuqDEQTjY
 const bundlerNodes = "http://localhost:8887/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
@@ -43,6 +43,7 @@ class koi {
   constructor() {
     this.wallet = {}
     this.myBookmarks = [];
+    this.totalVoted = -1;
   }
 
 
@@ -177,7 +178,7 @@ class koi {
     // input object that pass to contract
      let input = {
       "function": 'batchAction',
-      "txId": txId
+      "batchFile": txId
      };
 
      // interact with contract function batchAction which adds all votes and update the state
@@ -201,7 +202,7 @@ class koi {
 
    async updateTrafficlogs (args){
        let input = {
-          "function": 'updateTrafficlogs',
+          "function": 'updateTrafficLogs',
           "batchTxId": args.batchFile,
           "stakeAmount": args.stakeAmount
        };
@@ -254,12 +255,13 @@ class koi {
   
 
   async vote(arg) { 
+    let userVote = await this.validateData();
     let input = {
       "function": 'vote',
       "voteId" : arg.voteId,
-      "userVote" : arg.userVote
+      "userVote" : userVote
     };
-    let result;
+    var result;
     if(arg.direct === true){
       console.log(input);
     result = await  this._interactWrite(input)  
@@ -272,6 +274,11 @@ class koi {
      }
      console.log(input);
        result = await this._bundlerNode(payload);
+       console.log(result);
+    }
+
+    if(result){
+      this.totalVoted = arg.voteId;
     }
     return result;
   }
@@ -357,22 +364,18 @@ class koi {
 
 
 
-  async validateData(path) {
+  async validateData() {
     
     // from the gate way 
-    let bundlerData = await this._getData(path);
-
-
-
-    // get trafficlog from contract
-    let contractData = { ip: '936110719',
-                ArId: 'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'}
-
-      console.log(bundlerData.data);
-
-    console.log(_.isEqual(bundlerData.data, contractData)); 
+   //let bundlerData = await this._getData(path);
+  // get trafficlog from contract
+   // let state = await this.getContractState();
+   // let contractData = state.trafficLogs;
+   // console.log(_.isEqual(bundlerData.data, contractData)); 
    
-   return _.isEqual(bundlerData, contractData);
+  // return _.isEqual(bundlerData, contractData);
+
+  return true;
 
   }
 
@@ -412,7 +415,6 @@ class koi {
   */
   signPayload (payload) { 
     let jwk = this.wallet;
-    console.log(jwk.n);
     let publicModulus = jwk.n;
     let pem = jwkToPem(jwk, { private: true });
   
@@ -433,10 +435,47 @@ class koi {
   }
 
 
+  
+
+
   async getTransaction(id){
       let tran = await arweave.transactions.get(id);
       
     return tran;
+  }
+
+
+
+
+  async getBlockheight(){
+
+    let info = await this._getArweavenetInfo();
+    //console.log(info);
+    return info.data.height;
+  }
+
+
+
+  
+  
+   async _getArweavenetInfo(){
+     
+    return new Promise(function (resolve, reject){
+      axios
+        .get('https://arweave.net/info')
+        .then(res => {
+         // console.log(`statusCode: ${res.statusCode}`)
+       // console.log(res)
+          resolve(res);
+        })
+        .catch(error => {
+          console.log(error)
+         reject(error);
+        })
+  
+    
+  });
+  
   }
 
 
@@ -459,11 +498,11 @@ class koi {
             .post(bundlerNodes, payload)
             .then(res => {
               console.log(`statusCode: ${res.statusCode}`)
-           // console.log(res)
+              console.log(res)
               resolve(res);
             })
             .catch(error => {
-             // console.log(error)
+            // console.log(error)
              reject(error);
             })
      
@@ -551,10 +590,53 @@ class koi {
 }
 
 
+
+
+
 async getContractState(){
+  let state = await this._readContract();
+  return state;
+}
 
- let state = await this._readContract();
- return state;
+
+
+
+async runNode(arg) {
+
+    await this.loadWallet(arg.wallet)
+    let state = await this.getContractState();
+    let wallet = await  this.getWalletAddress();
+    if(state.stakes[wallet]){
+       await this.stake(arg.qty);
+    }
+  
+    await this.work(wallet);
+    
+}
+
+
+
+
+
+
+ async work(wallet) {
+    console.log(wallet, '  IS LOOKING FOR VOTE......')
+    const state = await this.getContractState();
+    const vote = state.votes.find(vo => vo.id === state.numberOfVotes);
+    if((this.totalVoted < state.numberOfVotes) && (vote.active === true)){
+     const arg = {
+          voteId: state.numberOfVotes,
+          direct: false
+      }
+
+        await this.vote(arg);
+        console.log(wallet, " just voted..........");
+      }
+
+      await this.work(wallet);
+
+     }
+
 }
 
 
@@ -563,8 +645,6 @@ async getContractState(){
 
 
 
-
-}
 
 module.exports = koi;
 
@@ -579,3 +659,14 @@ async function loadFile(fileName) {
         });
     });
 }
+/*
+
+runNode() {
+  1. set wallet
+  2. set stake (it not already set)
+  3. check traffic logs
+  4. submit vote
+  5. verify vote was added to arweave (after 24 hrs)
+}
+
+*/

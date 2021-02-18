@@ -1,12 +1,8 @@
 // tests koi-tools.js 
 const tools       = require('./koi-tools')
 var ktools        = new tools()
-const Arweave = require ('arweave/node')
-const arweave = Arweave.init({
-    host: 'arweave.net',
-    protocol: 'https',
-    port: 443
-  });
+//const Arweave = require ('arweave/node')
+
 
 var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
 
@@ -22,7 +18,7 @@ async function start () {
 
    
        await  testSignPayloadAndVerify()
-/*
+
        await testValidateData();
 
        
@@ -48,10 +44,10 @@ async function start () {
           await testDistributeDailyRewards()
 
           await testBatchAction ()
-       */
-       //  await testStake()
+       
+         await testStake()
      
-       //   await testGetContractState ()
+          await testGetContractState ()
          
        
 
@@ -79,9 +75,7 @@ async function testBalance () {
     // test 2 - balance
     var balance =  await ktools.getWalletBalance()
     console.log('balance is ', balance)
-    if ( balance = 0 ) {
-        throw Error ('The balance function failed to retrieve the dummy wallet.')
-    }
+    
 
 }
 
@@ -94,7 +88,7 @@ async function testWrite () {
 
     console.log('transaction........', transaction)
 
-    if ( typeof(address) === "undefined" || address === null ) {
+    if ( typeof(transaction) === "undefined" || transaction === null ) {
         throw Error ('Failed while attempting to upload payload')
     }
 
