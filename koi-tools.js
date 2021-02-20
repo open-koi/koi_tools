@@ -47,78 +47,55 @@ class koi {
     this.totalVoted = -1;
   }
 
-
   /*
-  @addToBookMarks // add txid to bookmarks 
-  artxid : String, // arweave transaction id
-  ref: ................?
-   
+    @addToBookMarks // add txid to bookmarks 
+    artxid : String, // arweave transaction id
+    ref: ................?  
   */
-
   addToBookmarks(artxid, ref) {
-      if ( typeof(this.myBookmarks[artxid]) != "undefined" ) {
-          throw Error ('cannot assign a bookmark to ', artxid, ' since it already has a note ', ref)
-      } else {
-          this.myBookmarks[artxid] = ref
-          this.myBookmarks[ref] = artxid
-      }
+    if ( typeof(this.myBookmarks[artxid]) != "undefined" ) {
+        throw Error ('cannot assign a bookmark to ', artxid, ' since it already has a note ', ref)
+    } else {
+        this.myBookmarks[artxid] = ref
+        this.myBookmarks[ref] = artxid
+    }
   }
-
-
-
-
- /*
-  @loadWallet // loads wallet key from file path.
-  Returns the key as an object.
-  walletFileLocation: // wallet key file loaction
-   
-  */
-
-
- async loadWallet (walletFileLocation) {
-      this.wallet = await loadFile(walletFileLocation)
-      await this.getWalletAddress()
-      console.log('loaded wallet from', walletFileLocation);
-      return this.wallet;
-  }
-
-
-
-
 
   /*
-  @getWalletAddress // get walllet key address.
-  Returns address as a string;
+    @loadWallet // loads wallet key from file path.
+    Returns the key as an object.
+    walletFileLocation: // wallet key file loaction
   */
-
-  async getWalletAddress () {
-      if (!this.address) this.address = await arweave.wallets.jwkToAddress(this.wallet)
-      return this.address;
+  async loadWallet (walletFileLocation) {
+    this.wallet = await loadFile(walletFileLocation)
+    await this.getWalletAddress()
+    console.log('loaded wallet from', walletFileLocation);
+    return this.wallet;
   }
 
-
-   /*
-  @getWalletBalance // gets wallet balance Note, this is arweave bakance, not kOI balance.
-  Returns balance.
+  /*
+    @getWalletAddress // get walllet key address.
+    Returns address as a string;
   */
+  async getWalletAddress () {
+    if (!this.address) this.address = await arweave.wallets.jwkToAddress(this.wallet)
+    return this.address;
+  }
 
+  /*
+    @getWalletBalance // gets wallet balance Note, this is arweave bakance, not kOI balance.
+    Returns balance.
+  */
   async getWalletBalance () {
     this.balance = await arweave.wallets.getBalance(this.address);
     return this.balance;
   }
 
-  // add koi balance 
-
-
-
   /*
-  @postData // posts data on arweave.
-  Returns transaction id.
-  data: object // data
+    @postData // posts data on arweave.
+    Returns transaction id.
+    data: object // data
   */
-
-
-
   async postData (data) { // TODO: define data interface
     // var receivedData: object = {};
     // TODO hit registerPermaWebData in order to add received data to PermaWeb
@@ -144,6 +121,10 @@ class koi {
   
 
 
+  /*
+   @submitDataToTask // creates a koi task 
+    submission : 
+  */
   createTask (task, bounty){ // TODO:create task interface
     // TODO: create task id
     // TODO: store task, task id, and bounty in SmartWeave contract
@@ -152,11 +133,10 @@ class koi {
     return {task, bounty};
   }
 
-
-  
-  
-
-
+  /*
+   @submitDataToTask // submits a valid payload for a koi task. 
+    submission : 
+  */
   submitDataToTask (submission) { // TODO: Create submission interface
     // TODO: pass submission from human or machine agent to SmartWeave contract
     // TODO: await rewards from SmartWeave contract and send them to human or machine
@@ -166,49 +146,37 @@ class koi {
     return {rewards, submission};
   }
 
-
-  
   /*
-  @batchAction // Interact with contract to add the votes 
+   @batchAction // Interact with contract to add the votes 
    Returns the transaction id. 
     txId : String, // the votes transaction id in arweave
-   */
-
-   async batchAction (txId){
-
+  */
+  async batchAction (txId){
     // input object that pass to contract
-     let input = {
+    let input = {
       "function": 'batchAction',
       "batchFile": txId
-     };
+    };
 
-     // interact with contract function batchAction which adds all votes and update the state
+    // interact with contract function batchAction which adds all votes and update the state
     let result = await this._interactWrite(input);
-     return result;
-   }
+    return result;
+  }
 
-
-
-
-   
-   /*
-    * @upadteTrafficlogs //  interact with contract to update traffic logs and create new vote
+  /*
+    * @updateTrafficlogs //  interact with contract to update traffic logs and create new vote
     * Returns the transaction id. 
     * args : Object, // it has batchFile/(string) and stakeAmount/(int) as properties 
         // batchFile is the traffilc logs transaction id in arweave and stakeamount is min staked kOI to vote  
   */
-
-
-
-
-   async updateTrafficlogs (args){
-       let input = {
-          "function": 'updateTrafficLogs',
-          "batchTxId": args.batchFile,
-          "stakeAmount": args.stakeAmount
-       };
-      let result = await this._interactWrite(input);
-      return result;
+  async updateTrafficlogs (args){
+    let input = {
+      "function": 'updateTrafficLogs',
+      "batchTxId": args.batchFile,
+      "stakeAmount": args.stakeAmount
+    };
+    let result = await this._interactWrite(input);
+    return result;
   }
    
 
@@ -217,27 +185,22 @@ class koi {
    @registerData //  interact with contract to register data
    Returns the transaction id. 
    param1 : txId, // it has batchFile/value(string) and stakeamount/value(int) as properties 
-   */
-
-
-
-   async registerData (txId){
-      let input = {
+  */
+  async registerData (txId){
+    let input = {
       "function": 'registerData',
       "txId": txId
     };
     let result = await this._interactWrite(input);
-     return result;
+    return result;
   }
 
    
 
   /*
-  @registerData //  interact with contract to distribute daily rewards
+   @registerData //  interact with contract to distribute daily rewards
    Returns the transaction id. 
-   */
-
-
+  */
   async distributeDailyRewards () { 
     let input = {
       "function": 'distributeRewards',
@@ -253,8 +216,6 @@ class koi {
    Returns the transaction id. 
    arg : Object, // it has direct(boolean),  voteId(string) and useVote(String)
   */
-  
-
   async vote(arg) { 
     let userVote = await this.validateData();
     let input = {
@@ -307,16 +268,12 @@ class koi {
     return result;
   }
   
-
-
- /*
-   @transfer //  interact with contract to transfer koi 
-   Returns the transaction id. 
-   qty : integer, //  quantity to transfer
-   target : string, //  reciever address 
-*/
-
-
+  /*
+    @transfer //  interact with contract to transfer koi 
+    Returns the transaction id. 
+    qty : integer, //  quantity to transfer
+    target : string, //  reciever address 
+  */
   async transfer(qty,target){
     
     let input = {
@@ -331,19 +288,12 @@ class koi {
 
   }
 
-
-
-
- /*
-  @withDraw //  interact with contract to transfer koi 
-   Returns the transaction id. 
-   qty : integer, //  quantity to transfer
-   target : string, //  reciever address 
-*/
-
-
-
-
+  /*
+    @withDraw //  interact with contract to transfer koi 
+    Returns the transaction id. 
+    qty : integer, //  quantity to transfer
+    target : string, //  reciever address 
+  */
   async withDraw(qty){
     
     let input = {
@@ -379,24 +329,21 @@ class koi {
 
 
 
-/*
-   @verifySignature //  verify signed payload
-   Returns boolean. // 
-   payload : object, //  payload 
-   
-*/
-
-
-
+  /*
+    @verifySignature //  verify signed payload
+    Returns boolean. // 
+    payload : object, //  payload 
+    
+  */
   verifySignature (payload) { 
     const publicKey = {
       kty: "RSA",
       e: "AQAB",
       n: payload.owner
-       };
+    };
 
-     const pem = jwkToPem(publicKey);
-     const rawSignature = ArweaveUtils.b64UrlToBuffer(payload.signature);
+    const pem = jwkToPem(publicKey);
+    const rawSignature = ArweaveUtils.b64UrlToBuffer(payload.signature);
     
     const verify = crypto.createVerify('SHA256').update(JSON.stringify(payload.vote));
     
@@ -428,7 +375,7 @@ class koi {
   verifyAddress(publicKey){
     const bufferPublickey = ArweaveUtils.b64UrlToBuffer(publicKey);
     let rawAddress = crypto.createHash('SHA256').update(bufferPublickey).digest();
-   let address = ArweaveUtils.bufferTob64Url(rawAddress);
+    let address = ArweaveUtils.bufferTob64Url(rawAddress);
     return address;
   }
 
@@ -437,8 +384,7 @@ class koi {
 
 
   async getTransaction(id){
-      let tran = await arweave.transactions.get(id);
-      
+    let tran = await arweave.transactions.get(id); 
     return tran;
   }
 
@@ -446,7 +392,6 @@ class koi {
 
 
   async getBlockheight(){
-
     let info = await this._getArweavenetInfo();
     //console.log(info);
     return info.data.height;
@@ -456,8 +401,7 @@ class koi {
 
   
   
-   async _getArweavenetInfo(){
-     
+  async _getArweavenetInfo(){
     return new Promise(function (resolve, reject){
       axios
         .get('https://arweave.net/info')
@@ -472,8 +416,7 @@ class koi {
         })
   
     
-  });
-  
+    });
   }
 
 
@@ -481,8 +424,8 @@ class koi {
 
     
   /*
-   @_bundlerNode // internal function, submits a playload to server 
-   Returns the a promise
+   @_bundlerNode // internal function, submits a payload to server 
+   Returns the result as a promise
    payload: // a payload to be submited. 
   */
   async _bundlerNode(payload){
@@ -542,69 +485,63 @@ class koi {
   async _interactWrite(input){
     let wallet = this.wallet;
     return new Promise(function (resolve, reject){
-            smartweave.interactWrite(
-              arweave,
-              wallet,
-              koi_contract,
-              input
-            ).then((txId) => {
-              resolve(txId);
-            })
-            .catch((err) => {
-              reject(err);
-            });
-    });
-    
- }
-
- 
- /*
-   @_readContract //  internal function, read contract latest state
-   Returns the a promise
- */ 
- async _readContract(){
-    return new Promise(function (resolve, reject){
-       smartweave.readContract(
-       arweave,
-       koi_contract,
-       ).then((state) => {
-       resolve(state);
+      smartweave.interactWrite(
+        arweave,
+        wallet,
+        koi_contract,
+        input
+      ).then((txId) => {
+        resolve(txId);
       })
       .catch((err) => {
         reject(err);
       });
-  });
-   
-}
+    });
+  }
+
+ 
+  /*
+    @_readContract //  internal function, read contract latest state
+    Returns the a promise
+  */ 
+  async _readContract(){
+    return new Promise(function (resolve, reject){
+      smartweave.readContract(
+      arweave,
+      koi_contract,
+      ).then((state) => {
+      resolve(state);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+    });
+  }
 
 
 
 
 
-async getContractState(){
-  let state = await this._readContract();
-  return state;
-}
+  async getContractState(){
+    let state = await this._readContract();
+    return state;
+  }
 
 
 
 
-async runNode(arg) {
-    console.log('entered run node with', arg)
-    await this.loadWallet(arg.wallet)
-    let state = await this.getContractState();
-    let wallet = await  this.getWalletAddress();
-    if(state.stakes[wallet]){
-       await this.stake(arg.qty);
-    }
-  
-    await this.work(wallet);
+  async runNode(arg) {
+      console.log('entered run node with', arg)
+      await this.loadWallet(arg.wallet)
+      let state = await this.getContractState();
+      let wallet = await  this.getWalletAddress();
+      if(state.stakes[wallet]){
+        await this.stake(arg.qty);
+      }
     
-}
-
-
-
-
+      await this.work(wallet);
+      
+  }
 
 
   async work(wallet) {
