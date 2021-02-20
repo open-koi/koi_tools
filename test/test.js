@@ -1,5 +1,5 @@
 // tests koi-tools.js 
-const tools       = require('./koi-tools')
+const tools       = require('../lib/tools')
 var ktools        = new tools()
 //const Arweave = require ('arweave/node')
 
