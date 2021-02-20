@@ -1,20 +1,15 @@
-const node       = require('../lib/node.js')
+const { koi_tools, koi_node }       = require('../index.js')
 
 // var wallet1 = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
 var wallet1 = "/media/al/files/koi/Arweave/sec2.json"
 
-async function start() {
-  const arg1 = {
-          wallet:wallet1,
-          qty:20
-        }
+const arg1 = {
+        wallet:wallet1,
+        qty:20
+      }
 
-  var koi_node = new node (arg1);
+var node = new koi_node (arg1);
 
-  console.log('node is', koi_node)
-  
-  koi_node.runNode()
+console.log('node is', node)
 
-}
-
-start()
+node.run()
