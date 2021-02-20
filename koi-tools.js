@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 const Arweave = require ('arweave/node')
 const fs      = require('jsonfile')
-const smartweave_1 = require("smartweave");
+const smartweave = require("smartweave");
 const axios = require('axios');
 const crypto = require('crypto');
 const jwkToPem = require('jwk-to-pem');
@@ -484,15 +484,13 @@ class koi {
    @_bundlerNode // internal function, submits a playload to server 
    Returns the a promise
    payload: // a payload to be submited. 
- */
-
-
-
+  */
   async _bundlerNode(payload){
+
+    payload = this.signPayload(payload)
 
     return new Promise(function (resolve, reject){
           console.log('entered bundler submission')
-          payload = this.signPayload(payload)
           axios
             .post(bundlerNodes, payload)
             .then(res => {
@@ -505,7 +503,6 @@ class koi {
               resolve(error);
             })
      
-        
     });
      
   }
@@ -518,8 +515,8 @@ class koi {
           axios
             .get(bundlerNodes+path)
             .then(res => {
-             // console.log(`statusCode: ${res.statusCode}`)
-           // console.log(res)
+              // console.log(`statusCode: ${res.statusCode}`)
+              // console.log(res)
               resolve(res);
             })
             .catch(error => {
@@ -541,41 +538,33 @@ class koi {
    @_interactWrite //  internal function, writes to contract
    Returns the a promise
    input: // Object, passes to smartweave write function, in order to excute a contract function.
-   */
-
-
-
+  */
   async _interactWrite(input){
     let wallet = this.wallet;
-   return new Promise(function (resolve, reject){
-            smartweave_1.interactWrite(
-            arweave,
-            wallet,
-            koi_contract,
-            input
+    return new Promise(function (resolve, reject){
+            smartweave.interactWrite(
+              arweave,
+              wallet,
+              koi_contract,
+              input
             ).then((txId) => {
-            resolve(txId);
+              resolve(txId);
             })
             .catch((err) => {
-            reject(err);
+              reject(err);
             });
-   });
+    });
     
  }
 
  
-/*
-
+ /*
    @_readContract //  internal function, read contract latest state
    Returns the a promise
-  
-   
-   
-   
-  */ 
+ */ 
  async _readContract(){
     return new Promise(function (resolve, reject){
-       smartweave_1.readContract(
+       smartweave.readContract(
        arweave,
        koi_contract,
        ).then((state) => {
@@ -637,13 +626,6 @@ async runNode(arg) {
 
   }
 }
-
-
-
-
-
-
-
 
 module.exports = koi;
 
