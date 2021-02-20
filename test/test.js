@@ -1,10 +1,11 @@
 // tests koi-tools.js 
-const tools       = require('../lib/tools')
-var ktools        = new tools()
+const { koi_tools }       = require('../index.js')
+var ktools        = new koi_tools ()
 //const Arweave = require ('arweave/node')
 
 
-var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
+// var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
+var walletKeyLocation = "/media/al/files/koi/Arweave/sec2.json"
 
 start()
 
@@ -16,44 +17,33 @@ async function start () {
 
     try {
 
-   
-       await  testSignPayloadAndVerify()
+        await testSignPayloadAndVerify()
 
-       await testValidateData();
+        await testValidateData();
 
-       
         await testAddress()
-    
+
         await testBalance()
-    
-         await testWrite()
 
-         
+        await testWrite()
 
-          await testVote ()
+        await testVote ()
 
-          await testTransfer ()
+        await testTransfer ()
 
-          await testRegisterdata ()
+        await testRegisterdata ()
 
-          await testUpdatetrafficlogs ()
+        await testUpdatetrafficlogs ()
 
-           await testWithdraw ()
+        await testWithdraw ()
 
+        await testDistributeDailyRewards ()
 
-          await testDistributeDailyRewards()
+        await testBatchAction ()
 
-          await testBatchAction ()
-       
-         await testStake()
-     
-          await testGetContractState ()
-         
-       
+        await testStake()
 
-
-
-
+        await testGetContractState ()
 
     } catch ( err ) {
         throw Error (err)
