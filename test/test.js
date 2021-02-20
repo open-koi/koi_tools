@@ -1,8 +1,6 @@
 // tests koi-tools.js 
-const { koi_tools }       = require('../index.js')
-var ktools        = new koi_tools ()
-//const Arweave = require ('arweave/node')
-
+const { koi_tools } = require('../index.js')
+var ktools          = new koi_tools ()
 
 // var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
 var walletKeyLocation = "/media/al/files/koi/Arweave/sec2.json"
@@ -86,14 +84,11 @@ async function testWrite () {
 
 
 async function testStake () {
-    // test 3 - write to arweave
+    // test 4 - test create stake
     var qty = 23;
 
     var result =  await ktools.stake(qty);
 
-    
-    
-    
     console.log('transaction.............', result)
 
     if ( typeof(result) === "undefined" || result === null ) {
@@ -104,7 +99,7 @@ async function testStake () {
 
 
 async function testWithdraw () {
-    // test 3 - write to arweave
+    // test 5 - withdraw tokens from staking
     var qty = 777;
     var result =  await ktools.withDraw(qty);
 
@@ -116,12 +111,8 @@ async function testWithdraw () {
 
 }
 
-
-
-
 async function testVote () {
-    // test 3 - write to arweave
-    //var qty = 777;
+    // test 6 - write to arweave
     let input = {
       direct: "true",
       voteId: 1,
@@ -139,147 +130,128 @@ async function testVote () {
 }
 
 
-    async function testTransfer () {
-        // test 3 - write to arweave
-        //var qty = 777;
-        let target = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
-        
+async function testTransfer () {
+    // test 7 - write to arweave
+    let target = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
     
-        var result =  await ktools.transfer(1,target);
-     
-        console.log('transaction', result)
+    var result =  await ktools.transfer(1,target);
     
-        if ( typeof(result) === "undefined" || result === null ) {
-            throw Error ('Failed while attempting to vote')
-        }
+    console.log('transaction', result)
 
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
     }
 
-    async function testRegisterdata () {
-        // test 3 - write to arweave
-        //var qty = 777;
-        let txId = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
-        
-    
-        var result =  await ktools.registerData(txId);
-     
-        console.log('transaction', result)
-    
-        if ( typeof(result) === "undefined" || result === null ) {
-            throw Error ('Failed while attempting to vote')
-        }
+}
 
+async function testRegisterdata () {
+    // test 8 - write to arweave
+    let txId = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
+
+    var result =  await ktools.registerData(txId);
+    
+    console.log('transaction', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
     }
 
+}
 
-    async function testUpdatetrafficlogs () {
-        // test 3 - write to arweave
-        //var qty = 777;
-        let input = {
-            "batchTxId": '48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM',
-            "stakeAmount": 50
-        };
-        
-    
-        var result =  await ktools.registerData(input);
-     
-        console.log('transaction', result)
-    
-        if ( typeof(result) === "undefined" || result === null ) {
-            throw Error ('Failed while attempting to vote')
-        }
 
+async function testUpdatetrafficlogs () {
+    // test 9 - write to arweave
+    let input = {
+        "batchTxId": '48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM',
+        "stakeAmount": 50
+    };
+    
+    var result =  await ktools.registerData(input);
+    
+    console.log('transaction', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
     }
 
+}
 
-    async function testDistributeDailyRewards () {
-        
-        
-        
-    
-        var result =  await ktools.distributeDailyRewards();
-     
-        console.log('transaction', result)
-    
-        if ( typeof(result) === "undefined" || result === null ) {
-            throw Error ('Failed while attempting to vote')
-        }
 
+async function testDistributeDailyRewards () {
+    // test 10 - distribute rewards (if traffic logs have already been submitted)
+    var result =  await ktools.distributeDailyRewards();
+    
+    console.log('transaction', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
     }
 
+}
 
-    async function testBatchAction () {
-        
-    
-        var result =  await ktools.batchAction();
-     
-        console.log('transaction', result)
-    
-        if ( typeof(result) === "undefined" || result === null ) {
-            throw Error ('Failed while attempting to vote')
-        }
 
+async function testBatchAction () {
+    // test 11 - input a batch action to arweave 
+    var result =  await ktools.batchAction();
+    
+    console.log('transaction', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
     }
 
+}
 
-    async function testGetContractState () {
-        
-    
-        var result =  await ktools.getContractState();
-     
-        console.log('transaction', result)
-    
-        if ( typeof(result) === "undefined" || result === null ) {
-            throw Error ('Failed while attempting to vote')
-        }
 
+async function testGetContractState () {
+    // test 12 - get the state of the arweave contract
+    var result =  await ktools.getContractState();
+    
+    console.log('transaction', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
     }
 
-
-    async function testSignPayloadAndVerify() {
-
-
-        let payload = {
-            vote : {
-                "function": "vote",
-                "voteId" : 1,
-                "userVote" : "true"
-            }, 
-            senderAddress :  await ktools.getWalletAddress()
-        }
-
-        payload = ktools.signPayload(payload);
-        console.log(payload);
-
-        if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
-            throw Error ('Failed while attempting to sign')
-        }
-     
-        payload.signature += "===";
-
-        let isValid = ktools.verifySignature(payload);
-
-        if ( typeof(isValid) === "undefined" || isValid === null ) {
-            throw Error ('Failed while attempting to verify')
-        }
-       // let tran = await ktools.getTransaction('48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM');
-       // console.log(tran);
-        //let address = ktools.verifyAddress(payload.owner);
-       // console.log(address);
-
-        console.log('here it is valid or not', isValid);
+}
 
 
+async function testSignPayloadAndVerify() {
+    // test 13 - test payload signatures
+
+    let payload = {
+        vote : {
+            "function": "vote",
+            "voteId" : 1,
+            "userVote" : "true"
+        }, 
+        senderAddress :  await ktools.getWalletAddress()
     }
 
+    payload = ktools.signPayload(payload);
+    console.log(payload);
 
+    if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
+        throw Error ('Failed while attempting to sign')
+    }
+    
+    payload.signature += "==="; // if payload is valid base 64, appended === should not affect outcome
 
-    async function testValidateData(){
+    let isValid = ktools.verifySignature(payload);
 
+    if ( typeof(isValid) === "undefined" || isValid === null ) {
+        throw Error ('Failed while attempting to verify')
+    }
+
+    console.log('here it is valid or not', isValid);
+
+}
+
+async function testValidateData(){
+    // test traffic log validation 
+    
     let result = await ktools.validateData("trafficlog");
 
     return result;
 
-    }
-
-
+}
