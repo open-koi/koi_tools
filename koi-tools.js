@@ -36,7 +36,8 @@ const arweave = Arweave.init({
 const koi_contract = "RWl3bimVg0Kdlr3R2vbjjxilKaJQwMcmCZ6Ho7dkv0g";
 // Do0Yg4vT9_OhjotAn-DI2J9ubkr8YmOpBg1Z8cBdLNA
 // PfNmSoFfLr5xoL14D6qXy6Gb3HVWX9vI8yLuqDEQTjY
-const bundlerNodes = "http://localhost:8887/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
+// const bundlerNodes = "http://localhost:8887/" // @abel - I have a gateway set up on this ndoe, I think we can run the server there as well
+const bundlerNodes = "http://bundler.openkoi.com:8887"
 
 class koi {
 
@@ -77,7 +78,7 @@ class koi {
  async loadWallet (walletFileLocation) {
       this.wallet = await loadFile(walletFileLocation)
       await this.getWalletAddress()
-      console.log(this.wallet);
+      console.log('loaded wallet from', walletFileLocation);
       return this.wallet;
   }
 
@@ -264,17 +265,17 @@ class koi {
     var result;
     if(arg.direct === true){
       console.log(input);
-    result = await  this._interactWrite(input)  
+      result = await  this._interactWrite(input)  
 
-   }else{
-    let caller = await this.getWalletAddress();
-    let payload = {
-      vote : input,
-      senderAddress : caller,
-     }
-     console.log(input);
-       result = await this._bundlerNode(payload);
-       console.log(result);
+    }else{
+      let caller = await this.getWalletAddress();
+      let payload = {
+        vote : input,
+        senderAddress : caller
+      }
+      console.log(input);
+      result = await this._bundlerNode(payload);
+      console.log(result);
     }
 
     if(result){
@@ -289,14 +290,11 @@ class koi {
    Returns the transaction id. 
    qty : integer, //  quantity to stake
   */
-
-  
-
   async stake(qty) { 
     console.log('starting.....');
     if (!Number.isInteger(qty)) {
       throw Error('Invalid value for "qty". Must be an integer');
-  }
+    }
   
     var input = {
       "function": 'stake',
@@ -492,8 +490,9 @@ class koi {
 
   async _bundlerNode(payload){
 
-    payload = this.signPayload(payload)
     return new Promise(function (resolve, reject){
+          console.log('entered bundler submission')
+          payload = this.signPayload(payload)
           axios
             .post(bundlerNodes, payload)
             .then(res => {
@@ -502,8 +501,8 @@ class koi {
               resolve(res);
             })
             .catch(error => {
-            // console.log(error)
-             reject(error);
+              // console.log(error)
+              resolve(error);
             })
      
         
@@ -602,7 +601,7 @@ async getContractState(){
 
 
 async runNode(arg) {
-
+    console.log('entered run node with', arg)
     await this.loadWallet(arg.wallet)
     let state = await this.getContractState();
     let wallet = await  this.getWalletAddress();
@@ -619,24 +618,24 @@ async runNode(arg) {
 
 
 
- async work(wallet) {
+  async work(wallet) {
     console.log(wallet, '  IS LOOKING FOR VOTE......')
     const state = await this.getContractState();
     const vote = state.votes.find(vo => vo.id === state.numberOfVotes);
-    if((this.totalVoted < state.numberOfVotes) && (vote.active === true)){
-     const arg = {
+    if( (this.totalVoted < state.numberOfVotes) && (vote.active === true) ){
+      const arg = {
           voteId: state.numberOfVotes,
           direct: false
       }
 
-        await this.vote(arg);
-        console.log(wallet, " just voted..........");
-      }
+      var result = await this.vote(arg);
+      console.log(wallet, " just voted..........", result);
 
-      await this.work(wallet);
+    }
 
-     }
+    await this.work(wallet);
 
+  }
 }
 
 

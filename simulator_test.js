@@ -9,25 +9,19 @@ const arweave = Arweave.init({
   });
   */
 
-  var wallet1 = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
+// var wallet1 = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
+var wallet1 = "/media/al/files/koi/Arweave/sec2.json"
 
+var node = new tools();
 
-  var node = new tools();
+async function start() {
+  const arg1 = {
+          wallet:wallet1,
+          qty:20
+        }
 
-
-  start()
-
-  async function start() {
-    const arg1 = {
-            wallet:wallet1,
-            qty:20
-            }
-
-    await node.runNode(arg1);
-   
+  await node.runNode(arg1);
+  
 }
 
-
-
-
-
+start()

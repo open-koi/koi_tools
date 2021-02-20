@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/open-koi/koi_tools#readme",
   "dependencies": {
-    "arweave": "^1.10.3",
+    "arweave": "^1.10.11",
     "crypto": "^1.0.1",
     "jsonfile": "^6.1.0",
     "jwk-to-pem": "^2.0.4",
