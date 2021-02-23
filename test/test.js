@@ -3,7 +3,7 @@ const { koi_tools } = require('../index.js')
 var ktools          = new koi_tools ()
 
 // var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
-var walletKeyLocation = "/media/al/files/koi/Arweave/sec2.json"
+var walletKeyLocation = "c:/Users/sebha/Desktop/koi/koi-protocol/dist/keywallet.json"
 
 start()
 
@@ -16,7 +16,7 @@ async function start () {
     try {
 
         await testSignPayloadAndVerify()
-
+/*
         await testValidateData();
 
         await testAddress()
@@ -42,6 +42,7 @@ async function start () {
         await testStake()
 
         await testGetContractState ()
+        */
 
     } catch ( err ) {
         throw Error (err)
@@ -228,22 +229,27 @@ async function testSignPayloadAndVerify() {
         senderAddress :  await ktools.getWalletAddress()
     }
 
-    payload = ktools.signPayload(payload);
+    payload = await ktools.signPayload(payload);
     console.log(payload);
 
     if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
         throw Error ('Failed while attempting to sign')
     }
-    
-    payload.signature += "==="; // if payload is valid base 64, appended === should not affect outcome
+    let input = {
+        "function": 'proposeSlash',
+        "reciept":payload
+    }
 
-    let isValid = ktools.verifySignature(payload);
+    await ktools._interactWrite(input);
+    //payload.signature += "==="; // if payload is valid base 64, appended === should not affect outcome
 
-    if ( typeof(isValid) === "undefined" || isValid === null ) {
+    let isValid = await ktools.verifySignature(payload);
+
+   if ( typeof(isValid) === "undefined" || isValid === null ) {
         throw Error ('Failed while attempting to verify')
     }
 
-    console.log('here it is valid or not', isValid);
+console.log('here it is valid or not', isValid);
 
 }
 
