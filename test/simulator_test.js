@@ -5,7 +5,7 @@ var wallet1 = "/media/al/files/koi/Arweave/sec2.json"
 
 const arg1 = {
         wallet:wallet1,
-        qty:200
+        qty:30
       }
 
 var node = new koi_node (arg1);

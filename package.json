@@ -24,6 +24,6 @@
     "smartweave": "^0.4.25"
   },
   "devDependencies": {
-    "eslint": "^7.20.0"
+    "eslint": "^7.21.0"
   }
 }
