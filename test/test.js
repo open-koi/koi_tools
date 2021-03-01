@@ -14,13 +14,16 @@ async function start () {
 
     try {
 
-       // await testSignPayloadAndVerify()
+        await testSignPayloadAndVerify()
 
         await testAddress()
 
        await testBalance()
        
        await testKoiBalance()
+
+         await testStake()
+
        // await testVote ()
 
        // await testTransfer ()
@@ -35,7 +38,7 @@ async function start () {
 
        // await testBatchAction ()
 
-       // await testStake()
+      
 
        // await testGetContractState ()
     
@@ -81,7 +84,7 @@ async function testKoiBalance(){
 
 }
 
-/*
+
 
 async function testStake () {
     // test 4 - test create stake
@@ -96,7 +99,7 @@ async function testStake () {
     }
 
 }
-
+/*
 
 async function testWithdraw () {
     // test 5 - withdraw tokens from staking
@@ -216,11 +219,11 @@ async function testGetContractState () {
     }
 
 }
-
+*/
 
 async function testSignPayloadAndVerify() {
     // test 13 - test payload signatures
-
+    console.log('signing......................................');
     let payload = {
         vote : {
             "function": "vote",
@@ -236,13 +239,14 @@ async function testSignPayloadAndVerify() {
     if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
         throw Error ('Failed while attempting to sign')
     }
+    /*
     let input = {
         "function": 'proposeSlash',
         "reciept":payload
     }
-
-    await ktools._interactWrite(input);
-    //payload.signature += "==="; // if payload is valid base 64, appended === should not affect outcome
+    */
+  //  await ktools._interactWrite(input);
+   /// payload.signature += "abel"; // if payload is valid base 64, appended === should not affect outcome
 
     let isValid = await ktools.verifySignature(payload);
 
@@ -250,7 +254,7 @@ async function testSignPayloadAndVerify() {
         throw Error ('Failed while attempting to verify')
     }
 
-console.log('here it is valid or not', isValid);
+   console.log('here it is valid or not', isValid);
 
 }
-*/
+
