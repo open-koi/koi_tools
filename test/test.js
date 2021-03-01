@@ -2,7 +2,6 @@
 const { koi_tools } = require('../index.js')
 var ktools          = new koi_tools ()
 
-// var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
 var walletKeyLocation = "c:/Users/sebha/Desktop/koi/koi-protocol/dist/keywallet.json"
 
 start()
