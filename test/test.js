@@ -2,7 +2,7 @@
 const { koi_tools } = require('../index.js')
 var ktools          = new koi_tools ()
 
-var walletKeyLocation = "c:/Users/sebha/Desktop/koi/koi-protocol/dist/keywallet.json"
+var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json"
 
 start()
 
@@ -14,29 +14,30 @@ async function start () {
 
     try {
 
-        await testSignPayloadAndVerify()
+       // await testSignPayloadAndVerify()
 
         await testAddress()
 
-        await testBalance()
+       await testBalance()
+       
+       await testKoiBalance()
+       // await testVote ()
 
-        await testVote ()
+       // await testTransfer ()
 
-        await testTransfer ()
+       // await testRegisterdata ()
 
-        await testRegisterdata ()
+      //  await testUpdatetrafficlogs ()
 
-        await testUpdatetrafficlogs ()
+       // await testWithdraw ()
 
-        await testWithdraw ()
+       // await testDistributeDailyRewards ()
 
-        await testDistributeDailyRewards ()
+       // await testBatchAction ()
 
-        await testBatchAction ()
+       // await testStake()
 
-        await testStake()
-
-        await testGetContractState ()
+       // await testGetContractState ()
     
 
     } catch ( err ) {
@@ -49,6 +50,7 @@ async function start () {
 async function testAddress () {
     // test 1 - address
     var address = await ktools.getWalletAddress()
+    console.log(address);
 
     if ( typeof(address) === "undefined" || address === null ) {
         throw Error ('The address function returned ', address)
@@ -59,12 +61,27 @@ async function testBalance () {
     // test 2 - balance
     var balance =  await ktools.getWalletBalance()
     console.log('balance is ', balance)
+
+    if ( typeof(balance) === "undefined" || balance === null ) {
+        throw Error ('The balance function returned ', balance)
+    }
     
 
 }
 
 
+async function testKoiBalance(){
 
+    var koiBalance =  await ktools.getKoiBalance()
+    console.log('balance is ', koiBalance)
+
+    if ( typeof(koiBalance) === "undefined" || koiBalance === null ) {
+        throw Error ('The balance function returned ', koiBalance)
+    }    
+
+}
+
+/*
 
 async function testStake () {
     // test 4 - test create stake
@@ -186,6 +203,8 @@ async function testBatchAction () {
 }
 
 
+
+
 async function testGetContractState () {
     // test 12 - get the state of the arweave contract
     var result =  await ktools.getContractState();
@@ -234,4 +253,4 @@ async function testSignPayloadAndVerify() {
 console.log('here it is valid or not', isValid);
 
 }
-
+*/
