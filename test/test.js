@@ -3,7 +3,7 @@ const { koi_tools } = require('../index.js')
 var ktools          = new koi_tools ()
 
 // var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
-var walletKeyLocation = "c:/Users/sebha/Desktop/koi/koi-protocol/dist/keywallet.json"
+var walletKeyLocation = '/Users/makdasebhatu/Desktop/koi/koi_tools/test/keywallet.json';
 
 start()
 
@@ -15,11 +15,16 @@ async function start () {
 
     try {
 
-        await testSignPayloadAndVerify()
+        // await testSignPayloadAndVerify()
+        await testAddress();
+/*
+        await testValidateData();
 
         await testAddress()
 
         await testBalance()
+
+        await testWrite()
 
         await testVote ()
 
@@ -38,7 +43,7 @@ async function start () {
         await testStake()
 
         await testGetContractState ()
-    
+        */
 
     } catch ( err ) {
         throw Error (err)
@@ -64,7 +69,20 @@ async function testBalance () {
 
 }
 
+async function testWrite () {
+    // test 3 - write to arweave
+    var data = {
+        "foo" : "bar"
+    }
+    var transaction =  await ktools.postData(data)
 
+    console.log('transaction........', transaction)
+
+    if ( typeof(transaction) === "undefined" || transaction === null ) {
+        throw Error ('Failed while attempting to upload payload')
+    }
+
+}
 
 
 async function testStake () {
@@ -236,3 +254,11 @@ console.log('here it is valid or not', isValid);
 
 }
 
+async function testValidateData(){
+    // test traffic log validation 
+    
+    let result = await ktools.validateData("trafficlog");
+
+    return result;
+
+}
