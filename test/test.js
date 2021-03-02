@@ -1,8 +1,8 @@
 // tests koi-tools.js 
 const { koi_tools } = require('../index.js')
-var ktools          = new koi_tools ()
+var ktools  = new koi_tools ()
 
-var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json"
+var walletKeyLocation = "c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json"
 
 start()
 
@@ -14,15 +14,16 @@ async function start () {
 
     try {
 
-        await testSignPayloadAndVerify()
+       await testPostData();
+     //   await testSignPayloadAndVerify()
 
-        await testAddress()
+     //  await testAddress()
 
-       await testBalance()
+     // await testBalance()
        
-       await testKoiBalance()
+     //  await testKoiBalance()
 
-         await testStake()
+       //  await testStake()
 
        // await testVote ()
 
@@ -48,7 +49,7 @@ async function start () {
     }
 
 }
-
+/*
 
 async function testAddress () {
     // test 1 - address
@@ -219,7 +220,7 @@ async function testGetContractState () {
     }
 
 }
-*/
+
 
 async function testSignPayloadAndVerify() {
     // test 13 - test payload signatures
@@ -239,12 +240,12 @@ async function testSignPayloadAndVerify() {
     if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
         throw Error ('Failed while attempting to sign')
     }
-    /*
+    
     let input = {
         "function": 'proposeSlash',
         "reciept":payload
     }
-    */
+    
   //  await ktools._interactWrite(input);
    /// payload.signature += "abel"; // if payload is valid base 64, appended === should not affect outcome
 
@@ -256,5 +257,20 @@ async function testSignPayloadAndVerify() {
 
    console.log('here it is valid or not', isValid);
 
+}
+
+*/
+
+async function testPostData(){
+   
+    let data = 'some thing';
+
+   let tx = await  ktools.postData(data);
+
+   if ( typeof(tx) === "undefined" || tx === null ) {
+       throw Error ('Failed while attempting to verify')
+   }
+
+   console.log('here it is valid or not', tx);
 }
 
