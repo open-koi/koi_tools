@@ -13,34 +13,46 @@ async function start () {
     await ktools.loadWallet(walletKeyLocation)
 
     try {
-
+            // test passed
        await testPostData();
+                 // test passed
      //   await testSignPayloadAndVerify()
 
+            // test passed
      //  await testAddress()
-
+     
+            // test paseed
      // await testBalance()
-       
+           
+              // test passed
      //  await testKoiBalance()
-
+           
+              // test passed
        //  await testStake()
+           
+                // test passed 
+           // await testWithdraw ()
 
-       // await testVote ()
-
+                // test passed
+          // await testVote ()
+            
+                 // tes passed
        // await testTransfer ()
 
+            // not yet Maki test it pls 
        // await testRegisterdata ()
 
-      //  await testUpdatetrafficlogs ()
+     
 
-       // await testWithdraw ()
-
+           // not yet
        // await testDistributeDailyRewards ()
 
+
+            // test passed
        // await testBatchAction ()
 
       
-
+             // test passed 
        // await testGetContractState ()
     
 
