@@ -1,9 +1,8 @@
 // tests koi-tools.js 
 const { koi_tools } = require('../index.js')
-var ktools          = new koi_tools ()
+var ktools  = new koi_tools ()
 
-// var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
-var walletKeyLocation = '/Users/makdasebhatu/Desktop/koi/koi_tools/test/keywallet.json';
+var walletKeyLocation = '/Users/makdasebhatu/Desktop/koi/koi_tools/test/keywallet.json'
 
 start()
 
@@ -14,36 +13,49 @@ async function start () {
     await ktools.loadWallet(walletKeyLocation)
 
     try {
+            // test passed
+    //    await testPostData();
+                 // test passed
+     //   await testSignPayloadAndVerify()
 
-        // await testSignPayloadAndVerify()
-        await testAddress();
-/*
-        await testValidateData();
+            // test passed
+     //  await testAddress()
+     
+            // test paseed
+     // await testBalance()
+           
+              // test passed
+     //  await testKoiBalance()
+           
+              // test passed
+       //  await testStake()
+           
+                // test passed 
+           // await testWithdraw ()
 
-        await testAddress()
+                // test passed
+          // await testVote ()
+            
+                 // test passed
+       // await testTransfer ()
 
-        await testBalance()
+            // test passed
+       // await testRegisterdata ()
 
-        await testWrite()
+     
 
-        await testVote ()
+           // test passed
+        // await testDistributeDailyRewards ()
 
-        await testTransfer ()
 
-        await testRegisterdata ()
+            // test passed
+       // await testBatchAction ()
 
-        await testUpdatetrafficlogs ()
-
-        await testWithdraw ()
-
-        await testDistributeDailyRewards ()
-
-        await testBatchAction ()
-
-        await testStake()
-
-        await testGetContractState ()
-        */
+      
+             // test passed 
+        // await testGetContractState ()
+           // test passed
+        //  await testContentView()  
 
     } catch ( err ) {
         throw Error (err)
@@ -51,10 +63,11 @@ async function start () {
 
 }
 
-
+/*
 async function testAddress () {
     // test 1 - address
     var address = await ktools.getWalletAddress()
+    console.log(address);
 
     if ( typeof(address) === "undefined" || address === null ) {
         throw Error ('The address function returned ', address)
@@ -65,6 +78,10 @@ async function testBalance () {
     // test 2 - balance
     var balance =  await ktools.getWalletBalance()
     console.log('balance is ', balance)
+
+    if ( typeof(balance) === "undefined" || balance === null ) {
+        throw Error ('The balance function returned ', balance)
+    }
     
 
 }
@@ -81,8 +98,18 @@ async function testWrite () {
     if ( typeof(transaction) === "undefined" || transaction === null ) {
         throw Error ('Failed while attempting to upload payload')
     }
+}
+async function testKoiBalance(){
+
+    var koiBalance =  await ktools.getKoiBalance()
+    console.log('balance is ', koiBalance)
+
+    if ( typeof(koiBalance) === "undefined" || koiBalance === null ) {
+        throw Error ('The balance function returned ', koiBalance)
+    }    
 
 }
+
 
 
 async function testStake () {
@@ -167,8 +194,12 @@ async function testUpdatetrafficlogs () {
         "batchTxId": '48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM',
         "stakeAmount": 50
     };
+ arg = {
+    gateWayUrl: "",
+    stakeAmount: 50,
+}
     
-    var result =  await ktools.registerData(input);
+    var result =  await ktools.submitTrafficLog(arg);
     
     console.log('transaction', result)
 
@@ -205,6 +236,8 @@ async function testBatchAction () {
 }
 
 
+
+
 async function testGetContractState () {
     // test 12 - get the state of the arweave contract
     var result =  await ktools.getContractState();
@@ -220,7 +253,7 @@ async function testGetContractState () {
 
 async function testSignPayloadAndVerify() {
     // test 13 - test payload signatures
-
+    console.log('signing......................................');
     let payload = {
         vote : {
             "function": "vote",
@@ -236,13 +269,14 @@ async function testSignPayloadAndVerify() {
     if ( typeof(payload.signature) === "undefined" || payload.signature === null ) {
         throw Error ('Failed while attempting to sign')
     }
+    
     let input = {
         "function": 'proposeSlash',
         "reciept":payload
     }
-
-    await ktools._interactWrite(input);
-    //payload.signature += "==="; // if payload is valid base 64, appended === should not affect outcome
+    
+  //  await ktools._interactWrite(input);
+   /// payload.signature += "abel"; // if payload is valid base 64, appended === should not affect outcome
 
     let isValid = await ktools.verifySignature(payload);
 
@@ -250,8 +284,23 @@ async function testSignPayloadAndVerify() {
         throw Error ('Failed while attempting to verify')
     }
 
-console.log('here it is valid or not', isValid);
+   console.log('here it is valid or not', isValid);
 
+}
+
+
+
+async function testPostData(){
+   
+    let data = 'some thing';
+
+   let tx = await  ktools.postData(data);
+
+   if ( typeof(tx) === "undefined" || tx === null ) {
+       throw Error ('Failed while attempting to verify')
+   }
+
+   console.log('here it is valid or not', tx);
 }
 
 async function testValidateData(){
@@ -262,3 +311,13 @@ async function testValidateData(){
     return result;
 
 }
+
+async function testContentView(){
+     let contentTxId = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
+    const result =  await ktools.contentView(contentTxId);
+    console.log(result);
+     if ( typeof(result) === "undefined" || result === null ) {
+       throw Error ('Failed while attempting to verify')
+   }
+}
+*/
