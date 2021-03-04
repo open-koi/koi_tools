@@ -19,6 +19,7 @@
   "dependencies": {
     "arweave": "^1.10.11",
     "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
     "jsonfile": "^6.1.0",
     "jwk-to-pem": "^2.0.4",
     "smartweave": "^0.4.25"

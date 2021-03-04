@@ -1,68 +1,59 @@
-// tests koi-tools.js 
-const { koi_tools } = require('../index.js')
-var ktools  = new koi_tools ()
+// tests koi-tools.js
+require("dotenv").config();
+const { koi_tools } = require("../index.js");
+var ktools = new koi_tools();
 
-var walletKeyLocation = "c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json"
+var walletKeyLocation = process.env.WALLET_LOCATION;
 
-start()
+start();
 
-async function start () {
+async function start() {
+  console.log("running async block", ktools);
 
-    console.log("running async block", ktools)
+  await ktools.loadWallet(walletKeyLocation);
 
-    await ktools.loadWallet(walletKeyLocation)
-
-    try {
-            // test passed
-       await testPostData();
-                 // test passed
-     //   await testSignPayloadAndVerify()
-
-            // test passed
-     //  await testAddress()
-     
-            // test paseed
-     // await testBalance()
-           
-              // test passed
-     //  await testKoiBalance()
-           
-              // test passed
-       //  await testStake()
-           
-                // test passed 
-           // await testWithdraw ()
-
-                // test passed
-          // await testVote ()
-            
-                 // tes passed
-       // await testTransfer ()
-
-            // not yet Maki test it pls 
-       // await testRegisterdata ()
-
-     
-
-           // not yet
-       // await testDistributeDailyRewards ()
-
-
-            // test passed
-       // await testBatchAction ()
-
-      
-             // test passed 
-       // await testGetContractState ()
-    
-
-    } catch ( err ) {
-        throw Error (err)
-    }
-
+  try {
+    // test passed
+    //    await testPostData();
+    // test passed
+    //   await testSignPayloadAndVerify()
+    // test passed
+    //  await testAddress()
+    // test paseed
+    // await testBalance()
+    // test passed
+    //  await testKoiBalance()
+    // test passed
+    //  await testStake()
+    // test passed
+    // await testWithdraw ()
+    // test passed
+    // await testVote ()
+    // test passed
+    // await testTransfer ()
+    // test passed
+    // await testRegisterdata ()
+    // test passed
+    // await testDistributeDailyRewards ()
+    // test passed
+    // await testBatchAction ()
+    // test passed
+    // await testGetContractState ()
+    // test passed
+    //  await testContentView()
+    // test passed
+    // await testUpdatetrafficlogs ()
+    //await testBlockheight();
+    //  not yet
+    //await testDistributeDailyRewards();
+    // test passed
+    // await testRankProposal()
+  } catch (err) {
+    throw Error(err);
+  }
 }
-/*
 
+/*
 async function testAddress () {
     // test 1 - address
     var address = await ktools.getWalletAddress()
@@ -85,7 +76,19 @@ async function testBalance () {
 
 }
 
+async function testWrite () {
+    // test 3 - write to arweave
+    var data = {
+        "foo" : "bar"
+    }
+    var transaction =  await ktools.postData(data)
 
+    console.log('transaction........', transaction)
+
+    if ( typeof(transaction) === "undefined" || transaction === null ) {
+        throw Error ('Failed while attempting to upload payload')
+    }
+}
 async function testKoiBalance(){
 
     var koiBalance =  await ktools.getKoiBalance()
@@ -112,7 +115,7 @@ async function testStake () {
     }
 
 }
-/*
+
 
 async function testWithdraw () {
     // test 5 - withdraw tokens from staking
@@ -123,6 +126,7 @@ async function testWithdraw () {
 
     if ( typeof(result) === "undefined" || result === null ) {
         throw Error ('Failed while attempting to stake')
+        
     }
 
 }
@@ -177,12 +181,16 @@ async function testRegisterdata () {
 
 async function testUpdatetrafficlogs () {
     // test 9 - write to arweave
-    let input = {
-        "batchTxId": '48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM',
-        "stakeAmount": 50
-    };
+    // let input = {
+    //     "batchTxId": '48slXf-CbgYdsi5-IWiTH8OTxuogEXeD4t0GZ0jJ1ZM',
+    //     "stakeAmount": 50
+    // };
+ arg = {
+    // gateWayUrl: "openKoi.com",
+    stakeAmount: 50,
+}
     
-    var result =  await ktools.registerData(input);
+    var result =  await ktools.submitTrafficLog(arg);
     
     console.log('transaction', result)
 
@@ -271,7 +279,7 @@ async function testSignPayloadAndVerify() {
 
 }
 
-*/
+
 
 async function testPostData(){
    
@@ -286,3 +294,33 @@ async function testPostData(){
    console.log('here it is valid or not', tx);
 }
 
+async function testValidateData(){
+    // test traffic log validation 
+    
+    let result = await ktools.validateData("trafficlog");
+
+    return result;
+
+}
+
+async function testContentView(){
+     let contentTxId = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
+    const result =  await ktools.contentView(contentTxId);
+    console.log(result);
+     if ( typeof(result) === "undefined" || result === null ) {
+       throw Error ('Failed while attempting to verify')
+   }
+}
+async function testBlockheight(){
+    const blockHeight = await ktools.getBlockheight();
+    console.log(blockHeight);
+}
+async function testRankProposal(){
+    const tx = await  ktools. rankProposal();
+    console.log('txxxxx')
+    console.log(tx);
+    if ( typeof(result) === "undefined" || result === null ) {
+       throw Error ('Failed while attempting to verify')
+   }
+}
+*/
