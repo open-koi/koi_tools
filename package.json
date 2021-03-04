@@ -1,6 +1,6 @@
 {
   "name": "koi_tools",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "description": "",
   "main": "koi-tools.js",
   "scripts": {
