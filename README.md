@@ -18,11 +18,11 @@ Once this has been completed, your wallet will receive a portion of the daily KO
 
 If you do not have a KOI balance, you cannot participate. Your KOI will be burned to register the content.
 
-## KOI Tasks
-In order to ensure everyone has open access to the network, we've made it possible for nodes to run 'tasks' for each other to earn tokens. 
+## Coming Soon: KOI Tasks
+In order to ensure everyone has open access to the network, we're working on making it possible for nodes to run 'tasks' for each other to earn tokens. 
 
 ### Earning KOI
-The default task is called StoreCat, which gathers web data and stores it on the permaweb archive. To run StoreCat, you can use a similar implementation to the one above.
+The default task is will be called StoreCat, which gathers web data and stores it on the permaweb archive. To run StoreCat, you can use a similar implementation to the one above.
 
 ```
 var koiTools = require('koiTools');
@@ -34,7 +34,7 @@ console.log('task:', result)
 Note: Some tasks take a while to execute, so the best way to run them is with the desktop node client. 
 
 ### Requesting Tasks
-It is possible to tap into the Koi network to request work. Once you have KOI tokens, you can set a bounty for a new task.
+It will soon be possible to tap into the Koi network to request work. Once you have KOI tokens, you can set a bounty for a new task.
 
 ```
 var koiTools = require('koiTools');
