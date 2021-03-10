@@ -327,10 +327,12 @@ class koi {
           if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
             contentViews.twentyFourHrViews = logSummary[contentTxId];
           }
+          contentViews[txIdContent] = contentTxId;
           const rewardPerAttention = ele.rewardPerAttention;
           contentViews.totalViews += logSummary[contentTxId];
           const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
           contentViews.totalReward += rewardPerLog;
+          contentViews[txIdContent] = contentTxId;
         }
       }
     });

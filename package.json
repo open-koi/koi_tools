@@ -4,7 +4,8 @@
   "description": "",
   "main": "koi-tools.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,9 @@
     "dotenv": "^8.2.0",
     "jsonfile": "^6.1.0",
     "jwk-to-pem": "^2.0.4",
-    "smartweave": "^0.4.25"
+    "smartweave": "^0.4.25",
+    "webpack": "^5.24.4",
+    "webpack-cli": "^4.5.0"
   },
   "devDependencies": {
     "eslint": "^7.21.0"
