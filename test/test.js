@@ -40,7 +40,7 @@ async function start() {
     // test passed
     // await testGetContractState ()
     // test passed
-    await testContentView();
+    // await testContentView();
     // test passed
     // await testUpdatetrafficlogs ()
     //await testBlockheight();
@@ -51,20 +51,28 @@ async function start() {
     // test passed
     // testMycontent();
     // test passed
-    // testRetrieveTopContent()
+    //await testRetrieveTopContent();
   } catch (err) {
     throw Error(err);
   }
 }
+
+/*
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
 async function testContentView() {
-  let contentTxId = "WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc";
+  let contentTxId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
   const result = await ktools.contentView(contentTxId);
   console.log(result);
   if (typeof result === "undefined" || result === null) {
     throw Error("Failed while attempting to verify");
   }
 }
-/*
 async function testMyContent() {
   const address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
 
@@ -74,13 +82,7 @@ async function testMyContent() {
     throw Error("The address function returned ", address);
   }
 }
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
+
 async function testAddress () {
     // test 1 - address
     var address = await ktools.getWalletAddress()
