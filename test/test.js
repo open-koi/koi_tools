@@ -52,11 +52,16 @@ async function start() {
     // testMycontent();
     // test passed
     //await testRetrieveTopContent();
+    await testReadSate();
   } catch (err) {
     throw Error(err);
   }
 }
-
+async function testReadSate() {
+  const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
+  const state = await ktools.readContract(txId);
+  console.log(state);
+}
 /*
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
