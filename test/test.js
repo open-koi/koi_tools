@@ -52,7 +52,8 @@ async function start() {
     // testMycontent();
     // test passed
     //await testRetrieveTopContent();
-    await testReadSate();
+    // test passed
+    // await testReadSate();
   } catch (err) {
     throw Error(err);
   }
