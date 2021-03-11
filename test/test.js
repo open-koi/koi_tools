@@ -1,6 +1,6 @@
 // tests koi-tools.js
 require("dotenv").config();
-const { koi_tools } = require("../index.js");
+const { koi_tools } = require("../src/index.js");
 var ktools = new koi_tools();
 
 var walletKeyLocation = process.env.WALLET_LOCATION;
@@ -40,7 +40,7 @@ async function start() {
     // test passed
     // await testGetContractState ()
     // test passed
-    //  await testContentView()
+    await testContentView();
     // test passed
     // await testUpdatetrafficlogs ()
     //await testBlockheight();
@@ -56,7 +56,14 @@ async function start() {
     throw Error(err);
   }
 }
-
+async function testContentView() {
+  let contentTxId = "WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc";
+  const result = await ktools.contentView(contentTxId);
+  console.log(result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to verify");
+  }
+}
 /*
 async function testMyContent() {
   const address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
@@ -323,14 +330,7 @@ async function testValidateData(){
 
 }
 
-async function testContentView(){
-     let contentTxId = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
-    const result =  await ktools.contentView(contentTxId);
-    console.log(result);
-     if ( typeof(result) === "undefined" || result === null ) {
-       throw Error ('Failed while attempting to verify')
-   }
-}
+
 async function testBlockheight(){
     const blockHeight = await ktools.getBlockheight();
     console.log(blockHeight);

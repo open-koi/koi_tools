@@ -18,7 +18,7 @@ const arweave = Arweave.init({
   port: 443,
 });
 
-const koi_contract = "TV1BVAKUy7ayZk4S_72K6s92D0AjJ6bqC0hESq3pvkE";
+const koi_contract = "PaSUW4Y3KRXRIegv7zQ8PHyP9X47v5uCf2eB5ar1JGc";
 const bundlerNodes = "http://bundler.openkoi.com:8887";
 class koi {
   constructor() {
@@ -360,12 +360,38 @@ class koi {
   /* return txId of the registered content*/
   async myContent(address) {
     const state = await this.getContractState();
+    const contents = [];
     const registerRecords = state.registeredRecord;
     for (let txId in registerRecords) {
       if (registerRecords[txId] == address) {
-        return txId;
+        contents.push[txId];
       }
     }
+    return contents;
+  }
+  /* nDay = number days it could be weekly or monthly for top contents
+return contents with top views
+
+ */
+  async nDaysTopContent(nDay) {
+    const state = await this.getContractState();
+    const registerRecords = state.registeredRecord;
+    const rewardReport = state.stateUpdate.trafficLogs.rewardReport;
+    const contents = [];
+    let index = rewardReport.length - nDay;
+    if (index >= 0) {
+      for (let i = index; i < rewardReport.length; i++) {
+        for (let txId in registerRecords) {
+          const contentView = await this.contentView(txId);
+          contents.push(contentView);
+        }
+      }
+      contents.sort(function (a, b) {
+        return b.totalViews - a.totalViews;
+      });
+      return contents;
+    }
+
     return null;
   }
 
