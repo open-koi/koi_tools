@@ -51,19 +51,26 @@ async function start() {
     // test passed
     // testMycontent();
     // test passed
-    //await testRetrieveTopContent();
+    await testRetrieveTopContent();
     // test passed
     // await testReadSate();
   } catch (err) {
     throw Error(err);
   }
 }
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+/*
 async function testReadSate() {
   const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
   const state = await ktools.readContract(txId);
   console.log(state);
 }
-/*
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
   console.log("Array", result);
