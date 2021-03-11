@@ -1,6 +1,6 @@
 // tests koi-tools.js
 require("dotenv").config();
-const { koi_tools } = require("../src/index.js");
+const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
 
 var walletKeyLocation = process.env.WALLET_LOCATION;
