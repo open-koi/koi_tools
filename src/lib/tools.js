@@ -59,16 +59,15 @@ class koi {
     return this.wallet;
   }
 
-
   /*
     @setWallet // set address .
     Returns address
     walletAddress: string // arweave address
   */
- async setWallet(walletAddress) {
-  if (!this.address) this.address = walletAddress;
-  return this.address;
-}
+  async setWallet(walletAddress) {
+    if (!this.address) this.address = walletAddress;
+    return this.address;
+  }
 
   /*
     @getWalletAddress // get walllet key address.
@@ -328,14 +327,35 @@ class koi {
           if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
             contentViews.twentyFourHrViews = logSummary[contentTxId];
           }
+          contentViews[txIdContent] = contentTxId;
           const rewardPerAttention = ele.rewardPerAttention;
           contentViews.totalViews += logSummary[contentTxId];
           const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
           contentViews.totalReward += rewardPerLog;
+          contentViews[txIdContent] = contentTxId;
         }
       }
     });
     return contentViews;
+  }
+  /* returns the top contents registered in Koi in array */
+  async retrieveTopContent() {
+    const allContents = await this.retrieveAllContent();
+    allContents.sort(function (a, b) {
+      return b.totalViews - a.totalViews;
+    });
+    return allContents;
+  }
+
+  async _retrieveAllContent() {
+    const state = await this.getContractState();
+    const registerRecords = state.registerRecords;
+    const contents = [];
+    for (let txId in registerRecords) {
+      const contentView = await this.contentView(txId);
+      contents.push(contentView);
+    }
+    return contents;
   }
 
   /*
