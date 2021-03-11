@@ -48,12 +48,32 @@ async function start() {
     //await testDistributeDailyRewards();
     // test passed
     // await testRankProposal()
+    // test passed
+    // testMycontent();
+    // test passed
+    // testRetrieveTopContent()
   } catch (err) {
     throw Error(err);
   }
 }
 
 /*
+async function testMyContent() {
+  const address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
+
+  const txId = await ktools.myContent(address);
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", address);
+  }
+}
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
 async function testAddress () {
     // test 1 - address
     var address = await ktools.getWalletAddress()

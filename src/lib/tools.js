@@ -18,7 +18,7 @@ const arweave = Arweave.init({
   port: 443,
 });
 
-const koi_contract = "2cdg9T1IWfGnDgt-ipLoVxg9Te49ByhIvwU1sGgu78w";
+const koi_contract = "TV1BVAKUy7ayZk4S_72K6s92D0AjJ6bqC0hESq3pvkE";
 const bundlerNodes = "http://bundler.openkoi.com:8887";
 class koi {
   constructor() {
@@ -327,12 +327,12 @@ class koi {
           if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
             contentViews.twentyFourHrViews = logSummary[contentTxId];
           }
-          contentViews['txIdContent'] = contentTxId;
+          contentViews["txIdContent"] = contentTxId;
           const rewardPerAttention = ele.rewardPerAttention;
           contentViews.totalViews += logSummary[contentTxId];
           const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
           contentViews.totalReward += rewardPerLog;
-          contentViews['txIdContent'] = contentTxId;
+          contentViews["txIdContent"] = contentTxId;
         }
       }
     });
@@ -349,13 +349,24 @@ class koi {
 
   async _retrieveAllContent() {
     const state = await this.getContractState();
-    const registerRecords = state.registerRecords;
+    const registerRecords = state.registeredRecord;
     const contents = [];
     for (let txId in registerRecords) {
       const contentView = await this.contentView(txId);
       contents.push(contentView);
     }
     return contents;
+  }
+  /* return txId of the registered content*/
+  async myContent(address) {
+    const state = await this.getContractState();
+    const registerRecords = state.registeredRecord;
+    for (let txId in registerRecords) {
+      if (registerRecords[txId] == address) {
+        return txId;
+      }
+    }
+    return null;
   }
 
   /*
@@ -429,12 +440,11 @@ class koi {
 */
   async _interactWrite(input) {
     let wallet;
-    if(this.wallet !== {}){
+    if (this.wallet !== {}) {
       wallet = this.wallet;
-    }else {
-      wallet = "use_wallet"
+    } else {
+      wallet = "use_wallet";
     }
-     
 
     return new Promise(function (resolve, reject) {
       smartweave
