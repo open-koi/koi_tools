@@ -327,12 +327,12 @@ class koi {
           if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
             contentViews.twentyFourHrViews = logSummary[contentTxId];
           }
-          contentViews[txIdContent] = contentTxId;
+          contentViews['txIdContent'] = contentTxId;
           const rewardPerAttention = ele.rewardPerAttention;
           contentViews.totalViews += logSummary[contentTxId];
           const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
           contentViews.totalReward += rewardPerLog;
-          contentViews[txIdContent] = contentTxId;
+          contentViews['txIdContent'] = contentTxId;
         }
       }
     });
@@ -340,7 +340,7 @@ class koi {
   }
   /* returns the top contents registered in Koi in array */
   async retrieveTopContent() {
-    const allContents = await this.retrieveAllContent();
+    const allContents = await this._retrieveAllContent();
     allContents.sort(function (a, b) {
       return b.totalViews - a.totalViews;
     });
@@ -428,7 +428,13 @@ class koi {
  input: // Object, passes to smartweave write function, in order to excute a contract function.
 */
   async _interactWrite(input) {
-    let wallet = this.wallet;
+    let wallet;
+    if(this.wallet !== {}){
+      wallet = this.wallet;
+    }else {
+      wallet = "use_wallet"
+    }
+     
 
     return new Promise(function (resolve, reject) {
       smartweave
