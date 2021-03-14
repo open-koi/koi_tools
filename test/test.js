@@ -32,7 +32,7 @@ async function start() {
     // test passed
     // await testTransfer ()
     // test passed
-    // await testRegisterdata ()
+    // await testRegisterdata();
     // test passed
     // await testDistributeDailyRewards ()
     // test passed
@@ -66,6 +66,20 @@ async function testRetrieveTopContent() {
   }
 }
 /*
+async function testRegisterdata() {
+  // test 8 - write to arweave
+  let txId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
+  let owner = "cf3iB51tJrVSQ-j-TmcRuMYeuvho6y-7IrQm9O7QKIk";
+
+  var result = await ktools.registerData(txId, owner);
+
+  console.log("transaction", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to vote");
+  }
+}
+
 async function testReadSate() {
   const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
   const state = await ktools.readContract(txId);
