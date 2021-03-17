@@ -3,8 +3,8 @@ require("dotenv").config();
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
 
-var walletKeyLocation = process.env.WALLET_LOCATION;
-
+//var walletKeyLocation = process.env.WALLET_LOCATION;
+var walletKeyLocation = '/Users/abelsebhatu/Downloads/keywallet-2.json';
 start();
 
 async function start() {
@@ -13,6 +13,7 @@ async function start() {
   await ktools.loadWallet(walletKeyLocation);
 
   try {
+      await testMint()
     // test passed
     //    await testPostData();
     // test passed
@@ -51,13 +52,28 @@ async function start() {
     // test passed
     // testMycontent();
     // test passed
-    await testRetrieveTopContent();
+   // await testRetrieveTopContent();
     // test passed
     // await testReadSate();
   } catch (err) {
     throw Error(err);
   }
 }
+
+async function testMint() {
+    let address = 'D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo'
+    var submission = {
+          targetAddress: address,
+          qty:50   
+     }
+  const result = await ktools.mint(submission);
+  const wallet = await ktools.getWalletAddress();
+  console.log("Array", wallet);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+/*
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
   console.log("Array", result);
@@ -65,7 +81,31 @@ async function testRetrieveTopContent() {
     throw Error("The address function returned ", result);
   }
 }
+
+async function testRegisterdata () {
+    // test 8 - write to arweave
+    let txId = 'PJS-kIJYdSkML2kmxJl6PSp9gqU8_xZJWHZawxQOTsw';
+
+    var result =  await ktools.registerData(txId);
+    
+    console.log('transaction', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to vote')
+    }
+
+}
 /*
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+
+
+
 async function testReadSate() {
   const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
   const state = await ktools.readContract(txId);
@@ -206,19 +246,7 @@ async function testTransfer () {
 
 }
 
-async function testRegisterdata () {
-    // test 8 - write to arweave
-    let txId = 'WL32qc-jsTxCe8m8RRQfS3b3MacsTQySDmJklvtkGFc';
 
-    var result =  await ktools.registerData(txId);
-    
-    console.log('transaction', result)
-
-    if ( typeof(result) === "undefined" || result === null ) {
-        throw Error ('Failed while attempting to vote')
-    }
-
-}
 
 
 async function testUpdatetrafficlogs () {
