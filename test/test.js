@@ -4,8 +4,7 @@ const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
 
 //var walletKeyLocation = process.env.WALLET_LOCATION;
-var walletKeyLocation =
-  "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
+var walletKeyLocation = {key:"value"};
 start();
 
 async function start() {
@@ -20,7 +19,7 @@ async function start() {
     // test passed
     //   await testSignPayloadAndVerify()
     // test passed
-    //  await testAddress()
+      await testAddress()
     // test paseed
     // await testBalance()
     // test passed
@@ -58,7 +57,7 @@ async function start() {
     // await testReadSate();
     // await testNftTransactionData()
     //testing
-    await testGetTopContent();
+   // await testGetTopContent();
   } catch (err) {
     throw Error(err);
   }
