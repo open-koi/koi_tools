@@ -4,7 +4,8 @@ const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
 
 //var walletKeyLocation = process.env.WALLET_LOCATION;
-var walletKeyLocation = '/Users/abelsebhatu/Downloads/keywallet-2.json';
+var walletKeyLocation =
+  "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
 start();
 
 async function start() {
@@ -13,7 +14,7 @@ async function start() {
   await ktools.loadWallet(walletKeyLocation);
 
   try {
-     // await testMint()
+    // await testMint()
     // test passed
     //    await testPostData();
     // test passed
@@ -39,9 +40,9 @@ async function start() {
     // test passed
     // await testBatchAction ()
     // test passed
-     //await testGetContractState ()
+    //await testGetContractState ()
     // test passed
-     await testContentView();
+    //await testContentView();
     // test passed
     // await testUpdatetrafficlogs ()
     //await testBlockheight();
@@ -50,15 +51,24 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-  // await testMyContent();
+    // await testMyContent();
     // test passed
-   // await testRetrieveTopContent();
+    // await testRetrieveTopContent();
     // test passed
     // await testReadSate();
-   // await testNftTransactionData()
-    
+    // await testNftTransactionData()
+    //testing
+    await testGetTopContent();
   } catch (err) {
     throw Error(err);
+  }
+}
+
+async function testGetTopContent() {
+  const contents = await ktools.getTopContent();
+  console.log(contents.data);
+  if (typeof contents === "undefined" || contents === null) {
+    throw Error("Failed while attempting to verify");
   }
 }
 
@@ -71,22 +81,17 @@ async function testContentView() {
   }
 }
 
-
 async function testNftTransactionData() {
-  
-  const txData = await ktools.nftTransactionData('qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI');
+  const txData = await ktools.nftTransactionData(
+    "qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI"
+  );
   console.log(txData);
   if (typeof txData === "undefined" || txData === null) {
     throw Error("The address function returned ");
   }
 }
 
-
-
-
 async function testMyContent() {
-  
-
   const txId = await ktools.myContent();
   console.log(txId);
   if (typeof txId === "undefined" || txId === null) {
@@ -95,11 +100,11 @@ async function testMyContent() {
 }
 
 async function testMint() {
-    let address = 'D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo'
-    var submission = {
-          targetAddress: address,
-          qty:50   
-     }
+  let address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
+  var submission = {
+    targetAddress: address,
+    qty: 50,
+  };
   const result = await ktools.mint(submission);
   const wallet = await ktools.getWalletAddress();
   console.log("Array", wallet);
