@@ -13,7 +13,7 @@ async function start() {
   await ktools.loadWallet(walletKeyLocation);
 
   try {
-      await testMint()
+     // await testMint()
     // test passed
     //    await testPostData();
     // test passed
@@ -39,9 +39,9 @@ async function start() {
     // test passed
     // await testBatchAction ()
     // test passed
-    // await testGetContractState ()
+     //await testGetContractState ()
     // test passed
-    // await testContentView();
+     await testContentView();
     // test passed
     // await testUpdatetrafficlogs ()
     //await testBlockheight();
@@ -50,13 +50,47 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-    // testMycontent();
+  // await testMyContent();
     // test passed
    // await testRetrieveTopContent();
     // test passed
     // await testReadSate();
+   // await testNftTransactionData()
+    
   } catch (err) {
     throw Error(err);
+  }
+}
+
+async function testContentView() {
+  let contentTxId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
+  const result = await ktools.contentView(contentTxId);
+  console.log(result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to verify");
+  }
+}
+
+
+async function testNftTransactionData() {
+  
+  const txData = await ktools.nftTransactionData('qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI');
+  console.log(txData);
+  if (typeof txData === "undefined" || txData === null) {
+    throw Error("The address function returned ");
+  }
+}
+
+
+
+
+async function testMyContent() {
+  
+
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", address);
   }
 }
 
@@ -135,23 +169,8 @@ async function testRetrieveTopContent() {
     throw Error("The address function returned ", result);
   }
 }
-async function testContentView() {
-  let contentTxId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
-  const result = await ktools.contentView(contentTxId);
-  console.log(result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to verify");
-  }
-}
-async function testMyContent() {
-  const address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
 
-  const txId = await ktools.myContent(address);
-  console.log(txId);
-  if (typeof txId === "undefined" || txId === null) {
-    throw Error("The address function returned ", address);
-  }
-}
+
 
 async function testAddress () {
     // test 1 - address
