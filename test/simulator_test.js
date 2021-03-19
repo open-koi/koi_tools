@@ -1,7 +1,7 @@
 const { koi_node }       = require('../index.js')
 
-// var wallet1 = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
-var wallet1 = "/media/al/files/koi/Arweave/sec2.json"
+ var wallet1 = 'c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json';
+//var wallet1 = "/media/al/files/koi/Arweave/sec2.json"
 
 const arg1 = {
         wallet:wallet1,

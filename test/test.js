@@ -2,12 +2,14 @@
 //require("dotenv").config();
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
+/*
 const Arweave = require("arweave/node");
 const arweave = Arweave.init({
   host: "arweave.net",
   protocol: "https",
   port: 443,
 });
+*/
 
 //var walletKeyLocation = process.env.WALLET_LOCATION;
 var walletKeyLocation = 'c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json';
@@ -21,7 +23,7 @@ async function start() {
   try {
     // await testMint()
     // test passed
-       await testPostData();
+     //  await testPostData();
     // test passed
     //   await testSignPayloadAndVerify()
     // test passed
@@ -43,7 +45,7 @@ async function start() {
     // test passed
     // await testDistributeDailyRewards ()
     // test passed
-    // await testBatchAction ()
+   //  await testBatchAction ()
     // test passed
     //await testGetContractState ()
     // test passed
@@ -66,10 +68,44 @@ async function start() {
    // await testGetTopContent();
 
   // await testGetTrafficLogFromGateWay()
+
+   await testSubmitTrafficLog();
+
   } catch (err) {
     throw Error(err);
   }
 }
+async function testSubmitTrafficLog () {
+  // test 11 - input a batch action to arweave 
+ //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+ let arg = {
+  gateWayUrl: 'https://arweave.dev/logs/'
+ };
+ 
+  var result =  await ktools.submitTrafficLog(arg);
+  
+  console.log('transaction', result)
+
+  if ( typeof(result) === "undefined" || result === null ) {
+      throw Error ('Failed while attempting to vote')
+  }
+
+}
+/*
+async function testBatchAction () {
+  // test 11 - input a batch action to arweave 
+ let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  var result =  await ktools.batchAction(txid);
+  
+  console.log('transaction', result)
+
+  if ( typeof(result) === "undefined" || result === null ) {
+      throw Error ('Failed while attempting to vote')
+  }
+
+}
+
+
 
 async function testPostData(){
    
@@ -384,7 +420,8 @@ async function testDistributeDailyRewards () {
 
 async function testBatchAction () {
     // test 11 - input a batch action to arweave 
-    var result =  await ktools.batchAction();
+   let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+    var result =  await ktools.batchAction(txId);
     
     console.log('transaction', result)
 
