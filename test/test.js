@@ -79,7 +79,8 @@ async function testSubmitTrafficLog () {
   // test 11 - input a batch action to arweave 
  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
  let arg = {
-  gateWayUrl: 'https://arweave.dev/logs/'
+  gateWayUrl: 'https://arweave.dev/logs/',
+  stakeAmount: 2
  };
  
   var result =  await ktools.submitTrafficLog(arg);
