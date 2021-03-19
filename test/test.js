@@ -97,7 +97,11 @@ console.log('&&&&&&&&&', proHash);
 let isValid = dataHash === proHash;
 console.log(isValid);
 
-console.log(line[0].addresses.length);
+console.log(line[41]);
+
+let NFTid = line[41].url.substring(1);
+
+console.log(NFTid);
 
  if ( typeof(tx) === "undefined" || tx === null ) {
      throw Error ('Failed while attempting to verify')
