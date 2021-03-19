@@ -1,10 +1,16 @@
 // tests koi-tools.js
-require("dotenv").config();
+//require("dotenv").config();
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
+const Arweave = require("arweave/node");
+const arweave = Arweave.init({
+  host: "arweave.net",
+  protocol: "https",
+  port: 443,
+});
 
 //var walletKeyLocation = process.env.WALLET_LOCATION;
-var walletKeyLocation = {key:"value"};
+var walletKeyLocation = 'c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json';
 start();
 
 async function start() {
@@ -15,11 +21,11 @@ async function start() {
   try {
     // await testMint()
     // test passed
-    //    await testPostData();
+       await testPostData();
     // test passed
     //   await testSignPayloadAndVerify()
     // test passed
-      await testAddress()
+    //  await testAddress()
     // test paseed
     // await testBalance()
     // test passed
@@ -58,9 +64,70 @@ async function start() {
     // await testNftTransactionData()
     //testing
    // await testGetTopContent();
+
+  // await testGetTrafficLogFromGateWay()
   } catch (err) {
     throw Error(err);
   }
+}
+
+async function testPostData(){
+   
+  const logs = await ktools._getTrafficLogFromGateWay('https://arweave.dev/logs');
+  //const line = logs.data.split('\r\n');
+  console.log(logs.data.summary);
+        let dataHash = await ktools._hashData(logs.data.summary);
+        console.log('&&&&&&&&&', dataHash);
+
+ let tx = await  ktools.postData(logs.data.summary);
+
+
+ console.log(tx);
+
+ let bundledTrafficLogs = await arweave.transactions.getData(
+  '_ZVR3nxmW_1G7fFtEYzc6sZ5WRDXS2uXpUZu1bGLyFg',
+  { decode: true, string: true }
+);
+//console.log('*******',bundledTrafficLogs );
+const line = JSON.parse(bundledTrafficLogs);
+line.push(1);
+
+let proHash = await ktools._hashData(line);
+console.log('&&&&&&&&&', proHash);
+let isValid = dataHash === proHash;
+console.log(isValid);
+
+console.log(line[0].addresses.length);
+
+ if ( typeof(tx) === "undefined" || tx === null ) {
+     throw Error ('Failed while attempting to verify')
+ }
+
+ console.log('here it is valid or not', tx);
+}
+
+
+/*
+async function testValidateData(){
+  // test traffic log validation 
+  
+  let result = await ktools.validateData("trafficlog");
+
+  return result;
+
+}
+
+async function  testGetTrafficLogFromGateWay(){
+   
+  const logs = await ktools._getTrafficLogFromGateWay('https://arweave.dev/logs');
+  //const line = logs.data.split('\r\n');
+  console.log(logs.data.summary);
+  //console.log(typeof line);
+  if (typeof logs === "undefined" ||logs === null) {
+    throw Error("Failed while attempting to verify");
+  }
+  
+
 }
 
 async function testGetTopContent() {
@@ -111,7 +178,7 @@ async function testMint() {
     throw Error("The address function returned ", result);
   }
 }
-/*
+
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
   console.log("Array", result);
@@ -134,18 +201,6 @@ async function testRegisterdata () {
 
 }
 /*
-<<<<<<< HEAD
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
-
-
-
-=======
 async function testRegisterdata() {
   // test 8 - write to arweave
   let txId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
@@ -160,7 +215,6 @@ async function testRegisterdata() {
   }
 }
 
->>>>>>> 93c2c07da6b924ae4ad813295b487dcf984a5ff5
 async function testReadSate() {
   const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
   const state = await ktools.readContract(txId);
