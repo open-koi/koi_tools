@@ -58,7 +58,7 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-    // await testMyContent();
+     await testMyContent();
     // test passed
     // await testRetrieveTopContent();
     // test passed
@@ -69,12 +69,22 @@ async function start() {
 
   // await testGetTrafficLogFromGateWay()
 
-   await testSubmitTrafficLog();
+  // await testSubmitTrafficLog();
 
   } catch (err) {
     throw Error(err);
   }
 }
+
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+
+/*
 async function testSubmitTrafficLog () {
   // test 11 - input a batch action to arweave 
  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -92,7 +102,7 @@ async function testSubmitTrafficLog () {
   }
 
 }
-/*
+
 async function testBatchAction () {
   // test 11 - input a batch action to arweave 
  let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -198,13 +208,7 @@ async function testNftTransactionData() {
   }
 }
 
-async function testMyContent() {
-  const txId = await ktools.myContent();
-  console.log(txId);
-  if (typeof txId === "undefined" || txId === null) {
-    throw Error("The address function returned ", address);
-  }
-}
+
 
 async function testMint() {
   let address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
