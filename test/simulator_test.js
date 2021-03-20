@@ -5,7 +5,7 @@ const { koi_node }       = require('../index.js')
 
 const arg1 = {
         wallet:wallet1,
-        qty:30
+        qty:4
       }
 
 var node = new koi_node (arg1);
