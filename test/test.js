@@ -58,7 +58,7 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-     await testMyContent();
+    // await testMyContent();
     // test passed
     // await testRetrieveTopContent();
     // test passed
@@ -69,13 +69,34 @@ async function start() {
 
   // await testGetTrafficLogFromGateWay()
 
-  // await testSubmitTrafficLog();
+   await testSubmitTrafficLog();
 
   } catch (err) {
     throw Error(err);
   }
 }
 
+
+async function testSubmitTrafficLog () {
+  // test 11 - input a batch action to arweave 
+ //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+ let arg = {
+  gateWayUrl: 'https://arweave.dev/logs/',
+  stakeAmount: 2
+ };
+ 
+  var result =  await ktools.submitTrafficLog(arg);
+  
+  console.log('transaction', result)
+
+  if ( typeof(result) === "undefined" || result === null ) {
+      throw Error ('Failed while attempting to vote')
+  }
+
+}
+
+
+/*
 async function testMyContent() {
   const txId = await ktools.myContent();
   console.log(txId);
@@ -84,7 +105,7 @@ async function testMyContent() {
   }
 }
 
-/*
+
 async function testSubmitTrafficLog () {
   // test 11 - input a batch action to arweave 
  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
