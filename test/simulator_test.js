@@ -6,6 +6,7 @@ var wallet1 = "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
 const arg1 = {
   wallet: wallet1,
   qty: 200,
+  direct: false,
 };
 
 var node = new koi_node(arg1);

@@ -68,9 +68,9 @@ async function start() {
     // test passed
     // await testGetTrafficLogFromGateWay()
     // test passed
-    // await testSubmitTrafficLog();
+    await testSubmitTrafficLog();
     // test
-    await testUserState();
+    //await testUserState();
   } catch (err) {
     throw Error(err);
   }
@@ -81,6 +81,21 @@ async function testUserState() {
   console.log(userState);
   if (typeof userState === "undefined" || userState === null) {
     throw Error("userState undefine");
+  }
+}
+async function testSubmitTrafficLog() {
+  // test 11 - input a batch action to arweave
+  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  let arg = {
+    gateWayUrl: "https://arweave.dev/logs/",
+    stakeAmount: 2,
+  };
+
+  var result = await ktools.submitTrafficLog(arg);
+
+  console.log("transaction", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to vote");
   }
 }
 /*
@@ -109,21 +124,7 @@ async function testMyContent() {
     throw Error("The address function returned ", txId);
   }
 }
-async function testSubmitTrafficLog () {
-  // test 11 - input a batch action to arweave 
- //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
- let arg = {
-  gateWayUrl: 'https://arweave.dev/logs/',
-  stakeAmount: 2
- };
- 
-  var result =  await ktools.submitTrafficLog(arg);
-  
-  console.log('transaction', result)
-  if ( typeof(result) === "undefined" || result === null ) {
-      throw Error ('Failed while attempting to vote')
-  }
-}
+
 async function testBatchAction () {
   // test 11 - input a batch action to arweave 
  let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
