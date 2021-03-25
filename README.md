@@ -1,6 +1,6 @@
 # KOI_Tasks Progress
 
-The following repo contains demo code to achieve the functionality of `Run javascript bundles locally`. The repo contains a folder `JS_APP_DEPLOY` Which is basically a test app, that would call the bundler API for specific endpoint. The file `loadingRunningArweaveFile.js` expects a arweave uploaded JS file URL which it would execute in its local context.
+The following repo contains demo code to achieve the functionality of `Run javascript bundles locally from Arweave Permaweb`. The repo contains a folder `JS_APP_DEPLOY` Which is basically a test app, that would call the bundler API for specific endpoint. The file `loadingRunningArweaveFile.js` expects a arweave uploaded JS file URL which it would execute in its local context.
 
 ## Steps
 1. Write Code in the `JS_APP_DEPLOT -> index.js` that you would want to execute at the client node.
