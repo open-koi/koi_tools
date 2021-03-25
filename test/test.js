@@ -95,8 +95,8 @@ async function testSubmitTrafficLog () {
 
 }
 
-
 /*
+
 async function testMyContent() {
   const txId = await ktools.myContent();
   console.log(txId);
