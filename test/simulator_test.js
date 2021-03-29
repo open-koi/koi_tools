@@ -1,18 +1,12 @@
 const { koi_node } = require("../index.js");
 require("dotenv").config();
 
-var wallet1 = 'some'
+var wallet1 = "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
 
 const arg1 = {
   wallet: wallet1,
   qty: 4,
-<<<<<<< HEAD
-
-
-  direct: false,
-=======
-  direct: false,   // direct false means, vote through bundler which is feeless 
->>>>>>> 6d3ae3f5b0c7a74dfe9eaa8bef0e36499b7284b7
+  direct: false, // direct false means, vote through bundler which is feeless
 };
 
 var node = new koi_node(arg1);
