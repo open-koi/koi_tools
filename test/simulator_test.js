@@ -10,8 +10,8 @@ const arg1 = {
         direct: false,
       }
 
-var node = new koi_node (arg1);
+var node = new koi_node(arg1);
 
-console.log('node is', node)
+console.log("node is", node);
 
-node.run()
+node.run();
