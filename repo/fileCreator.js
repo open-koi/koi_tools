@@ -1,4 +1,4 @@
-const fs = require("json");
+const fs = require("jsonfile");
 
 class NodeState {
   constructor(filename) {
