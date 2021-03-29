@@ -11,8 +11,7 @@ const arweave = Arweave.init({
 */
 
 //var walletKeyLocation = process.env.WALLET_LOCATION;
-var walletKeyLocation =
-  "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
+
 start();
 
 async function start() {
@@ -69,14 +68,14 @@ async function start() {
     // test passed
     // await testGetTrafficLogFromGateWay()
     // test passed
-    await testSubmitTrafficLog();
+    //await testSubmitTrafficLog();
     // test
     //await testUserState();
   } catch (err) {
     throw Error(err);
   }
 }
-
+/*
 async function testUserState() {
   const userState = await ktools.userState();
   console.log(userState);
@@ -99,7 +98,7 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
-/*
+
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'

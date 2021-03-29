@@ -6,7 +6,7 @@ var wallet1 = process.env.WALLET_LOCATION;
 const arg1 = {
   wallet: wallet1,
   qty: 4,
-  direct: false,
+  direct: false,   // direct false means, vote through bundler which is feeless 
 };
 
 var node = new koi_node(arg1);
