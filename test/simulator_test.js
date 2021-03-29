@@ -1,11 +1,13 @@
 const { koi_node } = require("../index.js");
 require("dotenv").config();
 
-var wallet1 = process.env.WALLET_LOCATION;
+var wallet1 = 'some'
 
 const arg1 = {
   wallet: wallet1,
   qty: 4,
+
+
   direct: false,
 };
 
