@@ -1,13 +1,14 @@
-const { koi_node } = require("../index.js");
+const { koi_node }       = require('../index.js')
+require("dotenv").config();
 
-// var wallet1 = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
-var wallet1 = "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
+var wallet1 = 'c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json';
+
 
 const arg1 = {
-  wallet: wallet1,
-  qty: 200,
-  direct: false,
-};
+        wallet:wallet1,
+        qty:4,
+        direct: false,
+      }
 
 var node = new koi_node(arg1);
 
