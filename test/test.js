@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
 /*
@@ -235,8 +236,11 @@ async function testRegisterdata () {
 =======
 // tests koi-tools.js
 //require("dotenv").config();
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
+require("dotenv").config();
 /*
 const Arweave = require("arweave/node");
 const arweave = Arweave.init({
@@ -246,8 +250,9 @@ const arweave = Arweave.init({
 });
 */
 
-//var walletKeyLocation = process.env.WALLET_LOCATION;
-var walletKeyLocation = 'c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json';
+var walletKeyLocation = process.env.WALLET_LOCATION;
+// var walletKeyLocation =
+//   "/Users/makdasebhatu/Documents/my-wallet/Arweave/keywallet.json";
 start();
 
 async function start() {
@@ -258,11 +263,11 @@ async function start() {
   try {
     // await testMint()
     // test passed
-     //  await testPostData();
+    //  await testPostData();
     // test passed
     //   await testSignPayloadAndVerify()
     // test passed
-    //  await testAddress()
+    await testAddress();
     // test paseed
     // await testBalance()
     // test passed
@@ -280,7 +285,7 @@ async function start() {
     // test passed
     // await testDistributeDailyRewards ()
     // test passed
-   //  await testBatchAction ()
+    // await testBatchAction();
     // test passed
     //await testGetContractState ()
     // test passed
@@ -299,13 +304,14 @@ async function start() {
     // test passed
     // await testReadSate();
     // await testNftTransactionData()
-    //testing
-   // await testGetTopContent();
-
-  // await testGetTrafficLogFromGateWay()
-
-   await testSubmitTrafficLog();
-
+    //test passed
+    // await testGetTopContent();
+    // test passed
+    // await testGetTrafficLogFromGateWay()
+    // test passed
+    //await testSubmitTrafficLog();
+    // test
+    //await testUserState();
   } catch (err) {
     throw Error(err);
   }
@@ -324,10 +330,25 @@ async function testSubmitTrafficLog () {
   
   console.log('transaction', result)
 
-  if ( typeof(result) === "undefined" || result === null ) {
-      throw Error ('Failed while attempting to vote')
+async function testAddress() {
+  // test 1 - address
+  var address = await ktools.getWalletAddress();
+  console.log(address);
+  if (typeof address === "undefined" || address === null) {
+    throw Error("The address function returned ", address);
   }
+}
 
+async function testGetTrafficLogFromGateWay() {
+  const logs = await ktools._getTrafficLogFromGateWay(
+    "https://arweave.dev/logs"
+  );
+  //const line = logs.data.split('\r\n');
+  console.log(logs.data.summary);
+  //console.log(typeof line);
+  if (typeof logs === "undefined" || logs === null) {
+    throw Error("Failed while attempting to verify");
+  }
 }
 
 /*
@@ -366,12 +387,60 @@ async function testBatchAction () {
   
   console.log('transaction', result)
 
-  if ( typeof(result) === "undefined" || result === null ) {
-      throw Error ('Failed while attempting to vote')
+  console.log("transaction", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to vote");
   }
-
 }
 
+async function testSubmitTrafficLog() {
+  // test 11 - input a batch action to arweave
+  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  let arg = {
+    gateWayUrl: "https://arweave.dev/logs/",
+    stakeAmount: 2,
+  };
+
+  var result = await ktools.submitTrafficLog(arg);
+
+  console.log("transaction", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to vote");
+  }
+}
+/*
+async function testUserState() {
+  const userState = await ktools.userState();
+  console.log(userState);
+  if (typeof userState === "undefined" || userState === null) {
+    throw Error("userState undefine");
+  }
+}
+async function testSubmitTrafficLog() {
+  // test 11 - input a batch action to arweave
+  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  let arg = {
+    gateWayUrl: "https://arweave.dev/logs/",
+    stakeAmount: 2,
+  };
+
+  var result = await ktools.submitTrafficLog(arg);
+
+  console.log("transaction", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to vote");
+  }
+}
+
+
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
 
 
 async function testPostData(){
@@ -381,12 +450,8 @@ async function testPostData(){
   console.log(logs.data.summary);
         let dataHash = await ktools._hashData(logs.data.summary);
         console.log('&&&&&&&&&', dataHash);
-
  let tx = await  ktools.postData(logs.data.summary);
-
-
  console.log(tx);
-
  let bundledTrafficLogs = await arweave.transactions.getData(
   '_ZVR3nxmW_1G7fFtEYzc6sZ5WRDXS2uXpUZu1bGLyFg',
   { decode: true, string: true }
@@ -394,49 +459,28 @@ async function testPostData(){
 //console.log('*******',bundledTrafficLogs );
 const line = JSON.parse(bundledTrafficLogs);
 line.push(1);
-
 let proHash = await ktools._hashData(line);
 console.log('&&&&&&&&&', proHash);
 let isValid = dataHash === proHash;
 console.log(isValid);
-
 console.log(line[41]);
-
 let NFTid = line[41].url.substring(1);
-
 console.log(NFTid);
-
  if ( typeof(tx) === "undefined" || tx === null ) {
      throw Error ('Failed while attempting to verify')
  }
-
  console.log('here it is valid or not', tx);
 }
-
-
 /*
 async function testValidateData(){
   // test traffic log validation 
   
   let result = await ktools.validateData("trafficlog");
-
   return result;
-
 }
 
-async function  testGetTrafficLogFromGateWay(){
-   
-  const logs = await ktools._getTrafficLogFromGateWay('https://arweave.dev/logs');
-  //const line = logs.data.split('\r\n');
-  console.log(logs.data.summary);
-  //console.log(typeof line);
-  if (typeof logs === "undefined" ||logs === null) {
-    throw Error("Failed while attempting to verify");
-  }
   
-
 }
-
 async function testGetTopContent() {
   const contents = await ktools.getTopContent();
   console.log(contents.data);
@@ -444,7 +488,6 @@ async function testGetTopContent() {
     throw Error("Failed while attempting to verify");
   }
 }
-
 async function testContentView() {
   let contentTxId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
   const result = await ktools.contentView(contentTxId);
@@ -453,7 +496,6 @@ async function testContentView() {
     throw Error("Failed while attempting to verify");
   }
 }
-
 async function testNftTransactionData() {
   const txData = await ktools.nftTransactionData(
     "qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI"
@@ -479,7 +521,6 @@ async function testMint() {
     throw Error("The address function returned ", result);
   }
 }
-
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
   console.log("Array", result);
@@ -487,16 +528,17 @@ async function testRetrieveTopContent() {
     throw Error("The address function returned ", result);
   }
 }
-
 async function testRegisterdata () {
     // test 8 - write to arweave
     let txId = 'PJS-kIJYdSkML2kmxJl6PSp9gqU8_xZJWHZawxQOTsw';
-
     var result =  await ktools.registerData(txId);
     
     console.log('transaction', result)
+<<<<<<< HEAD
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
     if ( typeof(result) === "undefined" || result === null ) {
         throw Error ('Failed while attempting to vote')
     }
@@ -507,23 +549,31 @@ async function testRegisterdata() {
   let txId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
   let owner = "cf3iB51tJrVSQ-j-TmcRuMYeuvho6y-7IrQm9O7QKIk";
 <<<<<<< HEAD
+<<<<<<< HEAD
   var result = await ktools.registerData(txId, owner);
   console.log("transaction", result);
 =======
 
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
   var result = await ktools.registerData(txId, owner);
-
   console.log("transaction", result);
+<<<<<<< HEAD
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
   if (typeof result === "undefined" || result === null) {
     throw Error("Failed while attempting to vote");
   }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testReadSate() {
   const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
   const state = await ktools.readContract(txId);
@@ -539,6 +589,7 @@ async function testRetrieveTopContent() {
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 
 
 >>>>>>> main
@@ -554,14 +605,19 @@ async function testAddress () {
         throw Error ('The address function returned ', address)
     }
 }
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testBalance () {
     // test 2 - balance
     var balance =  await ktools.getWalletBalance()
     console.log('balance is ', balance)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
     if ( typeof(balance) === "undefined" || balance === null ) {
         throw Error ('The balance function returned ', balance)
     }
@@ -589,19 +645,19 @@ async function testKoiBalance(){
 =======
 }
 async function testKoiBalance(){
-
     var koiBalance =  await ktools.getKoiBalance()
     console.log('balance is ', koiBalance)
-
     if ( typeof(koiBalance) === "undefined" || koiBalance === null ) {
         throw Error ('The balance function returned ', koiBalance)
     }    
-
 }
+<<<<<<< HEAD
 
 
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testStake () {
     // test 4 - test create stake
     var qty = 23;
@@ -646,12 +702,15 @@ async function testTransfer () {
     }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testUpdatetrafficlogs () {
     // test 9 - write to arweave
     // let input = {
@@ -690,12 +749,15 @@ async function testBatchAction () {
     }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testGetContractState () {
     // test 12 - get the state of the arweave contract
     var result =  await ktools.getContractState();
@@ -730,13 +792,17 @@ async function testSignPayloadAndVerify() {
   //  await ktools._interactWrite(input);
    /// payload.signature += "abel"; // if payload is valid base 64, appended === should not affect outcome
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
     let isValid = await ktools.verifySignature(payload);
    if ( typeof(isValid) === "undefined" || isValid === null ) {
         throw Error ('Failed while attempting to verify')
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
    console.log('here it is valid or not', isValid);
 }
@@ -751,32 +817,31 @@ async function testPostData(){
 }
 =======
 
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
    console.log('here it is valid or not', isValid);
-
 }
-
-
-
 async function testPostData(){
    
     let data = 'some thing';
-
    let tx = await  ktools.postData(data);
-
    if ( typeof(tx) === "undefined" || tx === null ) {
        throw Error ('Failed while attempting to verify')
    }
-
    console.log('here it is valid or not', tx);
 }
+<<<<<<< HEAD
 
 >>>>>>> main
+=======
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testValidateData(){
     // test traffic log validation 
     
     let result = await ktools.validateData("trafficlog");
     return result;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 
@@ -784,6 +849,9 @@ async function testValidateData(){
 
 
 >>>>>>> main
+=======
+}
+>>>>>>> ac9a6e9af99c41f7907d607fb996ff6b75ca0553
 async function testBlockheight(){
     const blockHeight = await ktools.getBlockheight();
     console.log(blockHeight);
