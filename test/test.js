@@ -61,7 +61,7 @@ async function start() {
     // test passed
     // await testGetTrafficLogFromGateWay()
     // test passed
-    await testSubmitTrafficLog();
+    //await testSubmitTrafficLog();
     // test
     //await testUserState();
   } catch (err) {
@@ -69,7 +69,7 @@ async function start() {
   }
 }
 
-
+/*
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -85,7 +85,7 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
-/*
+
 async function testUserState() {
   const userState = await ktools.userState();
   console.log(userState);
