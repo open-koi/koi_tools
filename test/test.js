@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
+require("dotenv").config();
 /*
 const Arweave = require("arweave/node");
 const arweave = Arweave.init({
@@ -317,18 +316,18 @@ async function start() {
   }
 }
 
+async function testSubmitTrafficLog() {
+  // test 11 - input a batch action to arweave
+  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  let arg = {
+    gateWayUrl: "https://arweave.dev/logs/",
+    stakeAmount: 2,
+  };
 
-async function testSubmitTrafficLog () {
-  // test 11 - input a batch action to arweave 
- //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
- let arg = {
-  gateWayUrl: 'https://arweave.dev/logs/',
-  stakeAmount: 2
- };
- 
-  var result =  await ktools.submitTrafficLog(arg);
-  
-  console.log('transaction', result)
+  var result = await ktools.submitTrafficLog(arg);
+
+  console.log("transaction", result);
+}
 
 async function testAddress() {
   // test 1 - address

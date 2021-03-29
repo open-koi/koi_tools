@@ -1,14 +1,13 @@
-const { koi_node }       = require('../index.js')
+const { koi_node } = require("../index.js");
 require("dotenv").config();
 
-var wallet1 = 'c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json';
-
+var wallet1 = process.env.WALLET_LOCATION;
 
 const arg1 = {
-        wallet:wallet1,
-        qty:4,
-        direct: false,
-      }
+  wallet: wallet1,
+  qty: 4,
+  direct: false,
+};
 
 var node = new koi_node(arg1);
 
