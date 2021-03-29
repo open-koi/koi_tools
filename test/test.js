@@ -77,6 +77,19 @@ async function start() {
   }
 }
 
+
+async function testSubmitTrafficLog () {
+  // test 11 - input a batch action to arweave 
+ //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+ let arg = {
+  gateWayUrl: 'https://arweave.dev/logs/',
+  stakeAmount: 2
+ };
+ 
+  var result =  await ktools.submitTrafficLog(arg);
+  
+  console.log('transaction', result)
+
 async function testAddress() {
   // test 1 - address
   var address = await ktools.getWalletAddress();
@@ -97,17 +110,42 @@ async function testGetTrafficLogFromGateWay() {
     throw Error("Failed while attempting to verify");
   }
 }
-async function testBatchAction() {
-  const bundlerAddress = await ktools.getWalletAddress();
-  console.log(bundlerAddress);
-  // test 11 - input a batch action to arweave
-  //let txid = "KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8";
-  const input = {
-    batchFile: "jzAxNvUDQIf58gnRNufn3U2XEBW_pZgWmHnetAtxT1c",
-    voteId: 0,
-    bundlerAddress: bundlerAddress,
-  };
-  var result = await ktools.batchAction(input);
+
+/*
+
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+
+
+async function testSubmitTrafficLog () {
+  // test 11 - input a batch action to arweave 
+ //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+ let arg = {
+  gateWayUrl: 'https://arweave.dev/logs/',
+  stakeAmount: 2
+ };
+ 
+  var result =  await ktools.submitTrafficLog(arg);
+  
+  console.log('transaction', result)
+
+  if ( typeof(result) === "undefined" || result === null ) {
+      throw Error ('Failed while attempting to vote')
+  }
+
+}
+
+async function testBatchAction () {
+  // test 11 - input a batch action to arweave 
+ let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  var result =  await ktools.batchAction(txid);
+  
+  console.log('transaction', result)
 
   console.log("transaction", result);
   if (typeof result === "undefined" || result === null) {
@@ -227,6 +265,9 @@ async function testNftTransactionData() {
     throw Error("The address function returned ");
   }
 }
+
+
+
 async function testMint() {
   let address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
   var submission = {
