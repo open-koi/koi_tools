@@ -23,6 +23,7 @@
     "dotenv": "^8.2.0",
     "jsonfile": "^6.1.0",
     "jwk-to-pem": "^2.0.4",
+    "lodash": "^4.17.21",
     "smartweave": "^0.4.25",
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0"
