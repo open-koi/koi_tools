@@ -23,13 +23,15 @@ Note: This library changes often, so if `npm i koi-tools` does not work, you may
    });
    ```
 
-3. Define the absolute path to your AR wallet's key.
+3. Create an RSA Wallet Key
 
-   - Note that the wallet address should not be held inside of your project when you check the project into GitHub
+   Note that the wallet address should not be held inside of your project when you check the project into GitHub
 
    ```
    var walletKeyLocation = "path/to/wallet.json";
    ```
+
+   If you don't have a wallet, you can get one from the faucet at [koi.rocks](https://koi.rocks/) or the Arweave faucet at [faucet.arweave.org](https://faucet.arweave.org/).
 
 4. Define a function to bootstrap your app and utilize the koi-tools library `loadWallet` method to be returned the address of your wallet from the permaweb.
 
@@ -51,6 +53,8 @@ Note: This library changes often, so if `npm i koi-tools` does not work, you may
 
    start()
    ```
+
+   If you are just testing with a local bundler, you can also use `await ktools.generateWallet()` to create a custom key file just for that runtime. (TODO: Expand support for 12 word seed phrase).
 
 5. Check out the test.js file held in this library with examples of how to interact with koi-tools.
 
