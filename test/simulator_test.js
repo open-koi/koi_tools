@@ -9,8 +9,8 @@ const arg1 = {
   qty: 4,
   direct: false, // direct false means, vote through bundler which is feeless
 };
-var wallet1 = process.env.WALLET_LOCATION;
 
+var wallet1 = process.env.WALLET_LOCATION;
 
 var node = new koi_node(arg1);
 
