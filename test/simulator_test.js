@@ -3,6 +3,7 @@ require("dotenv").config();
 
 var wallet1 = process.env.WALLET_LOCATION;
 
+
 const arg1 = {
   wallet: wallet1,
   qty: 4,

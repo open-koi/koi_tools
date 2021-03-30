@@ -1,9 +1,10 @@
-const { koi_tools } = require("../index.js");
-var ktools = new koi_tools();
-require("dotenv").config();
+//const { koi_tools } = require("../index.js");
+//var ktools = new koi_tools();
+//require("dotenv").config();
 
-var walletKeyLocation = process.env.WALLET_LOCATION;
-
+//var walletKeyLocation = process.env.WALLET_LOCATION;
+/*
+var walletKeyLocation = '';
 async function start() {
   console.log("running async block", ktools);
 
@@ -15,3 +16,4 @@ async function start() {
     console.log("found error", err);
   }
 }
+*/
