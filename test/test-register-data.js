@@ -2,9 +2,8 @@
 
 const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
-
-// var walletKeyLocation = "/Users/abelsebhatu/Desktop/koi-protocol/dist/keywallet.json";
-// var walletKeyLocation = "/media/al/files/koi/Arweave/sec2.json";
+require("dotenv").config();
+var walletKeyLocation = process.env.WALLET_LOCATION;
 
 start();
 

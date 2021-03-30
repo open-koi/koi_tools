@@ -2,9 +2,8 @@ const { koi_tools } = require("../index.js");
 var ktools = new koi_tools();
 require("dotenv").config();
 
-//var walletKeyLocation = process.env.WALLET_LOCATION;
-var walletKeyLocation =
-  "c:/Users/sebha/Desktop/koi/NFT-bridge/src/keywallet.json";
+var walletKeyLocation = process.env.WALLET_LOCATION;
+
 start();
 
 async function start() {
@@ -29,7 +28,7 @@ async function start() {
     // test passed
     // await testWithdraw ()
     // test passed
-    // await testVote ()
+    await testVote();
     // test passed
     // await testTransfer ()
     // test passed
@@ -68,7 +67,14 @@ async function start() {
     throw Error(err);
   }
 }
-
+async function testVote() {
+  const arg = {
+    voteId: -2,
+    direct: false,
+  };
+  const result = await ktools.vote(arg);
+  console.log("result", result.message);
+}
 /*
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
