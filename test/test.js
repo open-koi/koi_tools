@@ -67,6 +67,23 @@ async function start() {
     throw Error(err);
   }
 }
+
+
+async function testStake () {
+    // test 4 - test create stake
+    var qty = 23;
+
+    var result =  await ktools.stake(qty);
+
+    console.log('transaction.............', result)
+
+    if ( typeof(result) === "undefined" || result === null ) {
+        throw Error ('Failed while attempting to stake')
+    }
+
+}
+
+/*
 async function testVote() {
   const arg = {
     voteId: -2,
@@ -75,7 +92,7 @@ async function testVote() {
   const result = await ktools.vote(arg);
   console.log("result", result.message);
 }
-/*
+
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
