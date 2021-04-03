@@ -5,13 +5,19 @@ require("dotenv").config();
 var walletKeyLocation = process.env.WALLET_LOCATION;
 
 start();
+const Arweave = require("arweave/node");
 
+const arweave = Arweave.init({
+  host: "arweave.net",
+  protocol: "https",
+  port: 443,
+});
 async function start() {
   console.log("running async block", ktools);
 
   await ktools.loadWallet(walletKeyLocation);
 
-  try {
+  // try {
     // await testMint()
     // test passed
     //  await testPostData();
@@ -24,11 +30,11 @@ async function start() {
     // test passed
     //  await testKoiBalance()
     // test passed
-    //  await testStake()
+     await testStake(1)
     // test passed
     // await testWithdraw ()
     // test passed
-    await testVote();
+    // await testVote();
     // test passed
     // await testTransfer ()
     // test passed
@@ -63,9 +69,9 @@ async function start() {
     //await testSubmitTrafficLog();
     // test
     //await testUserState();
-  } catch (err) {
-    throw Error(err);
-  }
+  // } catch (err) {
+  //   throw Error(err);
+  // }
 }
 async function testVote() {
   const arg = {
@@ -74,6 +80,15 @@ async function testVote() {
   };
   const result = await ktools.vote(arg);
   console.log("result", result.message);
+}
+async function testStake(qty) {
+  let result = await ktools.stake(qty)
+  console.log({result})
+  arweave.transactions.getStatus(result).then(status => {
+    console.log("STATUS",status);
+    // 200
+  })
+  return result;
 }
 /*
 async function testSubmitTrafficLog() {
