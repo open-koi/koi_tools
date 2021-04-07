@@ -49,9 +49,9 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-    // await testMyContent();
+    await testMyContent();
     // test passed
-    // await testRetrieveTopContent();
+    //await testRetrieveTopContent();
     // test passed
     // await testReadSate();
     // await testNftTransactionData()
@@ -65,6 +65,22 @@ async function start() {
     //await testUserState();
   } catch (err) {
     throw Error(err);
+  }
+}
+
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
   }
 }
 
@@ -237,11 +253,5 @@ async function testMint() {
     throw Error("The address function returned ", result);
   }
 }
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
+
 */
