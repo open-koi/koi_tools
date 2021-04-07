@@ -28,7 +28,7 @@ async function start() {
     // test passed
     // await testWithdraw ()
     // test passed
-    await testVote();
+    //await testVote();
     // test passed
     // await testTransfer ()
     // test passed
@@ -68,31 +68,6 @@ async function start() {
   }
 }
 
-
-async function testStake () {
-    // test 4 - test create stake
-    var qty = 23;
-
-    var result =  await ktools.stake(qty);
-
-    console.log('transaction.............', result)
-
-    if ( typeof(result) === "undefined" || result === null ) {
-        throw Error ('Failed while attempting to stake')
-    }
-
-}
-
-/*
-async function testVote() {
-  const arg = {
-    voteId: -2,
-    direct: false,
-  };
-  const result = await ktools.vote(arg);
-  console.log("result", result.message);
-}
-
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -108,6 +83,31 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
+
+async function testStake() {
+  // test 4 - test create stake
+  var qty = 23;
+
+  var result = await ktools.stake(qty);
+
+  console.log("transaction.............", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to stake");
+  }
+}
+
+/*
+async function testVote() {
+  const arg = {
+    voteId: -2,
+    direct: false,
+  };
+  const result = await ktools.vote(arg);
+  console.log("result", result.message);
+}
+
+
 
 async function testUserState() {
   const userState = await ktools.userState();
