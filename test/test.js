@@ -37,6 +37,9 @@ async function start() {
     // await testWithdraw ()
     // test passed
     // await testVote();
+
+    //await testVote();
+
     // test passed
     // await testTransfer ()
     // test passed
@@ -57,9 +60,9 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-    // await testMyContent();
+    //await testMyContent();
     // test passed
-    // await testRetrieveTopContent();
+    //await testRetrieveTopContent();
     // test passed
     // await testReadSate();
     // await testNftTransactionData()
@@ -68,20 +71,20 @@ async function start() {
     // test passed
     // await testGetTrafficLogFromGateWay()
     // test passed
-    //await testSubmitTrafficLog();
+    // await testSubmitTrafficLog();
     // test
     //await testUserState();
   // } catch (err) {
   //   throw Error(err);
   // }
 }
-async function testVote() {
-  const arg = {
-    voteId: -2,
-    direct: false,
-  };
-  const result = await ktools.vote(arg);
-  console.log("result", result.message);
+
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
 }
 async function testStake(qty) {
   console.log("RUNNING STAKE")
@@ -97,6 +100,15 @@ async function testStake(qty) {
   return result;
 }
 /*
+
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -112,6 +124,31 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
+
+async function testStake() {
+  // test 4 - test create stake
+  var qty = 23;
+
+  var result = await ktools.stake(qty);
+
+  console.log("transaction.............", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to stake");
+  }
+}
+
+/*
+async function testVote() {
+  const arg = {
+    voteId: -2,
+    direct: false,
+  };
+  const result = await ktools.vote(arg);
+  console.log("result", result.message);
+}
+
+
 
 async function testUserState() {
   const userState = await ktools.userState();
@@ -241,11 +278,5 @@ async function testMint() {
     throw Error("The address function returned ", result);
   }
 }
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
+
 */
