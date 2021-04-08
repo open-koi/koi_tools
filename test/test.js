@@ -49,7 +49,7 @@ async function start() {
     // test passed
     // await testRankProposal()
     // test passed
-    await testMyContent();
+    //await testMyContent();
     // test passed
     //await testRetrieveTopContent();
     // test passed
@@ -60,7 +60,7 @@ async function start() {
     // test passed
     // await testGetTrafficLogFromGateWay()
     // test passed
-    //await testSubmitTrafficLog();
+    // await testSubmitTrafficLog();
     // test
     //await testUserState();
   } catch (err) {
