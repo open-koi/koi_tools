@@ -3,9 +3,11 @@ var ktools = new koi_tools();
 require("dotenv").config();
 
 var walletKeyLocation = process.env.WALLET_LOCATION;
+const redisClient = require('../helpers/redis');
 
 start();
 const Arweave = require("arweave/node");
+const smartweave = require("smartweave");
 
 const arweave = Arweave.init({
   host: "arweave.net",
@@ -82,6 +84,10 @@ async function testVote() {
   console.log("result", result.message);
 }
 async function testStake(qty) {
+  console.log("RUNNING STAKE")
+  console.log(redisClient.get("pendingStateArray",(err,val)=>{
+    console.log(val)
+  }))
   let result = await ktools.stake(qty)
   console.log({result})
   arweave.transactions.getStatus(result).then(status => {
