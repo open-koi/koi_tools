@@ -1,9 +1,9 @@
 const { koi_tools } = require("../index.js");
-var ktools = new koi_tools();
+var ktools = new koi_tools(true);
 require("dotenv").config();
 
 var walletKeyLocation = process.env.WALLET_LOCATION;
-const redisClient = require('../helpers/redis');
+// const redisClient = require("../helpers/redis");
 
 start();
 const Arweave = require("arweave/node");
@@ -20,64 +20,98 @@ async function start() {
   await ktools.loadWallet(walletKeyLocation);
 
   // try {
-    // await testMint()
-    // test passed
-    //  await testPostData();
-    // test passed
-    //   await testSignPayloadAndVerify()
-    // test passed
-    //  await testAddress()
-    // test paseed
-    // await testBalance()
-    // test passed
-    //  await testKoiBalance()
-    // test passed
-     await testStake(1)
-    // test passed
-    // await testWithdraw ()
-    // test passed
-    // await testVote();
+  // await testMint()
+  // test passed
+  //  await testPostData();
+  // test passed
+  //   await testSignPayloadAndVerify()
+  // test passed
+  //  await testAddress()
+  // test paseed
+  // await testBalance()
+  // test passed
+  //  await testKoiBalance()
+  // test passed
+  await testStake();
+  // test passed
+  // await testWithdraw ()
+  // test passed
+  // await testVote();
 
-    //await testVote();
+  //await testVote();
 
-    // test passed
-    // await testTransfer ()
-    // test passed
-    // await testRegisterdata();
-    // test passed
-    // await testDistributeDailyRewards ()
-    // test passed
-    //  await testBatchAction ()
-    // test passed
-    //await testGetContractState ()
-    // test passed
-    //await testContentView();
-    // test passed
-    // await testUpdatetrafficlogs ()
-    //await testBlockheight();
-    //  not yet
-    //await testDistributeDailyRewards();
-    // test passed
-    // await testRankProposal()
-    // test passed
-    //await testMyContent();
-    // test passed
-    //await testRetrieveTopContent();
-    // test passed
-    // await testReadSate();
-    // await testNftTransactionData()
-    //test passed
-    // await testGetTopContent();
-    // test passed
-    // await testGetTrafficLogFromGateWay()
-    // test passed
-    // await testSubmitTrafficLog();
-    // test
-    //await testUserState();
+  // test passed
+  // await testTransfer ()
+  // test passed
+  // await testRegisterdata();
+  // test passed
+  // await testDistributeDailyRewards ()
+  // test passed
+  //  await testBatchAction ()
+  // test passed
+  //await testGetContractState ()
+  // test passed
+  //await testContentView();
+  // test passed
+  // await testUpdatetrafficlogs ()
+  //await testBlockheight();
+  //  not yet
+  //await testDistributeDailyRewards();
+  // test passed
+  // await testRankProposal()
+  // test passed
+  //await testMyContent();
+  // test passed
+  //await testRetrieveTopContent();
+  // test passed
+  // await testReadSate();
+  // await testNftTransactionData()
+  //test passed
+  // await testGetTopContent();
+  // test passed
+  // await testGetTrafficLogFromGateWay()
+  // test passed
+  // await testSubmitTrafficLog();
+  // test
+  //await testUserState();
+
   // } catch (err) {
   //   throw Error(err);
   // }
 }
+async function testStake() {
+  // test 4 - test create stake
+  var qty = 23;
+
+  var result = await ktools.stake(qty);
+
+  console.log("transaction.............", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to stake");
+  }
+}
+/*
+
+
+async function testStake() {
+  let qty = 5;
+  console.log("RUNNING STAKE");
+  console.log(redisClient);
+  console.log(
+    redisClient.get("pendingStateArray", (err, val) => {
+      console.log("valbabalaba", val);
+    })
+  );
+  let result = await ktools.stake(qty);
+  console.log({ result });
+  arweave.transactions.getStatus(result).then((status) => {
+    console.log("STATUS", status);
+    // 200
+  });
+  return result;
+}
+
 
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
@@ -86,20 +120,8 @@ async function testRetrieveTopContent() {
     throw Error("The address function returned ", result);
   }
 }
-async function testStake(qty) {
-  console.log("RUNNING STAKE")
-  console.log(redisClient.get("pendingStateArray",(err,val)=>{
-    console.log(val)
-  }))
-  let result = await ktools.stake(qty)
-  console.log({result})
-  arweave.transactions.getStatus(result).then(status => {
-    console.log("STATUS",status);
-    // 200
-  })
-  return result;
-}
-/*
+
+
 
 async function testMyContent() {
   const txId = await ktools.myContent();
@@ -125,18 +147,6 @@ async function testSubmitTrafficLog() {
   }
 }
 
-async function testStake() {
-  // test 4 - test create stake
-  var qty = 23;
-
-  var result = await ktools.stake(qty);
-
-  console.log("transaction.............", result);
-
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to stake");
-  }
-}
 
 /*
 async function testVote() {
