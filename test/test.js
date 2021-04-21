@@ -81,7 +81,7 @@ async function start() {
 }
 async function testStake() {
   // test 4 - test create stake
-  var qty = 23;
+  var qty = 1;
 
   var result = await ktools.stake(qty);
 
