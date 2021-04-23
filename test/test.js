@@ -20,7 +20,7 @@ async function start() {
   await ktools.loadWallet(walletKeyLocation);
 
   // try {
-  // await testMint()
+  //await testMint();
   // test passed
   //  await testPostData();
   // test passed
@@ -37,9 +37,7 @@ async function start() {
   // await testWithdraw ()
   // test passed
   // await testVote();
-
   //await testVote();
-
   // test passed
   // await testTransfer ()
   // test passed
@@ -71,13 +69,50 @@ async function start() {
   // test passed
   // await testGetTrafficLogFromGateWay()
   // test passed
-  // await testSubmitTrafficLog();
+  //await testSubmitTrafficLog();
   // test
   //await testUserState();
-  await testStake();
+  //await testStake();
+  await testGetKoiBalnace();
   // } catch (err) {
   //   throw Error(err);
   // }
+}
+
+async function testGetKoiBalnace() {
+  const result = await ktools.getKoiBalance();
+  console.log("result", result);
+}
+/*
+async function testSubmitTrafficLog() {
+  // test 11 - input a batch action to arweave
+  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
+  let arg = {
+    gateWayUrl: "https://arweave.dev/logs/",
+    stakeAmount: 2,
+  };
+
+  var result = await ktools.submitTrafficLog(arg);
+
+  console.log("transaction", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to vote");
+  }
+}
+
+async function testMint() {
+  let address = "zFGpdtH0tpXAvG7PDMhq-ExCR_w7c4PYuwmoRZKmMpA";
+  var submission = {
+    targetAddress: address,
+    qty: 10000000,
+  };
+  const result = await ktools.mint(submission);
+  const wallet = await ktools.getWalletAddress();
+  console.log("result", result);
+  console.log("Array", wallet);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
 }
 async function testStake() {
   // test 4 - test create stake
@@ -92,7 +127,7 @@ async function testStake() {
   }
 }
 
-/*
+
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
   console.log("Array", result);
@@ -123,21 +158,7 @@ async function testMyContent() {
   }
 }
 
-async function testSubmitTrafficLog() {
-  // test 11 - input a batch action to arweave
-  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
-  let arg = {
-    gateWayUrl: "https://arweave.dev/logs/",
-    stakeAmount: 2,
-  };
 
-  var result = await ktools.submitTrafficLog(arg);
-
-  console.log("transaction", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to vote");
-  }
-}
 
 
 
