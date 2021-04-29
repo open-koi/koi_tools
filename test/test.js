@@ -70,33 +70,16 @@ async function start() {
   // await testGetTrafficLogFromGateWay()
   // test passed
   //await testRetrieveTopContent();
-  //await testSubmitTrafficLog();
+  await testSubmitTrafficLog();
   // test
   //await testUserState();
   //await testStake();
   //await testGetKoiBalnace();
-  await testMyContent();
+  //await testMyContent();
   // } catch (err) {
   //   throw Error(err);
   // }
 }
-
-async function testMyContent() {
-  const txId = await ktools.myContent();
-  console.log(txId);
-  if (typeof txId === "undefined" || txId === null) {
-    throw Error("The address function returned ", txId);
-  }
-}
-
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
-/*
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -112,6 +95,23 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
+/*
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+
 
 
 async function testGetKoiBalnace() {
