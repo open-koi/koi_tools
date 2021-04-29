@@ -69,19 +69,32 @@ async function start() {
   // test passed
   // await testGetTrafficLogFromGateWay()
   // test passed
+  //await testRetrieveTopContent();
   //await testSubmitTrafficLog();
   // test
   //await testUserState();
   //await testStake();
-  await testGetKoiBalnace();
+  //await testGetKoiBalnace();
+  await testMyContent();
   // } catch (err) {
   //   throw Error(err);
   // }
 }
 
-async function testGetKoiBalnace() {
-  const result = await ktools.getKoiBalance();
-  console.log("result", result);
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
 }
 /*
 async function testSubmitTrafficLog() {
@@ -98,6 +111,12 @@ async function testSubmitTrafficLog() {
   if (typeof result === "undefined" || result === null) {
     throw Error("Failed while attempting to vote");
   }
+}
+
+
+async function testGetKoiBalnace() {
+  const result = await ktools.getKoiBalance();
+  console.log("result", result);
 }
 
 async function testMint() {
@@ -128,13 +147,7 @@ async function testStake() {
 }
 
 
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
+
 async function testStake(qty) {
   console.log("RUNNING STAKE")
   console.log(redisClient.get("pendingStateArray",(err,val)=>{
@@ -150,13 +163,7 @@ async function testStake(qty) {
 }
 
 
-async function testMyContent() {
-  const txId = await ktools.myContent();
-  console.log(txId);
-  if (typeof txId === "undefined" || txId === null) {
-    throw Error("The address function returned ", txId);
-  }
-}
+
 
 
 
