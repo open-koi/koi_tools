@@ -6,7 +6,7 @@ async function test() {
     // Test wallet generation
     console.log("\nGenerating wallet using mnemonic, this can take a minute")
     if (await ktools.generateWallet(true))
-        console.log(`Wallet generated\nmnemonic: ${ktools.mnemonic}\naddress: ${ktools_load.address}\n`);
+        console.log(`Wallet generated\nmnemonic: ${ktools.mnemonic}\naddress: ${ktools.address}\n`);
     else return "Failed to generate wallet";
 
     // Save mnemonic
