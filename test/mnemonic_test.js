@@ -13,12 +13,12 @@ async function test() {
     let mnemonic = ktools.mnemonic;
 
     // Create new ktools instance
-    console.log(`New wallet should be empty\nmnemonic: ${ktools.mnemonic}\naddress: ${ktools_load.address}\n`);
+    console.log(`New wallet should be empty\nmnemonic: ${ktools_load.mnemonic}\naddress: ${ktools_load.address}\n`);
 
     // Load wallet
     console.log("Loading wallet using mnemonic, this can a take minute")
     if (await ktools_load.loadWallet(mnemonic))
-        console.log(`Wallet loaded using mnemonic\nmnemonic: ${ktools.mnemonic}\naddress: ${ktools_load.address}\n`);
+        console.log(`Wallet loaded using mnemonic\nmnemonic: ${ktools_load.mnemonic}\naddress: ${ktools_load.address}\n`);
     else return "Failed to load wallet";
     
     return "Success";
