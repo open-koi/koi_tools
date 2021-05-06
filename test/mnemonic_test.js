@@ -2,6 +2,10 @@ const koi_tools = require("../lib/tools.js");
 const ktools = new koi_tools();
 const ktools_load = new koi_tools();
 
+test().then((res) => {
+    console.log("Test result:", res);
+})
+
 async function test() {
     // Test wallet generation
     console.log("\nGenerating wallet using mnemonic, this can take a minute")
@@ -23,7 +27,3 @@ async function test() {
     
     return "Success";
 }
-
-test().then((res) => {
-    console.log("Test result:", res);
-})
