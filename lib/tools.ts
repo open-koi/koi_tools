@@ -1,7 +1,7 @@
 import { generateMnemonic, getKeyFromMnemonic } from "../helpers/mnemonic_keys";
 import Arweave = require("arweave");
 import { JWKInterface } from "arweave/node/lib/wallet";
-import fs = require("graceful-fs");
+import * as fs from "fs";
 
 const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 const BUNDLER_NODES = "https://bundler.openkoi.com:8888/submitVote/";
