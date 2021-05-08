@@ -80,6 +80,18 @@ async function start() {
   //   throw Error(err);
   // }
 }
+async function testStake() {
+  // test 4 - test create stake
+  var qty = 1;
+
+  var result = await ktools.stake(qty);
+
+  console.log("transaction.............", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to stake");
+  }
+}
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -133,18 +145,7 @@ async function testMint() {
     throw Error("The address function returned ", result);
   }
 }
-async function testStake() {
-  // test 4 - test create stake
-  var qty = 1;
 
-  var result = await ktools.stake(qty);
-
-  console.log("transaction.............", result);
-
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to stake");
-  }
-}
 
 
 
