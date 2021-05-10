@@ -27,7 +27,7 @@ export async function getKeyFromMnemonic(mnemonic: string): Promise<any> {
     { privateKeyFormat: "pkcs1-pem" }
   );
 
-  //@ts-ignore
+  //@ts-ignore Need to access private attribute
   const privateKey = (await crypto.keys.import(keyPair.privateKey, ""))._key;
   delete privateKey.alg;
   delete privateKey.key_ops;

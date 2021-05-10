@@ -19,9 +19,11 @@
   "homepage": "https://github.com/open-koi/koi_tools#readme",
   "dependencies": {
     "arweave": "^1.10.13",
+    "axios": "^0.21.1",
     "human-crypto-keys": "^0.1.4",
     "libp2p-crypto": "^0.19.4",
-    "node-polyfill-webpack-plugin": "^1.1.1"
+    "node-polyfill-webpack-plugin": "^1.1.1",
+    "smartweave": "^0.4.29"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.22.1",

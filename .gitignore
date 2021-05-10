@@ -4,3 +4,4 @@ yarn-error*
 dist
 .env
 my-db.db
+.vscode
