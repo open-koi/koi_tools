@@ -138,7 +138,7 @@ export class Node {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
 
     const currentTrafficLogs = contractState.stateUpdate.trafficLogs.dailyTrafficLog.find(
-      (trafficlog) => trafficlog.block === trafficLogs.open
+      (trafficLog) => trafficLog.block === trafficLogs.open
     );
 
     if (
@@ -160,7 +160,7 @@ export class Node {
   isRewardDistributed(contractState, block) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
     const currentTrafficLogs = contractState.stateUpdate.trafficLogs.dailyTrafficLog.find(
-      (trafficlog) => trafficlog.block === trafficLogs.open
+      (trafficLog) => trafficLog.block === trafficLogs.open
     );
 
     if (
