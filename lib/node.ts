@@ -74,6 +74,11 @@ export class Node {
     await this.work(wallet);
   }
 
+  /**
+   *
+   * @param state
+   * @param wallet
+   */
   async searchVote(state, wallet) {
     //console.log(wallet, "  is looking for votes to join...... ");
     // const state = await tools.getContractState();
@@ -94,6 +99,12 @@ export class Node {
     }
   }
 
+  /**
+   *
+   * @param contractState
+   * @param block
+   * @returns
+   */
   checkForVote(contractState, block) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
     if (block < trafficLogs.close - 250) {
@@ -102,6 +113,12 @@ export class Node {
     return false;
   }
 
+  /**
+   *
+   * @param contractState
+   * @param block
+   * @returns
+   */
   checkProposeSlash(contractState, block) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
 
@@ -111,6 +128,12 @@ export class Node {
     return false;
   }
 
+  /**
+   *
+   * @param contractState
+   * @param block
+   * @returns
+   */
   isProposalRanked(contractState, block) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
 
@@ -128,6 +151,12 @@ export class Node {
     return false;
   }
 
+  /**
+   *
+   * @param contractState
+   * @param block
+   * @returns
+   */
   isRewardDistributed(contractState, block) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
     const currentTrafficLogs = contractState.stateUpdate.trafficLogs.dailyTrafficLog.find(
