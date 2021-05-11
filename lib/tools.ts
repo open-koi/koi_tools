@@ -4,12 +4,30 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import * as fs from "fs";
 import axios, { AxiosResponse } from "axios";
 import { smartweave } from "smartweave";
+import * as ArweaveUtils from "arweave/node/lib/utils";
+import "nedb-promises"; // Datastore
+import Datastore = require("nedb-promises");
+
+interface Vote {
+  voteId: number;
+  direct?: string;
+  userVote?: string;
+}
+
+interface BundlerPayload {
+  vote: Vote;
+  senderAddress: string;
+  signature?: string;
+  owner?: string;
+}
 
 const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
-const BUNDLER_ADDR = "https://bundler.openkoi.com:8888";
-const BUNDLER_ADDR_NODES = BUNDLER_ADDR + "/submitVote/";
+const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
+const ADDR_BUNDLER_NODES = ADDR_BUNDLER + "/submitVote/";
+const ADDR_LOGS = "https://arweave.dev/logs";
+const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
-enum BASIC_TX {
+export enum BasicTx {
   Stake = "stake",
   Withdraw = "withdraw",
   Transfer = "transfer"
@@ -29,12 +47,13 @@ export class Koi {
   totalVoted = -1;
   wallet?: JWKInterface;
   myBookmarks: Map<string, string> = new Map();
-  receipts = [];
+  receipts: any[] = [];
   nodeState = {};
   contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
   balance?: string;
+  db?: Datastore;
 
   constructor() {
     console.log(
@@ -92,8 +111,8 @@ export class Koi {
   loadFile(file: string): Promise<JWKInterface> {
     return new Promise(function (resolve, reject) {
       fs.readFile(file, "utf8", (err, data) => {
-        if (err === null) resolve(JSON.parse(data));
-        else reject(err);
+        if (err !== null) reject(err);
+        resolve(JSON.parse(data));
       });
     });
   }
@@ -127,6 +146,35 @@ export class Koi {
   }
 
   /**
+   * Loads wallet for node Simulator key from file path and initialize ndb.
+   * @param walletFileLocation Wallet key file location
+   * @returns Key as an object
+   */
+  async nodeLoadWallet(walletFileLocation) {
+    await this.loadWallet(walletFileLocation);
+    this.db = Datastore.create({
+      filename: "my-db.db",
+      autoload: true
+    });
+    const count = await this.db.count({});
+    if (count == 0) {
+      const data = {
+        totalVoted: 32,
+        receipt: []
+      };
+
+      await this.db.insert(data);
+
+      this.totalVoted = data.totalVoted;
+    } else {
+      const data: any = await this.db.find({});
+      this.totalVoted = data[0].totalVoted;
+      this.receipts.push(data[0].receipt);
+    }
+    return this.wallet;
+  }
+
+  /**
    * Adds content to bookmarks
    * @param arTxId Arweave transaction ID
    * @param ref Content stored in transaction
@@ -144,10 +192,10 @@ export class Koi {
 
   /**
    * Gets koi balance from cache
-   * @returns balance as a number
+   * @returns Balance as a number
    */
   async getKoiBalance(): Promise<number> {
-    const path = BUNDLER_ADDR + "/state/current/";
+    const path = ADDR_BUNDLER + "/state/current/";
     const state = await getCacheData<any>(path);
 
     if (
@@ -160,10 +208,10 @@ export class Koi {
 
   /**
    * Basic interaction transaction
-   * @param qty quantity to stake
-   * @returns transaction id
+   * @param qty Quantity to stake
+   * @returns Transaction id
    */
-  transact(tx_type: BASIC_TX, qty: number): Promise<string> {
+  transact(tx_type: BasicTx, qty: number): Promise<string> {
     if (!Number.isInteger(qty))
       throw Error('Invalid value for "qty". Must be an integer');
 
@@ -177,11 +225,11 @@ export class Koi {
 
   /**
    * Interact with contract to register data
-   * @param txId it has batchFile/value(string) and stakeamount/value(int) as properties
+   * @param txId It has batchFile/value(string) and stakeamount/value(int) as properties
    * @param owner
    * @param arWallet
-   * @param arweaveInst arweave client instance
-   * @returns transaction ID
+   * @param arweaveInst Arweave client instance
+   * @returns Transaction ID
    */
   registerData(
     txId: any, // Maybe string?
@@ -199,26 +247,11 @@ export class Koi {
   }
 
   /**
-   * internal function, writes to contract
-   * @param input Passes to smartweave write function, in order to execute a contract function
-   * @returns Transaction ID
-   */
-  private _interactWrite(input: any): Promise<string> {
-    const wallet = typeof this.wallet == "object" ? this.wallet : "use_wallet";
-
-    return smartweave.interactWrite(arweave, wallet, KOI_CONTRACT, input);
-  }
-
-  /**
    * Submit vote to bundle server or direct to contract
    * @param arg Object with direct, voteId, and useVote
    * @returns Transaction ID
    */
-  async vote(arg: {
-    direct: boolean;
-    voteId: string;
-    useVote: string;
-  }): Promise<any> {
+  async vote(arg: Vote): Promise<any> {
     const userVote = await this.validateData(arg.voteId);
     if (userVote == null) {
       this.totalVoted += 1;
@@ -229,26 +262,21 @@ export class Koi {
     const input = {
       function: "vote",
       voteId: arg.voteId,
-      userVote: userVote
+      userVote: userVote.toString()
     };
 
-    let reciept;
+    let receipt;
     let tx;
-    if (arg.direct === true) {
-      tx = await this._interactWrite(input);
-    } else {
+    if (arg.direct) tx = await this._interactWrite(input);
+    else {
       const caller = await this.getWalletAddress();
-      const userVoteBoolean = new Boolean(userVote);
 
-      const userVoteString = userVoteBoolean.toString();
-
-      input.userVote = userVoteString;
-      const payload = {
+      const payload: BundlerPayload = {
         vote: input,
         senderAddress: caller
       };
 
-      reciept = await this._bundlerNode(payload);
+      receipt = await this._bundlerNode(payload);
     }
 
     if (tx) {
@@ -257,21 +285,20 @@ export class Koi {
       return { message: "justVoted" };
     }
 
-    if (reciept) {
-      if (reciept.status == 200) {
+    if (receipt) {
+      if (this.db !== undefined && receipt.status === 200) {
         this.totalVoted += 1;
-        const data = reciept.data.receipt;
+        const data = receipt.data.receipt;
         const id = await this._db();
         await this.db.update({ _id: id }, { $push: { receipt: data } });
-        this.reciepts.push(data);
+        this.receipts.push(data);
         return { message: "success" };
-      } else {
-        console.log(reciept);
-        this.totalVoted += 1;
-        await this._db();
-
-        return { message: "duplicatedVote" };
       }
+
+      console.log(receipt);
+      this.totalVoted += 1;
+      await this._db();
+      return { message: "duplicatedVote" };
     }
 
     return null;
@@ -279,17 +306,17 @@ export class Koi {
 
   /**
    * Validate trafficlog by comparing traffic log from gateway and arweave storage
-   * @param voteId vote id which is belongs for specific proposalLog
-   * @returns whether data is valid
+   * @param voteId Vote id which is belongs for specific proposalLog
+   * @returns Whether data is valid
    */
-  async validateData(voteId: string): Promise<boolean | null> {
-    const state = await this.getContractState();
+  async validateData(voteId: number): Promise<boolean | null> {
+    const state = await this._readContract();
     const trafficLogs = state.stateUpdate.trafficLogs;
     const currentTrafficLogs = trafficLogs.dailyTrafficLog.find(
-      (trafficlog) => trafficlog.block === trafficLogs.open
+      (trafficLog) => trafficLog.block === trafficLogs.open
     );
     const proposedLogs = currentTrafficLogs.proposedLogs;
-    let proposedLog = null;
+    let proposedLog: null | any = null;
     proposedLogs.forEach((element) => {
       if (element.voteId === voteId) {
         proposedLog = element;
@@ -298,28 +325,171 @@ export class Koi {
     // lets assume we have one gateway id for now.
     //let gateWayUrl = proposedLog.gatWayId;
 
-    if (proposedLog === null) {
-      return null;
-    }
-    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(
-      "https://arweave.dev/logs"
-    );
+    if (proposedLog === null) return null;
+
+    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(ADDR_LOGS);
     const gatewayTrafficLogsHash = await this._hashData(
       gatewayTrafficLogs.data.summary
     );
 
-    const bundledTrafficLogs = await arweave.transactions.getData(
+    let bundledTrafficLogs = await arweave.transactions.getData(
       proposedLog.TLTxId,
       { decode: true, string: true }
     );
 
+    if (typeof bundledTrafficLogs !== "string")
+      bundledTrafficLogs = new TextDecoder("utf-8").decode(bundledTrafficLogs);
     const bundledTrafficLogsParsed = JSON.parse(bundledTrafficLogs);
     const bundledTrafficLogsParsedHash = await this._hashData(
       bundledTrafficLogsParsed
     );
-    const isValid = gatewayTrafficLogsHash === bundledTrafficLogsParsedHash;
 
-    return isValid;
+    return gatewayTrafficLogsHash === bundledTrafficLogsParsedHash;
+  }
+
+  /**
+   * Sign payload
+   * @param payload Payload to sign
+   * @returns Signed payload with signature
+   */
+  async signPayload(payload: BundlerPayload): Promise<BundlerPayload | null> {
+    if (this.wallet === undefined) return null;
+    const jwk = this.wallet;
+    const publicModulus = jwk.n;
+    const dataInString = JSON.stringify(payload.vote);
+    const dataIn8Array = ArweaveUtils.stringToBuffer(dataInString);
+    const rawSignature = await arweave.crypto.sign(jwk, dataIn8Array);
+    payload.signature = ArweaveUtils.bufferTob64Url(rawSignature);
+    payload.owner = publicModulus;
+    return payload;
+  }
+
+  /**
+   * Propose a stake slashing
+   * @returns
+   */
+  async proposeSlash(): Promise<void> {
+    const state = await this.getContractState();
+    const votes = state.votes;
+    for (let i; i < this.receipts.length - 1; i++) {
+      const element = this.receipts[i];
+      const voteId = element.vote.vote.voteId;
+      const vote = votes[voteId];
+      if (!vote.voted.includes(this.wallet)) {
+        const input = {
+          function: "proposeSlash",
+          receipt: element
+        };
+        await this._interactWrite(input);
+      }
+    }
+  }
+
+  /**
+   * @returns Current KOI system state
+   */
+  getContractState(): Promise<any> {
+    return this._readContract();
+  }
+
+  /**
+   * Get block height
+   * @returns Block height // maybe number
+   */
+  async getBlockHeight(): Promise<any> {
+    const info = await getArweaveNetInfo();
+    return info.data.height;
+  }
+
+  /**
+   *
+   * @returns
+   */
+  rankProposal(): Promise<string> {
+    const input = {
+      function: "rankProposal"
+    };
+    return this._interactWrite(input);
+  }
+
+  // Private functions
+
+  /**
+   * Writes to contract
+   * @param input Passes to smartweave write function, in order to execute a contract function
+   * @returns Transaction ID
+   */
+  private _interactWrite(input: any): Promise<string> {
+    const wallet = typeof this.wallet == "object" ? this.wallet : "use_wallet";
+
+    return smartweave.interactWrite(arweave, wallet, KOI_CONTRACT, input);
+  }
+
+  /**
+   * Read contract latest state
+   * @returns Contract
+   */
+  private _readContract(): Promise<any> {
+    return smartweave.readContract(arweave, KOI_CONTRACT);
+  }
+
+  /**
+   * Get traffic logs from gateway
+   * @param path Gateway url
+   * @returns Result as a promise
+   */
+  private _getTrafficLogFromGateWay(path: string): Promise<any> {
+    return axios.get(path);
+  }
+
+  /**
+   * Read contract latest state
+   * @param data Data to be hashed
+   * @returns Hex string
+   */
+  private async _hashData(data: any): Promise<string> {
+    const dataInString = JSON.stringify(data);
+    const dataIn8Array = ArweaveUtils.stringToBuffer(dataInString);
+    const hashBuffer = await arweave.crypto.hash(dataIn8Array);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join(""); // convert bytes to hex string
+    return hashHex;
+  }
+
+  /**
+   * Read the data and update
+   * @returns Database document ID
+   */
+  private async _db(): Promise<string | null> {
+    if (this.db === undefined) return null;
+
+    const dataB: any = await this.db.find({});
+    const id: string = dataB[0]._id;
+    const receipt = dataB[0].receipt; // dataB is forced to any to allow .receipt
+    await this.db.update(
+      { _id: id },
+      {
+        totalVoted: this.totalVoted,
+        receipt: receipt
+      }
+    );
+    return id;
+  }
+
+  /**
+   * Submits a payload to server
+   * @param payload Payload to be submitted
+   * @returns Result as a promise
+   */
+  private async _bundlerNode(
+    payload: BundlerPayload
+  ): Promise<AxiosResponse<any> | null> {
+    const sigResult = await this.signPayload(payload);
+    return sigResult !== null
+      ? await axios.post(ADDR_BUNDLER_NODES, sigResult)
+      : null;
   }
 }
 
@@ -330,4 +500,12 @@ export class Koi {
  */
 function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
   return axios.get(path);
+}
+
+/**
+ * Get info from Arweave net
+ * @returns Axios response with info
+ */
+function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
+  return axios.get(ADDR_ARWEAVE_INFO);
 }
