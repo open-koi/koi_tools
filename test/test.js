@@ -1,5 +1,5 @@
 const { koi_tools } = require("../index.js");
-var ktools = new koi_tools(true);
+var ktools = new koi_tools();
 require("dotenv").config();
 
 var walletKeyLocation = process.env.WALLET_LOCATION;
@@ -32,18 +32,17 @@ async function start() {
   // test passed
   //  await testKoiBalance()
   // test passed
-  //await testStake(1);
+  //await testStake();
   // test passed
   // await testWithdraw ()
   // test passed
-  // await testVote();
   //await testVote();
   // test passed
   // await testTransfer ()
   // test passed
   // await testRegisterdata();
   // test passed
-  // await testDistributeDailyRewards ()
+  //await testDistributeDailyRewards();
   // test passed
   //  await testBatchAction ()
   // test passed
@@ -56,9 +55,9 @@ async function start() {
   //  not yet
   //await testDistributeDailyRewards();
   // test passed
-  // await testRankProposal()
+  //await testRankProposal();
   // test passed
-  //await testMyContent();
+  await testMyContent();
   // test passed
   //await testRetrieveTopContent();
   // test passed
@@ -70,7 +69,7 @@ async function start() {
   // await testGetTrafficLogFromGateWay()
   // test passed
   //await testRetrieveTopContent();
-  await testSubmitTrafficLog();
+  //await testSubmitTrafficLog();
   // test
   //await testUserState();
   //await testStake();
@@ -79,6 +78,29 @@ async function start() {
   // } catch (err) {
   //   throw Error(err);
   // }
+}
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+async function testVote() {
+  const arg = {
+    voteId: 35,
+    direct: true,
+  };
+  const result = await ktools.vote(arg);
+  console.log("result", result.message);
+}
+async function testDistributeDailyRewards() {
+  let tx = await ktools.distributeDailyRewards();
+  console.log(tx);
+}
+async function testRankProposal() {
+  var tx = await ktools.rankProposal();
+  console.log(tx);
 }
 async function testStake() {
   // test 4 - test create stake
@@ -108,13 +130,7 @@ async function testSubmitTrafficLog() {
   }
 }
 /*
-async function testMyContent() {
-  const txId = await ktools.myContent();
-  console.log(txId);
-  if (typeof txId === "undefined" || txId === null) {
-    throw Error("The address function returned ", txId);
-  }
-}
+
 
 async function testRetrieveTopContent() {
   const result = await ktools.retrieveTopContent();
@@ -171,14 +187,7 @@ async function testStake(qty) {
 
 
 /*
-async function testVote() {
-  const arg = {
-    voteId: -2,
-    direct: false,
-  };
-  const result = await ktools.vote(arg);
-  console.log("result", result.message);
-}
+
 
 
 
