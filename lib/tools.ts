@@ -25,6 +25,7 @@ const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 const ADDR_BUNDLER_NODES = ADDR_BUNDLER + "/submitVote/";
 const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
+const ADDR_BUNDLER_STATE = ADDR_BUNDLER + "/state/current/";
 const ADDR_LOGS = "https://arweave.dev/logs";
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
@@ -529,11 +530,11 @@ export class Koi {
   }
 
   /**
-   *
+   * propose a tafficlog for vote
    * @param arg
-   * @returns
+   * @returns object arg.gateway(trafficlog orginal gateway id) and arg.stakeAmount(min required stake to vote)
    */
-  async submitTrafficLog(arg) {
+  async submitTrafficLog(arg: any): Promise<string> {
     const TLTxId = await this._storeTrafficlogOnArweave(arg.gateWayUrl);
 
     const input = {
@@ -542,9 +543,7 @@ export class Koi {
       batchTxId: TLTxId,
       stakeAmount: arg.stakeAmount
     };
-    const tx = await this._interactWrite(input);
-
-    return tx;
+    return this._interactWrite(input);
   }
 
   /**
@@ -553,8 +552,7 @@ export class Koi {
    */
   async myContent(): Promise<[any]> {
     //const state = await this.getContractState();
-    const path = "https://bundler.openkoi.com:8888/state/current/";
-    const state: any = await getCacheData(path);
+    const state: any = await getCacheData(ADDR_BUNDLER_STATE);
 
     const contents: any = [];
     const registerRecords = state.data.registeredRecord;
