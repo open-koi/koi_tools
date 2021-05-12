@@ -11,6 +11,7 @@ if (!process.env.REDIS_IP || !process.env.REDIS_PORT) {
   });
 
   client.on("error", function (error) {
+    console.log("hiiiiii");
     console.error(error);
   });
 
