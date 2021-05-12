@@ -5,11 +5,11 @@ import * as fs from "fs";
 import axios, { AxiosResponse } from "axios";
 import { smartweave } from "smartweave";
 import * as ArweaveUtils from "arweave/node/lib/utils";
-import "nedb-promises"; // Datastore
 import Datastore = require("nedb-promises");
+import Transaction from "arweave/node/lib/transaction";
 
 interface Vote {
-  voteId: number;
+  voteId: string;
   direct?: string;
   userVote?: string;
 }
@@ -24,6 +24,7 @@ interface BundlerPayload {
 const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 const ADDR_BUNDLER_NODES = ADDR_BUNDLER + "/submitVote/";
+const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
 const ADDR_LOGS = "https://arweave.dev/logs";
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
@@ -309,7 +310,7 @@ export class Koi {
    * @param voteId Vote id which is belongs for specific proposalLog
    * @returns Whether data is valid
    */
-  async validateData(voteId: number): Promise<boolean | null> {
+  async validateData(voteId: string): Promise<boolean | null> {
     const state = await this._readContract();
     const trafficLogs = state.stateUpdate.trafficLogs;
     const currentTrafficLogs = trafficLogs.dailyTrafficLog.find(
@@ -412,6 +413,191 @@ export class Koi {
     return this._interactWrite(input);
   }
 
+  /**
+   * returns the top contents registered in Koi in array
+   * @returns
+   */
+  async retrieveTopContent() {
+    const allContents = await this._retrieveAllContent();
+    allContents.sort(function (a, b) {
+      return b.totalViews - a.totalViews;
+    });
+    return allContents;
+  }
+
+  /**
+   * mint koi
+   * @param arg object arg.targetAddress(reciever address) and arg.qty(amount to mint)
+   * @returns Transaction ID
+   */
+  mint(arg: any): Promise<string> {
+    const input = {
+      function: "mint",
+      target: arg.targetAddress,
+      qty: arg.qty
+    };
+
+    return this._interactWrite(input);
+  }
+
+  /**
+   *
+   * @param contentTxId TxId of the content
+   * @param state
+   * @returns An object with {totaltViews, totalReward, 24hrsViews}
+   */
+  async contentView(contentTxId, state): Promise<any> {
+    // const state = await this.getContractState();
+    // const path = "https://bundler.openkoi.com/state/current/";
+    const rewardReport = state.data.stateUpdate.trafficLogs.rewardReport;
+
+    try {
+      const nftState = await this.readNftState(contentTxId);
+      const contentViews = {
+        ...nftState,
+        totalViews: 0,
+        totalReward: 0,
+        twentyFourHrViews: 0,
+        txIdContent: contentTxId
+      };
+
+      rewardReport.forEach((ele) => {
+        const logSummary = ele.logsSummary;
+
+        for (const txId in logSummary) {
+          if (txId == contentTxId) {
+            if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
+              contentViews.twentyFourHrViews = logSummary[contentTxId];
+            }
+
+            const rewardPerAttention = ele.rewardPerAttention;
+            contentViews.totalViews += logSummary[contentTxId];
+            const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
+            contentViews.totalReward += rewardPerLog;
+          }
+        }
+      });
+      return contentViews;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   *
+   * @param txId
+   * @returns
+   */
+  async readNftState(txId: string): Promise<any> {
+    return smartweave.readContract(arweave, txId);
+  }
+
+  /**
+   * posts data on arweave.
+   * @param data
+   * @returns Transaction ID
+   */
+  async postData(data: any): Promise<string | null> {
+    // TODO: define data interface
+    const wallet = this.wallet;
+    const transaction = await arweave.createTransaction(
+      {
+        data: Buffer.from(JSON.stringify(data, null, 2), "utf8")
+      },
+      wallet
+    );
+
+    // Now we sign the transaction
+    await arweave.transactions.sign(transaction, wallet);
+    const txId = transaction.id;
+
+    // After is signed, we send the transaction
+    const response = await arweave.transactions.post(transaction);
+
+    if (response.status === 200) return txId;
+
+    return null;
+  }
+
+  /**
+   * Get transaction data from Arweave
+   * @param txId Transaction ID
+   * @returns Transaction
+   */
+  nftTransactionData(txId: string): Promise<Transaction> {
+    return arweave.transactions.get(txId);
+  }
+
+  /**
+   *
+   * @param arg
+   * @returns
+   */
+  async submitTrafficLog(arg) {
+    const TLTxId = await this._storeTrafficlogOnArweave(arg.gateWayUrl);
+
+    const input = {
+      function: "submitTrafficLog",
+      gateWayUrl: arg.gateWayUrl,
+      batchTxId: TLTxId,
+      stakeAmount: arg.stakeAmount
+    };
+    const tx = await this._interactWrite(input);
+
+    return tx;
+  }
+
+  /**
+   * Get top contents of user
+   * @returns Array of user contents
+   */
+  async myContent(): Promise<[any]> {
+    //const state = await this.getContractState();
+    const path = "https://bundler.openkoi.com:8888/state/current/";
+    const state: any = await getCacheData(path);
+
+    const contents: any = [];
+    const registerRecords = state.data.registeredRecord;
+    for (const txId in registerRecords) {
+      if (registerRecords[txId] == this.address) {
+        const nftInfo: any = await this.contentView(txId, state.data);
+        if (nftInfo !== null) {
+          contents.push(nftInfo);
+        }
+      }
+    }
+
+    return contents;
+  }
+
+  /**
+   * Interact with contract to add the votes
+   * @param arg
+   * @returns Transaction ID
+   */
+  batchAction(arg: any): Promise<string> {
+    // input object that pass to contract
+    const input = {
+      function: "batchAction",
+      batchFile: arg.batchFile,
+      voteId: arg.voteId,
+      bundlerAddress: arg.bundlerAddress
+    };
+
+    // interact with contract function batchAction which adds all votes and update the state
+    return this._interactWrite(input);
+  }
+
+  /**
+   *
+   * @returns
+   */
+  async getTopContent() {
+    const path = ADDR_BUNDLER_TOP;
+    const topContents = await getCacheData(path);
+    return topContents;
+  }
+
   // Private functions
 
   /**
@@ -490,6 +676,37 @@ export class Koi {
     return sigResult !== null
       ? await axios.post(ADDR_BUNDLER_NODES, sigResult)
       : null;
+  }
+
+  /**
+   *
+   * @returns
+   */
+  private async _retrieveAllContent(): Promise<any> {
+    const state = await this.getContractState();
+    const registerRecords = state.registeredRecord;
+    const txIdArr = Object.keys(registerRecords);
+    const contentViewPromises = txIdArr.map((txId) =>
+      this.contentView(txId, state)
+    );
+    // Required any to convert PromiseSettleResult to PromiseFulfilledResult<any>
+    const contents: any = await Promise.allSettled(contentViewPromises);
+    const result = contents.filter((res) => res.value !== null);
+    const clean = result.map((res) => res.value);
+
+    return clean;
+  }
+
+  /**
+   *
+   * @param gateWayUrl
+   * @returns
+   */
+  private async _storeTrafficlogOnArweave(
+    gateWayUrl: string
+  ): Promise<string | null> {
+    const trafficLogs = await this._getTrafficLogFromGateWay(gateWayUrl);
+    return await this.postData(trafficLogs.data.summary);
   }
 }
 

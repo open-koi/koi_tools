@@ -85,7 +85,7 @@ export class Node {
     const votes = state.votes;
     if (tools.totalVoted < votes.length - 1) {
       const id = tools.totalVoted;
-      const voteId = id + 1;
+      const voteId = (id + 1).toString();
       const arg = {
         voteId,
         direct: this.direct

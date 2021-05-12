@@ -1,2 +1,2 @@
-export * as KoiTools from "./lib/tools";
-export * as KoiNode from "./lib/node";
+export * as koi_tools from "./lib/tools";
+export * as koi_node from "./lib/node";
