@@ -36,13 +36,13 @@ async function start() {
   // test passed
   // await testWithdraw ()
   // test passed
-  //await testVote();
+  await testVote();
   // test passed
   // await testTransfer ()
   // test passed
   // await testRegisterdata();
   // test passed
-  //await testDistributeDailyRewards();
+  // await testDistributeDailyRewards();
   // test passed
   //  await testBatchAction ()
   // test passed
@@ -57,7 +57,7 @@ async function start() {
   // test passed
   //await testRankProposal();
   // test passed
-  await testMyContent();
+  // await testMyContent();
   // test passed
   //await testRetrieveTopContent();
   // test passed
@@ -88,7 +88,7 @@ async function testMyContent() {
 }
 async function testVote() {
   const arg = {
-    voteId: 35,
+    voteId: 36,
     direct: true,
   };
   const result = await ktools.vote(arg);
