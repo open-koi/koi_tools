@@ -6,6 +6,7 @@ module.exports = {
   entry: "./index.ts",
 
   output: {
+    globalObject: "this",
     path: path.resolve(__dirname, "dist"),
     filename: "koi_tools.js"
   },

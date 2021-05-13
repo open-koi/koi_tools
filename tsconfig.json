@@ -4,9 +4,7 @@
     "target": "ES2020",
     "module": "CommonJS",
     "strict": true,
-    "moduleResolution": "node",
-    "removeComments": true,
-    "noImplicitAny": false,
+    "moduleResolution": "Node",
     "allowJs": true
   },
   "exclude": [

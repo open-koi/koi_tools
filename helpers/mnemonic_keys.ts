@@ -1,5 +1,6 @@
 // https://github.com/acolytec3/arweave-mnemonic-keys
 
+//@ts-ignore Allow implicit any here
 import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
 import * as crypto from "libp2p-crypto";
 

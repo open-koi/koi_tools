@@ -23,7 +23,7 @@ export class Node {
    *
    * @param prop
    */
-  constructor(prop) {
+  constructor(prop: any) {
     console.log(prop);
     this.walletFile = prop.wallet;
     this.stakeAmount = prop.qty;
@@ -44,14 +44,14 @@ export class Node {
       await tools.transact(BasicTx.Stake, this.stakeAmount);
     }
 
-    await this.work(this.wallet);
+    for (;;) await this.work(this.wallet);
   }
 
   /**
    *
    * @param wallet
    */
-  async work(wallet): Promise<void> {
+  async work(wallet: any): Promise<void> {
     const contractState = await tools.getContractState();
     const block = await tools.getBlockHeight();
     console.log(wallet, "  is looking for task to join...... ");
@@ -70,8 +70,6 @@ export class Node {
     if (this.isRewardDistributed(contractState, block)) {
       // await distribute(); // Function does not exist?
     }
-
-    await this.work(wallet);
   }
 
   /**
@@ -79,7 +77,7 @@ export class Node {
    * @param state
    * @param wallet
    */
-  async searchVote(state, wallet) {
+  async searchVote(state: any, wallet: any) {
     //console.log(wallet, "  is looking for votes to join...... ");
     // const state = await tools.getContractState();
     const votes = state.votes;
@@ -105,7 +103,7 @@ export class Node {
    * @param block
    * @returns
    */
-  checkForVote(contractState, block) {
+  checkForVote(contractState: any, block: any) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
     if (block < trafficLogs.close - 250) {
       return true;
@@ -119,7 +117,7 @@ export class Node {
    * @param block
    * @returns
    */
-  checkProposeSlash(contractState, block) {
+  checkProposeSlash(contractState: any, block: any) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
 
     if (block > trafficLogs.close - 150 && block < trafficLogs.close - 75) {
@@ -134,11 +132,11 @@ export class Node {
    * @param block
    * @returns
    */
-  isProposalRanked(contractState, block) {
+  isProposalRanked(contractState: any, block: any) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
 
     const currentTrafficLogs = contractState.stateUpdate.trafficLogs.dailyTrafficLog.find(
-      (trafficLog) => trafficLog.block === trafficLogs.open
+      (trafficLog: any) => trafficLog.block === trafficLogs.open
     );
 
     if (
@@ -157,10 +155,10 @@ export class Node {
    * @param block
    * @returns
    */
-  isRewardDistributed(contractState, block) {
+  isRewardDistributed(contractState: any, block: any) {
     const trafficLogs = contractState.stateUpdate.trafficLogs;
     const currentTrafficLogs = contractState.stateUpdate.trafficLogs.dailyTrafficLog.find(
-      (trafficLog) => trafficLog.block === trafficLogs.open
+      (trafficLog: any) => trafficLog.block === trafficLogs.open
     );
 
     if (

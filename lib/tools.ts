@@ -1,12 +1,12 @@
 import { generateMnemonic, getKeyFromMnemonic } from "../helpers/mnemonic_keys";
-import Arweave = require("arweave");
 import { JWKInterface } from "arweave/node/lib/wallet";
 import * as fs from "fs";
 import axios, { AxiosResponse } from "axios";
 import { smartweave } from "smartweave";
-import * as ArweaveUtils from "arweave/node/lib/utils";
-import Datastore = require("nedb-promises");
+import * as arweaveUtils from "arweave/node/lib/utils";
 import Transaction from "arweave/node/lib/transaction";
+import Arweave = require("arweave");
+import Datastore = require("nedb-promises");
 
 interface Vote {
   voteId: string;
@@ -45,7 +45,6 @@ const arweave = Arweave.init({
  * Tools for interacting with the koi network
  */
 export class Koi {
-  redisClient;
   totalVoted = -1;
   wallet?: JWKInterface;
   myBookmarks: Map<string, string> = new Map();
@@ -87,7 +86,7 @@ export class Koi {
    * Loads arweave wallet
    * @param source string or object to load from
    */
-  async loadWallet(source: any): Promise<void> {
+  async loadWallet(source: string | any): Promise<void> {
     switch (typeof source) {
       case "string":
         if (
@@ -152,7 +151,9 @@ export class Koi {
    * @param walletFileLocation Wallet key file location
    * @returns Key as an object
    */
-  async nodeLoadWallet(walletFileLocation) {
+  async nodeLoadWallet(
+    walletFileLocation: string
+  ): Promise<JWKInterface | undefined> {
     await this.loadWallet(walletFileLocation);
     this.db = Datastore.create({
       filename: "my-db.db",
@@ -315,11 +316,11 @@ export class Koi {
     const state = await this._readContract();
     const trafficLogs = state.stateUpdate.trafficLogs;
     const currentTrafficLogs = trafficLogs.dailyTrafficLog.find(
-      (trafficLog) => trafficLog.block === trafficLogs.open
+      (trafficLog: any) => trafficLog.block === trafficLogs.open
     );
     const proposedLogs = currentTrafficLogs.proposedLogs;
-    let proposedLog: null | any = null;
-    proposedLogs.forEach((element) => {
+    let proposedLog: any | null;
+    proposedLogs.forEach((element: any) => {
       if (element.voteId === voteId) {
         proposedLog = element;
       }
@@ -359,9 +360,9 @@ export class Koi {
     const jwk = this.wallet;
     const publicModulus = jwk.n;
     const dataInString = JSON.stringify(payload.vote);
-    const dataIn8Array = ArweaveUtils.stringToBuffer(dataInString);
+    const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     const rawSignature = await arweave.crypto.sign(jwk, dataIn8Array);
-    payload.signature = ArweaveUtils.bufferTob64Url(rawSignature);
+    payload.signature = arweaveUtils.bufferTob64Url(rawSignature);
     payload.owner = publicModulus;
     return payload;
   }
@@ -373,7 +374,8 @@ export class Koi {
   async proposeSlash(): Promise<void> {
     const state = await this.getContractState();
     const votes = state.votes;
-    for (let i; i < this.receipts.length - 1; i++) {
+
+    for (let i = 0; i < this.receipts.length - 1; i++) {
       const element = this.receipts[i];
       const voteId = element.vote.vote.voteId;
       const vote = votes[voteId];
@@ -420,7 +422,7 @@ export class Koi {
    */
   async retrieveTopContent() {
     const allContents = await this._retrieveAllContent();
-    allContents.sort(function (a, b) {
+    allContents.sort(function (a: any, b: any) {
       return b.totalViews - a.totalViews;
     });
     return allContents;
@@ -447,7 +449,7 @@ export class Koi {
    * @param state
    * @returns An object with {totaltViews, totalReward, 24hrsViews}
    */
-  async contentView(contentTxId, state): Promise<any> {
+  async contentView(contentTxId: any, state: any): Promise<any> {
     // const state = await this.getContractState();
     // const path = "https://bundler.openkoi.com/state/current/";
     const rewardReport = state.data.stateUpdate.trafficLogs.rewardReport;
@@ -462,7 +464,7 @@ export class Koi {
         txIdContent: contentTxId
       };
 
-      rewardReport.forEach((ele) => {
+      rewardReport.forEach((ele: any) => {
         const logSummary = ele.logsSummary;
 
         for (const txId in logSummary) {
@@ -633,7 +635,7 @@ export class Koi {
    */
   private async _hashData(data: any): Promise<string> {
     const dataInString = JSON.stringify(data);
-    const dataIn8Array = ArweaveUtils.stringToBuffer(dataInString);
+    const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     const hashBuffer = await arweave.crypto.hash(dataIn8Array);
     const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
     const hashHex = hashArray
@@ -688,7 +690,7 @@ export class Koi {
       this.contentView(txId, state)
     );
     // Required any to convert PromiseSettleResult to PromiseFulfilledResult<any>
-    const contents: any = await Promise.allSettled(contentViewPromises);
+    const contents = await Promise.all(contentViewPromises);
     const result = contents.filter((res) => res.value !== null);
     const clean = result.map((res) => res.value);
 
