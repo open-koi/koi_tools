@@ -6,14 +6,14 @@ var walletKeyLocation = process.env.WALLET_LOCATION;
 //const redisClient = require("../helpers/redis");
 
 start();
-const Arweave = require("arweave/node");
-const smartweave = require("smartweave");
+// const Arweave = require("arweave/node");
+// const smartweave = require("smartweave");
 
-const arweave = Arweave.init({
-  host: "arweave.net",
-  protocol: "https",
-  port: 443,
-});
+// const arweave = Arweave.init({
+//   host: "arweave.net",
+//   protocol: "https",
+//   port: 443,
+// });
 async function start() {
   //console.log("running async block", ktools);
 
@@ -36,7 +36,7 @@ async function start() {
   // test passed
   // await testWithdraw ()
   // test passed
-  await testVote();
+  //await testVote();
   // test passed
   // await testTransfer ()
   // test passed
@@ -55,7 +55,7 @@ async function start() {
   //  not yet
   //await testDistributeDailyRewards();
   // test passed
-  //await testRankProposal();
+  await testRankProposal();
   // test passed
   // await testMyContent();
   // test passed
