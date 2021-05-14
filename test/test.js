@@ -10,7 +10,6 @@ test().then((result) => {
 
 async function test() {
   await ktools.loadWallet(walletKeyLocation);
-
   await testRetrieveTopContent();
   await testGetKoiBalance();
   await testMint();
@@ -95,6 +94,16 @@ async function testGetTopContent() {
   }
 }
 
+async function testNftTransactionData() {
+  const txData = await ktools.nftTransactionData(
+    "qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI"
+  );
+  console.log(txData);
+  if (typeof txData === "undefined" || txData === null) {
+    throw Error("The address function returned ");
+  }
+}
+
 // Can't test, state needed for content view
 // async function testContentView() {
 //   const contentTxId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
@@ -105,13 +114,4 @@ async function testGetTopContent() {
 //   }
 // }
 
-async function testNftTransactionData() {
-  const txData = await ktools.nftTransactionData(
-    "qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI"
-  );
-  console.log(txData);
-  if (typeof txData === "undefined" || txData === null) {
-    throw Error("The address function returned ");
-  }
-}
 */

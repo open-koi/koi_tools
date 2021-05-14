@@ -13,9 +13,6 @@ module.exports = {
 
   resolve: {
     extensions: [".js", ".ts"],
-    fallback: {
-      fs: false
-    }
   },
 
   module: {
