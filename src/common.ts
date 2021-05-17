@@ -33,7 +33,7 @@ export enum BasicTx {
 
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
-const arweave = Arweave.init({
+export const arweave = Arweave.init({
   host: "arweave.net",
   protocol: "https",
   port: 443
