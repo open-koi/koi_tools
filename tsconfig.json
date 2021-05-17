@@ -5,6 +5,7 @@
     "module": "CommonJS",
     "strict": true,
     "moduleResolution": "Node",
+    "removeComments": true,
     "allowJs": true,
     "esModuleInterop": true
   },
