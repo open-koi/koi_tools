@@ -5,7 +5,8 @@
     "module": "CommonJS",
     "strict": true,
     "moduleResolution": "Node",
-    "allowJs": true
+    "allowJs": true,
+    "esModuleInterop": true
   },
   "exclude": [
       "node_modules",

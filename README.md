@@ -120,6 +120,8 @@ yarn install
 yarn build
 ```
 
+Test with `yarn test`
+
 ### Useful vscode settings
 
 `settings.json`

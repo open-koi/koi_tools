@@ -1,15 +1,10 @@
-const koi_tools = require("../dist/koi_tools.js");
-
-/*
-const walletKeyLocation = process.env.WALLET_LOCATION;
-const ktools = new koi_tools.Koi();
+const kweb = new koi_tools.koi_web.Web();
 
 test().then((result) => {
   console.log("Result", result);
 });
 
 async function test() {
-  await ktools.loadWallet(walletKeyLocation);
   await testRetrieveTopContent();
   await testGetKoiBalance();
   await testMint();
@@ -24,7 +19,8 @@ async function test() {
 }
 
 async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
+  console.log("Testing retrieveTopContent");
+  const result = await kweb.retrieveTopContent();
   console.log("Array", result);
   if (typeof result === "undefined" || result === null) {
     throw Error("The address function returned " + result);
@@ -32,29 +28,32 @@ async function testRetrieveTopContent() {
 }
 
 async function testGetKoiBalance() {
-  const result = await ktools.getKoiBalance();
+  console.log("Testing getKoiBalance");
+  const result = await kweb.getKoiBalance();
   console.log("result", result);
 }
 
 async function testMint() {
+  console.log("Testing mint");
   const address = "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo";
   const submission = {
     targetAddress: address,
     qty: 50
   };
-  const result = await ktools.mint(submission);
-  const wallet = await ktools.getWalletAddress();
+  const result = await kweb.mint(submission);
+  const wallet = await kweb.getWalletAddress();
   console.log("Array", wallet);
 }
 
 async function testSubmitTrafficLog() {
+  console.log("Testing submitTrafficLog");
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
   const arg = {
     gateWayUrl: "https://arweave.dev/logs/",
     stakeAmount: 2
   };
-  const result = await ktools.submitTrafficLog(arg);
+  const result = await kweb.submitTrafficLog(arg);
   console.log("transaction", result);
   if (typeof result === "undefined" || result === null) {
     throw Error("Failed while attempting to vote");
@@ -62,7 +61,8 @@ async function testSubmitTrafficLog() {
 }
 
 async function testMyContent() {
-  const txId = await ktools.myContent();
+  console.log("Testing myContent");
+  const txId = await kweb.myContent();
   console.log(txId);
   if (typeof txId === "undefined" || txId === null) {
     throw Error("The address function returned " + txId);
@@ -70,9 +70,10 @@ async function testMyContent() {
 }
 
 async function testBatchAction() {
+  console.log("Testing batchAction");
   // test 11 - input a batch action to arweave
   const txid = "KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8";
-  const result = await ktools.batchAction(txid);
+  const result = await kweb.batchAction(txid);
 
   console.log("transaction", result);
   if (typeof result === "undefined" || result === null) {
@@ -81,13 +82,15 @@ async function testBatchAction() {
 }
 
 async function testValidateData() {
+  console.log("Testing validateData");
   // test traffic log validation
-  const result = await ktools.validateData("trafficlog");
+  const result = await kweb.validateData("trafficlog");
   return result;
 }
 
 async function testGetTopContent() {
-  const contents = await ktools.getTopContent();
+  console.log("Testing getTopContent");
+  const contents = await kweb.getTopContent();
   console.log(contents.data);
   if (typeof contents === "undefined" || contents === null) {
     throw Error("Failed while attempting to verify");
@@ -95,7 +98,8 @@ async function testGetTopContent() {
 }
 
 async function testNftTransactionData() {
-  const txData = await ktools.nftTransactionData(
+  console.log("Testing nftTransactionData");
+  const txData = await kweb.nftTransactionData(
     "qZa1iNiUus-kRbBqwx0UimPNGVtCSZvQAQ9aCvPfHmI"
   );
   console.log(txData);
@@ -107,11 +111,9 @@ async function testNftTransactionData() {
 // Can't test, state needed for content view
 // async function testContentView() {
 //   const contentTxId = "OsrHVoEQot03wQfSzxHmMhZMwtYbanUZx5cjtdJcfk0";
-//   const result = await ktools.contentView(contentTxId);
+//   const result = await kweb.contentView(contentTxId);
 //   console.log(result);
 //   if (typeof result === "undefined" || result === null) {
 //     throw Error("Failed while attempting to verify");
 //   }
 // }
-
-*/

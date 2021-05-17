@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import Arweave = require("arweave");
+import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import * as arweaveUtils from "arweave/node/lib/utils";
 import Transaction from "arweave/node/lib/transaction";

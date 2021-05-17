@@ -8,7 +8,8 @@ module.exports = {
   output: {
     globalObject: "this",
     path: path.resolve(__dirname, "dist"),
-    filename: "koi_tools.js"
+    filename: "koi_tools.js", 
+    library: "koi_tools"
   },
 
   resolve: {

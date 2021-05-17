@@ -4,8 +4,8 @@
   "description": "",
   "main": "koi-tools.js",
   "scripts": {
-    "test": "jest",
-    "build": "webpack"
+    "test": "http-server -c-1 -o test",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "http-server": "^0.12.3",
     "prettier": "^2.2.1",
     "ts-loader": "^9.1.2",
     "typescript": "^4.2.4",
