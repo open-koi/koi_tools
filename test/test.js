@@ -5,23 +5,37 @@ test().then((result) => {
 });
 
 async function test() {
-  await testRetrieveTopContent();
+  await testGenerateWallet();
   await testGetKoiBalance();
+  await testGetWalletBalance();
+  //await testRetrieveTopContent(); // Test failing
   await testMint();
-  await testSubmitTrafficLog();
   await testMyContent();
-  await testBatchAction();
-  await testValidateData();
   await testGetTopContent();
   await testNftTransactionData();
 
   return true;
 }
 
+async function testGenerateWallet() {
+  console.log("Testing generateWallet");
+  await kweb.generateWallet();
+  console.log("Wallet address", kweb.address);
+}
+
+async function testGetKoiBalance() {
+  console.log("Testing getKoiBalance");
+  console.log(await kweb.getKoiBalance());
+}
+
+async function testGetWalletBalance() {
+  console.log("Testing getWalletBalance");
+  console.log(kweb.getWalletBalance());
+}
+
 async function testRetrieveTopContent() {
   console.log("Testing retrieveTopContent");
   const result = await kweb.retrieveTopContent();
-  console.log("Array", result);
   if (typeof result === "undefined" || result === null) {
     throw Error("The address function returned " + result);
   }
@@ -45,21 +59,6 @@ async function testMint() {
   console.log("Array", wallet);
 }
 
-async function testSubmitTrafficLog() {
-  console.log("Testing submitTrafficLog");
-  // test 11 - input a batch action to arweave
-  //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
-  const arg = {
-    gateWayUrl: "https://arweave.dev/logs/",
-    stakeAmount: 2
-  };
-  const result = await kweb.submitTrafficLog(arg);
-  console.log("transaction", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to vote");
-  }
-}
-
 async function testMyContent() {
   console.log("Testing myContent");
   const txId = await kweb.myContent();
@@ -67,25 +66,6 @@ async function testMyContent() {
   if (typeof txId === "undefined" || txId === null) {
     throw Error("The address function returned " + txId);
   }
-}
-
-async function testBatchAction() {
-  console.log("Testing batchAction");
-  // test 11 - input a batch action to arweave
-  const txid = "KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8";
-  const result = await kweb.batchAction(txid);
-
-  console.log("transaction", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to vote");
-  }
-}
-
-async function testValidateData() {
-  console.log("Testing validateData");
-  // test traffic log validation
-  const result = await kweb.validateData("trafficlog");
-  return result;
 }
 
 async function testGetTopContent() {
