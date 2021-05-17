@@ -30,7 +30,7 @@ async function testGetKoiBalance() {
 
 async function testGetWalletBalance() {
   console.log("Testing getWalletBalance");
-  console.log(kweb.getWalletBalance());
+  console.log(await kweb.getWalletBalance());
 }
 
 async function testRetrieveTopContent() {
