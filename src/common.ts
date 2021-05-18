@@ -77,10 +77,16 @@ export class Common {
 
   /**
    * Loads arweave wallet
-   * @param source object to load from, JSON or JWK
+   * @param source object to load from, JSON or JWK, or mnemonic key
    */
-  loadWallet(source: any): void {
-    this.wallet = source;
+  async loadWallet(source: any): Promise<void> {
+    switch (typeof source) {
+      case "string":
+        this.wallet = await this._getKeyFromMnemonic(source);
+        break;
+      default:
+        this.wallet = source;
+    }
   }
 
   /**
@@ -320,7 +326,7 @@ export class Common {
    * @param mnemonic - a 12 word mnemonic represented as a string
    * @returns {object} - returns a Javascript object that conforms to the JWKInterface required by Arweave-js
    */
-  private async _getKeyFromMnemonic(mnemonic: string): Promise<any> {
+  private async _getKeyFromMnemonic(mnemonic: string): Promise<JWKInterface> {
     const keyPair = await getKeyPairFromMnemonic(
       mnemonic,
       { id: "rsa", modulusLength: 4096 },
