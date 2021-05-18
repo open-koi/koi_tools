@@ -5,7 +5,6 @@
   "main": "./node/node.js",
   "browser": "./web/web.js",
   "scripts": {
-    "build": "webpack --mode production && tsc -project tsconfig.node.json && tsc -project tsconfig.web.json",
     "bundle": "webpack --mode production",
     "compile:node": "tsc -project tsconfig.node.json",
     "compile:web": "tsc -project tsconfig.web.json",
