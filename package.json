@@ -2,10 +2,13 @@
   "name": "koi_tools",
   "version": "2.0.15",
   "description": "",
-  "main": "koi-tools.js",
+  "main": "./node/node.js",
+  "browser": "./web/web.js",
   "scripts": {
     "test": "http-server -c-1 -o test",
-    "build": "webpack --mode production"
+    "bundle": "webpack --mode production",
+    "compile:node": "tsc -project tsconfig.node.json",
+    "compile:web": "tsc -project tsconfig.web.json"
   },
   "repository": {
     "type": "git",

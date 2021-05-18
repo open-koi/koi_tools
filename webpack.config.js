@@ -7,7 +7,7 @@ module.exports = {
 
   output: {
     globalObject: "this",
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "dist/webpack"),
     filename: "koi_tools.js", 
     library: "koi_tools"
   },

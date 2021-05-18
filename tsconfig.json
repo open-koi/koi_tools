@@ -1,17 +1,3 @@
 {
-  "compilerOptions": {
-    "outDir": "./dist/",
-    "target": "ES2020",
-    "module": "CommonJS",
-    "strict": true,
-    "moduleResolution": "node",
-    "removeComments": true,
-    "allowJs": true,
-    "esModuleInterop": true,
-    "declaration": true
-  },
-  "exclude": [
-      "node_modules",
-      "dist"
-  ]
+  "extends": "./tsconfig.node"
 }

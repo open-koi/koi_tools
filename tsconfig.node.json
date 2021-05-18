@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "outDir": "./dist/node",
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2020",
+      "moduleResolution": "node",
+      "module": "commonjs",
+      "allowJs": true,
+      "esModuleInterop": true,
+      "declaration": true
+    },
+    "include": [
+        "src/common.ts",
+        "src/node.ts"
+    ]
+  }
