@@ -6,8 +6,7 @@
   "browser": "./web/web.js",
   "scripts": {
     "bundle": "webpack --mode production",
-    "compile:node": "tsc -project tsconfig.node.json",
-    "compile:web": "tsc -project tsconfig.web.json",
+    "compile": "tsc -project tsconfig.json",
     "test": "http-server -c-1 -o test"
   },
   "repository": {
