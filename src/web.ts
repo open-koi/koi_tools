@@ -137,3 +137,5 @@ export class Web extends Common {
     return clean;
   }
 }
+
+module.exports = { Web };

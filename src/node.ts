@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import {
   Common,
   Vote,
@@ -12,6 +15,7 @@ import Datastore from "nedb-promises";
 import axios, { AxiosResponse } from "axios";
 import * as arweaveUtils from "arweave/node/lib/utils";
 import { smartweave } from "smartweave";
+import redis, { RedisClient } from "redis";
 
 /*
 Koi Node Operation: {
@@ -30,7 +34,12 @@ export class Node extends Common {
   db?: Datastore;
   totalVoted = -1;
   receipts: Array<any> = [];
-  redisClient?: any;
+  redisClient: RedisClient;
+
+  constructor() {
+    super();
+    this.redisClient = getRedisClient();
+  }
 
   /**
    * Asynchronously load a wallet from a UTF8 JSON file
@@ -339,7 +348,7 @@ export class Node extends Common {
     const redisClient = this.redisClient;
 
     const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
-    if (this.redisClient !== null) {
+    if (this.redisClient !== null && this.redisClient !== undefined) {
       // Adding the dryRun logic
       let pendingStateArray = await redisGetAsync(
         "pendingStateArray",
@@ -509,3 +518,27 @@ async function checkPendingTransactionStatus(redisClient: any): Promise<any> {
     redisClient
   );
 }
+
+function getRedisClient(): RedisClient {
+  let client = null;
+  if (!process.env.REDIS_IP || !process.env.REDIS_PORT) {
+    throw Error("CANNOT READ REDIS IP OR PORT FROM ENV");
+  } else {
+    client = redis.createClient({
+      host: process.env.REDIS_IP,
+      port: parseInt(process.env.REDIS_PORT),
+      password: process.env.REDIS_PASSWORD
+    });
+
+    client.on("error", function (error) {
+      console.error(error);
+    });
+
+    client.on("connect", function () {
+      console.log("connected to redis!!");
+    });
+  }
+  return client;
+}
+
+module.exports = { Node };

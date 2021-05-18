@@ -351,3 +351,5 @@ export function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
 function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
+
+module.exports = { Common };
