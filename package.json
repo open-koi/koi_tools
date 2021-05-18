@@ -5,10 +5,11 @@
   "main": "./node/node.js",
   "browser": "./web/web.js",
   "scripts": {
-    "test": "http-server -c-1 -o test",
+    "build": "webpack --mode production && tsc -project tsconfig.node.json && tsc -project tsconfig.web.json",
     "bundle": "webpack --mode production",
     "compile:node": "tsc -project tsconfig.node.json",
-    "compile:web": "tsc -project tsconfig.web.json"
+    "compile:web": "tsc -project tsconfig.web.json",
+    "test": "http-server -c-1 -o test"
   },
   "repository": {
     "type": "git",
