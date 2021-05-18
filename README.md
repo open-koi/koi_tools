@@ -113,14 +113,15 @@ var result = await koi.registerTask(koiTask)
 console.log('registered:', result)
 ```
 
-## Build procedure
+## Webpack build procedure
 
 ```
 yarn install
 yarn build
 ```
-
 Test with `yarn test`
+
+
 
 ### Useful vscode settings
 
