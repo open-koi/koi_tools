@@ -4,7 +4,7 @@
     "target": "ES2020",
     "module": "CommonJS",
     "strict": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "removeComments": true,
     "allowJs": true,
     "esModuleInterop": true
