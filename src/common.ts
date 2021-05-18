@@ -288,7 +288,7 @@ export class Common {
    * @returns Transaction ID
    */
   protected _interactWrite(input: any): Promise<string> {
-    const wallet = typeof this.wallet == "object" ? this.wallet : "use_wallet";
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
     return smartweave.interactWrite(arweave, wallet, KOI_CONTRACT, input);
   }
