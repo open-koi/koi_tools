@@ -10,10 +10,10 @@ The Koi.js library enables node.js and typescript applications to easily interac
    import { Web } from "koi_tools/web";
    const ktools = new Web();
    ```
-   or
+   or with CommonJS
    ```
-   import { Node } from "koi_tools/node";
-   const ktools = new Node();
+   const kweb = require("koi_tools/web");
+   const ktools = new kweb.Web();
    ```
 
 Note: This library changes often, so if `npm i koi-tools` does not work, check for beta releases on NPM under the versions section or manually build the package. See [#Build](#Build) section below.
