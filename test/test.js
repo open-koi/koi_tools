@@ -46,7 +46,7 @@ async function start() {
   // test passed
   //  await testBatchAction ()
   // test passed
-  //await testGetContractState ()
+  //await testGetContractState();
   // test passed
   //await testContentView();
   // test passed
@@ -57,9 +57,9 @@ async function start() {
   // test passed
   //await testRankProposal();
   // test passed
-  await testMyContent();
+  //await testMyContent();
   // test passed
-  //await testRetrieveTopContent();
+  await testRetrieveTopContent();
   // test passed
   // await testReadSate();
   // await testNftTransactionData()
@@ -79,6 +79,30 @@ async function start() {
   //   throw Error(err);
   // }
 }
+async function testGetContractState() {
+  const result = await ktools.getContractState();
+  console.log(result);
+}
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+async function testStake() {
+  // test 4 - test create stake
+  var qty = 1;
+
+  var result = await ktools.stake(qty);
+
+  console.log("transaction.............", result);
+
+  if (typeof result === "undefined" || result === null) {
+    throw Error("Failed while attempting to stake");
+  }
+}
+/*
 async function testMyContent() {
   const txId = await ktools.myContent();
   console.log(txId);
@@ -102,18 +126,7 @@ async function testRankProposal() {
   var tx = await ktools.rankProposal();
   console.log(tx);
 }
-async function testStake() {
-  // test 4 - test create stake
-  var qty = 1;
 
-  var result = await ktools.stake(qty);
-
-  console.log("transaction.............", result);
-
-  if (typeof result === "undefined" || result === null) {
-    throw Error("Failed while attempting to stake");
-  }
-}
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -129,16 +142,11 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
-/*
 
 
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
-}
+
+
+
 
 
 
