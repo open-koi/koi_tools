@@ -6,7 +6,8 @@
   "browser": "./web/web.js",
   "scripts": {
     "bundle": "webpack --mode production",
-    "compile": "tsc -project tsconfig.json",
+    "compile": "tsc --declaration",
+    "build": "webpack --mode production && tsc --declaration && cpy package.json README.md dist",
     "test": "http-server -c-1 -o test"
   },
   "repository": {
@@ -34,6 +35,7 @@
     "@types/redis": "^2.8.28",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
+    "cpy-cli": "^3.1.1",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
