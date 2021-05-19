@@ -112,3 +112,27 @@ var koiTask = {
 var result = await koi.registerTask(koiTask)
 console.log('registered:', result)
 ```
+
+## Webpack build procedure
+
+```
+yarn install
+yarn build
+```
+Test with `yarn test`
+
+
+
+### Useful vscode settings
+
+`settings.json`
+```
+    "eslint.validate": [
+        "typescript",
+        "typescriptreact",
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+```
+

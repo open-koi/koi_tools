@@ -1,11 +1,13 @@
 {
   "name": "koi_tools",
-  "version": "2.0.15",
+  "version": "2.1.15-beta.1",
   "description": "",
-  "main": "koi-tools.js",
+  "main": "./node/node.js",
+  "browser": "./web/web.js",
   "scripts": {
-    "test": "mocha --timeout 5000 -R mocha-multi --reporter-options nyan=-,json=.results.json",
-    "build": "webpack"
+    "bundle": "webpack --mode production",
+    "compile": "tsc -project tsconfig.json",
+    "test": "http-server -c-1 -o test"
   },
   "repository": {
     "type": "git",
@@ -19,18 +21,27 @@
   "homepage": "https://github.com/open-koi/koi_tools#readme",
   "dependencies": {
     "arweave": "^1.10.13",
-    "crypto": "^1.0.1",
-    "dotenv": "^8.2.0",
-    "jsonfile": "^6.1.0",
-    "jwk-to-pem": "^2.0.4",
-    "lodash": "^4.17.21",
-    "nedb-promises": "^4.1.1",
-    "redis": "^3.1.0",
-    "smartweave": "^0.4.27",
-    "webpack": "^5.24.4",
-    "webpack-cli": "^4.5.0"
+    "axios": "^0.21.1",
+    "dotenv": "^9.0.2",
+    "human-crypto-keys": "^0.1.4",
+    "libp2p-crypto": "^0.19.4",
+    "nedb-promises": "^4.1.5",
+    "node-polyfill-webpack-plugin": "^1.1.1",
+    "redis": "^3.1.2",
+    "smartweave": "^0.4.29"
   },
   "devDependencies": {
-    "eslint": "^7.21.0"
+    "@types/redis": "^2.8.28",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "http-server": "^0.12.3",
+    "prettier": "^2.2.1",
+    "ts-loader": "^9.1.2",
+    "typescript": "^4.2.4",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.7.0"
   }
 }
