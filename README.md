@@ -7,10 +7,16 @@ The Koi.js library enables node.js and typescript applications to easily interac
 1. Add the Koi-tools module to your node script and then initialize the koi class.
 
    ```
-   const tools = require('koi-tools')
-   var ktools = new tools()
+   import { Web } from "koi_tools/web";
+   const ktools = new Web();
    ```
-Note: This library changes often, so if `npm i koi-tools` does not work, you may also want to try installing the master branch of this repo directly with `npm i git+https://github.com:open-koi/koi_tools.git` to get the latest version.
+   or
+   ```
+   import { Node } from "koi_tools/node";
+   const ktools = new Node();
+   ```
+
+Note: This library changes often, so if `npm i koi-tools` does not work, check for beta releases on NPM under the versions section or manually build the package. See [#Build](#Build) section below.
 
 2. Optional - Add the Arweave module to your project if your app plans to directly transact with the permaweb outside of using the Koi-tools library
 
@@ -113,15 +119,31 @@ var result = await koi.registerTask(koiTask)
 console.log('registered:', result)
 ```
 
-## Webpack build procedure
+## Build
+
+### NPM
 
 ```
 yarn install
-yarn build
+yarn compile
+```
+Copy `package.json` and `README.md` to `./dist`
+```
+yarn publish ./dist
+```
+
+For beta releases
+ - append `-beta.N` to `dist/package.json` version where N is the beta version
+ - use `yarn publish ./dist --tag beta`
+
+
+### Webpack
+
+```
+yarn install
+yarn bundle
 ```
 Test with `yarn test`
-
-
 
 ### Useful vscode settings
 

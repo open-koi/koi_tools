@@ -24,14 +24,13 @@ export interface BundlerPayload {
 
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
+const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export enum BasicTx {
   Stake = "stake",
   Withdraw = "withdraw",
   Transfer = "transfer"
 }
-
-const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -286,6 +285,19 @@ export class Common {
     return null;
   }
 
+  /**
+   * Gets all the transactions from a wallet address
+   * @param wallet Wallet address as a string
+   * @returns Array of transaction id strings
+   */
+  getWalletTxs(wallet: string): Promise<Array<string>> {
+    return arweave.arql({
+      op: "equals",
+      expr1: "from",
+      expr2: wallet
+    });
+  }
+
   // Protected functions
 
   /**
@@ -358,4 +370,4 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
 
-module.exports = { Common };
+module.exports = { ADDR_BUNDLER, KOI_CONTRACT, BasicTx, Common, getCacheData };
