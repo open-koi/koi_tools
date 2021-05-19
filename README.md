@@ -125,10 +125,7 @@ console.log('registered:', result)
 
 ```
 yarn install
-yarn compile
-```
-Copy `package.json` and `README.md` to `./dist`
-```
+yarn build
 yarn publish ./dist
 ```
 
