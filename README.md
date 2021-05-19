@@ -126,12 +126,12 @@ console.log('registered:', result)
 ```
 yarn install
 yarn build
-yarn publish ./dist
+yarn publish dist
 ```
 
 For beta releases
  - append `-beta.N` to `dist/package.json` version where N is the beta version
- - use `yarn publish ./dist --tag beta`
+ - use `yarn publish dist --tag beta`
 
 
 ### Webpack

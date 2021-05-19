@@ -26,12 +26,6 @@ export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
-export enum BasicTx {
-  Stake = "stake",
-  Withdraw = "withdraw",
-  Transfer = "transfer"
-}
-
 export const arweave = Arweave.init({
   host: "arweave.net",
   protocol: "https",
@@ -185,17 +179,63 @@ export class Common {
   }
 
   /**
-   * Basic interaction transaction
+   * Interact with contract to stake
    * @param qty Quantity to stake
-   * @returns Transaction id
+   * @returns Transaction ID
    */
-  transact(tx_type: BasicTx, qty: number): Promise<string> {
+  stake(qty: number): Promise<string> {
     if (!Number.isInteger(qty))
       throw Error('Invalid value for "qty". Must be an integer');
-
     const input = {
-      function: tx_type,
+      function: "stake",
       qty: qty
+    };
+
+    return this._interactWrite(input);
+  }
+
+  /**
+   * Interact with contract to withdraw
+   * @param qty Quantity to transfer
+   * @returns Transaction ID
+   */
+  withdraw(qty: number): Promise<string> {
+    if (!Number.isInteger(qty))
+      throw Error('Invalid value for "qty". Must be an integer');
+    const input = {
+      function: "withdraw",
+      qty: qty
+    };
+
+    return this._interactWrite(input);
+  }
+
+  /**
+   * Interact with contract to transfer koi
+   * @param qty Quantity to transfer
+   * @param target Reciever address
+   * @returns Transaction ID
+   */
+  transfer(qty: number, target: string): Promise<string> {
+    const input = {
+      function: "transfer",
+      qty: qty,
+      target: target
+    };
+
+    return this._interactWrite(input);
+  }
+
+  /**
+   * Mint koi
+   * @param arg object arg.targetAddress(reciever address) and arg.qty(amount to mint)
+   * @returns Transaction ID
+   */
+  mint(arg: any): Promise<string> {
+    const input = {
+      function: "mint",
+      target: arg.targetAddress,
+      qty: arg.qty
     };
 
     return this._interactWrite(input);
@@ -208,21 +248,6 @@ export class Common {
    */
   nftTransactionData(txId: string): Promise<Transaction> {
     return arweave.transactions.get(txId);
-  }
-
-  /**
-   * mint koi
-   * @param arg object arg.targetAddress(reciever address) and arg.qty(amount to mint)
-   * @returns Transaction ID
-   */
-  mint(arg: any): Promise<string> {
-    const input = {
-      function: "mint",
-      target: arg.targetAddress,
-      qty: arg.qty
-    };
-
-    return this._interactWrite(input);
   }
 
   /**
@@ -370,4 +395,4 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
 
-module.exports = { ADDR_BUNDLER, KOI_CONTRACT, BasicTx, Common, getCacheData };
+module.exports = { ADDR_BUNDLER, KOI_CONTRACT, Common, getCacheData };

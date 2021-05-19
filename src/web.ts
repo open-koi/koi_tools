@@ -96,7 +96,7 @@ export class Web extends Common {
     const registerRecords = state.data.registeredRecord;
     for (const txId in registerRecords) {
       if (registerRecords[txId] == this.address) {
-        const nftInfo: any = await this.contentView(txId, state.data);
+        const nftInfo: any = await this.contentView(txId, state);
         if (nftInfo !== null) {
           contents.push(nftInfo);
         }
