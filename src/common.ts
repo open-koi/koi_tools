@@ -344,24 +344,13 @@ export class Common {
    * Read contract latest state
    * @returns Contract
    */
-  protected _readContract(): Promise<any> {
+  protected async _readContract(): Promise<any> {
     // return smartweave.readContract(arweave, KOI_CONTRACT);
-    return new Promise(async (resolve, reject) => {
-      const poolID = 4;
-      const query = new Query(poolID);
-      // finding latest transactions
-      try {
-        const Object = await query.limit(1).find();
-        if (Object.length > 0) {
-          resolve(JSON.parse(Object[0]).state)
-        } else {
-          resolve([])
-        }
-      } catch (e) {
-        console.log("ERROR", e)
-        reject(e)
-      }
-    });
+    const poolID = 4;
+    const query = new Query(poolID);
+    // finding latest transactions
+    const object = await query.limit(1).find();
+    return object.length > 0 ? JSON.parse(object[0]).state : [];
   }
 
   // Private functions
