@@ -150,7 +150,7 @@ export class Common {
 
   /**
    * Get block height
-   * @returns Block height // maybe number
+   * @returns Block height maybe number
    */
   async getBlockHeight(): Promise<any> {
     const info = await getArweaveNetInfo();
