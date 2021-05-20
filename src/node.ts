@@ -46,9 +46,9 @@ export class Node extends Common {
   /**
    * Asynchronously load a wallet from a UTF8 JSON file
    * @param file Path of the file to be loaded
-   * @returns Wallet
+   * @returns JSON representation of the object
    */
-  loadFile(file: string): Promise<JWKInterface> {
+  loadFile(file: string): Promise<any> {
     return new Promise(function (resolve, reject) {
       fs.readFile(file, "utf8", (err: Error | null, data: string) => {
         if (err !== null) reject(err);
@@ -65,7 +65,8 @@ export class Node extends Common {
   async nodeLoadWallet(
     walletFileLocation: string
   ): Promise<JWKInterface | undefined> {
-    await this.loadWallet(walletFileLocation);
+    const jwk = await this.loadFile(walletFileLocation);
+    await this.loadWallet(jwk);
     this.db = Datastore.create({
       filename: "my-db.db",
       autoload: true
