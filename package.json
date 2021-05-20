@@ -30,6 +30,9 @@
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0"
   },
+  "browser": {
+    "crypto": false
+},
   "devDependencies": {
     "eslint": "^7.21.0"
   }
