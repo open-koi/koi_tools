@@ -90,7 +90,7 @@ export class Web extends Common {
    */
   async myContent(): Promise<[any]> {
     //const state = await this.getContractState();
-    const state: any = await getCacheData(ADDR_BUNDLER_STATE);
+    const state: any = await getCacheData(ADDR_BUNDLER_TOP);
     const contents: any = [];
 
     state.data
