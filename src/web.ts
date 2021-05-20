@@ -3,7 +3,6 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import { smartweave } from "smartweave";
 
 const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
-const ADDR_BUNDLER_STATE = ADDR_BUNDLER + "/state/current/";
 
 export class Web extends Common {
   /**

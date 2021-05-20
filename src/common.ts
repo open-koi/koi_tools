@@ -24,6 +24,7 @@ export interface BundlerPayload {
 }
 
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
+export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
@@ -121,8 +122,7 @@ export class Common {
    * @returns Balance as a number
    */
   async getKoiBalance(): Promise<number> {
-    const path = ADDR_BUNDLER + "/state/current/";
-    const state = await getCacheData<any>(path);
+    const state = await getCacheData<any>(ADDR_BUNDLER_CURRENT);
 
     if (
       typeof this.address !== "undefined" &&
