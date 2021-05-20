@@ -72,14 +72,17 @@ export class Common {
    * Loads arweave wallet
    * @param source object to load from, JSON or JWK, or mnemonic key
    */
-  async loadWallet(source: any): Promise<void> {
+  async loadWallet(source: any): Promise<JWKInterface> {
     switch (typeof source) {
       case "string":
         this.wallet = await this._getKeyFromMnemonic(source);
         break;
       default:
-        this.wallet = source;
+        this.wallet = source as JWKInterface;
     }
+
+    await this.getWalletAddress();
+    return this.wallet;
   }
 
   /**

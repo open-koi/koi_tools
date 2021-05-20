@@ -7,7 +7,8 @@ import {
   BundlerPayload,
   arweave,
   ADDR_BUNDLER,
-  KOI_CONTRACT
+  KOI_CONTRACT,
+  getCacheData
 } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import * as fs from "fs";
@@ -29,6 +30,7 @@ Koi Node Operation: {
 
 const ADDR_LOGS = "https://arweave.dev/logs";
 const ADDR_BUNDLER_NODES = ADDR_BUNDLER + "/submitVote/";
+const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current/";
 
 export class Node extends Common {
   db?: Datastore;
@@ -229,8 +231,8 @@ export class Node extends Common {
    * @returns Whether data is valid
    */
   async validateData(voteId: string): Promise<boolean | null> {
-    const state = await this._readContract();
-    const trafficLogs = state.stateUpdate.trafficLogs;
+    const state: any = await getCacheData(ADDR_BUNDLER_CURRENT);
+    const trafficLogs = state.data.stateUpdate.trafficLogs;
     const currentTrafficLogs = trafficLogs.dailyTrafficLog.find(
       (trafficLog: any) => trafficLog.block === trafficLogs.open
     );
