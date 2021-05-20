@@ -4,6 +4,7 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import * as arweaveUtils from "arweave/node/lib/utils";
 import Transaction from "arweave/node/lib/transaction";
 import { smartweave } from "smartweave";
+import { Query } from "@kyve/query";
 
 //@ts-ignore // Needed to allow implicit any here
 import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
@@ -344,7 +345,23 @@ export class Common {
    * @returns Contract
    */
   protected _readContract(): Promise<any> {
-    return smartweave.readContract(arweave, KOI_CONTRACT);
+    // return smartweave.readContract(arweave, KOI_CONTRACT);
+    return new Promise(async (resolve, reject) => {
+      const poolID = 4;
+      const query = new Query(poolID);
+      // finding latest transactions
+      try {
+        const Object = await query.limit(1).find();
+        if (Object.length > 0) {
+          resolve(JSON.parse(Object[0]).state)
+        } else {
+          resolve([])
+        }
+      } catch (e) {
+        console.log("ERROR", e)
+        reject(e)
+      }
+    });
   }
 
   // Private functions

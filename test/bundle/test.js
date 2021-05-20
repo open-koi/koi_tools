@@ -2,9 +2,12 @@ const kweb = new koi_tools.koi_web.Web();
 
 test().then((result) => {
   console.log("Result", result);
+}).catch(e=>{
+  console.log(e)
 });
 
 async function test() {
+  await testGetLatestState();
   await testGenerateWallet();
   await testGetKoiBalance();
   await testGetWalletBalance();
@@ -45,6 +48,16 @@ async function testGetKoiBalance() {
   console.log("Testing getKoiBalance");
   const result = await kweb.getKoiBalance();
   console.log("result", result);
+}
+
+async function testGetLatestState() {
+  console.log("Testing getLatestState");
+  try{
+    const result = await kweb.getContractState();
+    console.log("result", result);
+  }catch(e){
+    console.log("ERROR",e)
+  }
 }
 
 async function testMint() {
