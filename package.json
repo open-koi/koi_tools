@@ -1,6 +1,6 @@
 {
   "name": "koi_tools",
-  "version": "2.1.15-beta.1",
+  "version": "2.1.16-beta.11",
   "description": "",
   "main": "./node/node.js",
   "browser": "./web/web.js",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/open-koi/koi_tools#readme",
   "dependencies": {
-    "@kyve/query": "^0.0.0-alpha.8",
+    "@kyve/query": "^0.0.0-alpha.9",
     "arweave": "^1.10.13",
     "axios": "^0.21.1",
     "dotenv": "^9.0.2",
