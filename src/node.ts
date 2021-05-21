@@ -7,6 +7,7 @@ import {
   BundlerPayload,
   arweave,
   ADDR_BUNDLER,
+  ADDR_BUNDLER_CURRENT,
   KOI_CONTRACT,
   getCacheData
 } from "./common";
@@ -30,7 +31,6 @@ Koi Node Operation: {
 
 const ADDR_LOGS = "https://arweave.dev/logs";
 const ADDR_BUNDLER_NODES = ADDR_BUNDLER + "/submitVote/";
-const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current/";
 
 export class Node extends Common {
   db?: Datastore;
