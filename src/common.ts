@@ -336,7 +336,7 @@ export class Common {
   async contentView(contentTxId: any, state: any): Promise<any> {
     // const state = await this.getContractState();
     // const path = "https://bundler.openkoi.com/state/current/";
-    const rewardReport = state.data.stateUpdate.trafficLogs.rewardReport;
+    const rewardReport = state.stateUpdate.trafficLogs.rewardReport;
 
     try {
       const nftState = await this.readNftState(contentTxId);
@@ -404,8 +404,19 @@ export class Common {
     const poolID = 4;
     const query = new Query(poolID);
     // finding latest transactions
-    const object = await query.limit(1).find();
-    return object.length > 0 ? JSON.parse(object[0]).state : [];
+    try {
+      const snapshotArray = await query.limit(1).find();
+      if (snapshotArray && snapshotArray.length > 0) {
+        return JSON.parse(snapshotArray[0]).state
+      } else {
+        console.log("NOTHING RETURNED FROM KYVE")
+        return smartweave.readContract(arweave, KOI_CONTRACT);
+      }
+    } catch (e) {
+      console.log("ERROR RETRIEVING FROM KYVE", e)
+      return smartweave.readContract(arweave, KOI_CONTRACT);
+
+    }
   }
 
   // Private functions
