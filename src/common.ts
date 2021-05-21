@@ -345,12 +345,12 @@ export class Common {
    * @returns Contract
    */
   protected async _readContract(): Promise<any> {
-    return smartweave.readContract(arweave, KOI_CONTRACT);
-    // const poolID = 4;
-    // const query = new Query(poolID);
-    // // finding latest transactions
-    // const object = await query.limit(1).find();
-    // return object.length > 0 ? JSON.parse(object[0]).state : [];
+    // return smartweave.readContract(arweave, KOI_CONTRACT);
+    const poolID = 4;
+    const query = new Query(poolID);
+    // finding latest transactions
+    const object = await query.limit(1).find();
+    return object.length > 0 ? JSON.parse(object[0]).state : [];
   }
 
   // Private functions
