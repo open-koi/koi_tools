@@ -23,10 +23,10 @@ export interface BundlerPayload {
   owner?: string;
 }
 
+export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
+export const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
-export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
-const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -327,6 +327,61 @@ export class Common {
     });
   }
 
+  /**
+   *
+   * @param contentTxId TxId of the content
+   * @param state
+   * @returns An object with {totaltViews, totalReward, 24hrsViews}
+   */
+  async contentView(contentTxId: any, state: any): Promise<any> {
+    // const state = await this.getContractState();
+    // const path = "https://bundler.openkoi.com/state/current/";
+    const rewardReport = state.data.stateUpdate.trafficLogs.rewardReport;
+
+    try {
+      const nftState = await this.readNftState(contentTxId);
+      const contentViews = {
+        ...nftState,
+        totalViews: 0,
+        totalReward: 0,
+        twentyFourHrViews: 0,
+        txIdContent: contentTxId
+      };
+
+      rewardReport.forEach((ele: any) => {
+        const logSummary = ele.logsSummary;
+
+        for (const txId in logSummary) {
+          if (txId == contentTxId) {
+            if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
+              contentViews.twentyFourHrViews = logSummary[contentTxId];
+            }
+
+            const rewardPerAttention = ele.rewardPerAttention;
+            contentViews.totalViews += logSummary[contentTxId];
+            const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
+            contentViews.totalReward += rewardPerLog;
+          }
+        }
+      });
+      return contentViews;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * returns the top contents registered in Koi in array
+   * @returns
+   */
+  async retrieveTopContent(): Promise<any> {
+    const allContents = await this._retrieveAllContent();
+    allContents.sort(function (a: any, b: any) {
+      return b.totalViews - a.totalViews;
+    });
+    return allContents;
+  }
+
   // Protected functions
 
   /**
@@ -384,6 +439,25 @@ export class Common {
     delete privateKey.alg;
     delete privateKey.key_ops;
     return privateKey;
+  }
+
+  /**
+   *
+   * @returns
+   */
+  private async _retrieveAllContent(): Promise<any> {
+    const state = await this.getContractState();
+    const registerRecords = state.registeredRecord;
+    const txIdArr = Object.keys(registerRecords);
+    const contentViewPromises = txIdArr.map((txId) =>
+      this.contentView(txId, state)
+    );
+    // Required any to convert PromiseSettleResult to PromiseFulfilledResult<any>
+    const contents = await Promise.all(contentViewPromises);
+    const result = contents.filter((res) => res.value !== null);
+    const clean = result.map((res) => res.value);
+
+    return clean;
   }
 }
 

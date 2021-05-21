@@ -29,61 +29,6 @@ export class Web extends Common {
   }
 
   /**
-   * returns the top contents registered in Koi in array
-   * @returns
-   */
-  async retrieveTopContent(): Promise<any> {
-    const allContents = await this._retrieveAllContent();
-    allContents.sort(function (a: any, b: any) {
-      return b.totalViews - a.totalViews;
-    });
-    return allContents;
-  }
-
-  /**
-   *
-   * @param contentTxId TxId of the content
-   * @param state
-   * @returns An object with {totaltViews, totalReward, 24hrsViews}
-   */
-  async contentView(contentTxId: any, state: any): Promise<any> {
-    // const state = await this.getContractState();
-    // const path = "https://bundler.openkoi.com/state/current/";
-    const rewardReport = state.data.stateUpdate.trafficLogs.rewardReport;
-
-    try {
-      const nftState = await this.readNftState(contentTxId);
-      const contentViews = {
-        ...nftState,
-        totalViews: 0,
-        totalReward: 0,
-        twentyFourHrViews: 0,
-        txIdContent: contentTxId
-      };
-
-      rewardReport.forEach((ele: any) => {
-        const logSummary = ele.logsSummary;
-
-        for (const txId in logSummary) {
-          if (txId == contentTxId) {
-            if (rewardReport.indexOf(ele) == rewardReport.length - 1) {
-              contentViews.twentyFourHrViews = logSummary[contentTxId];
-            }
-
-            const rewardPerAttention = ele.rewardPerAttention;
-            contentViews.totalViews += logSummary[contentTxId];
-            const rewardPerLog = logSummary[contentTxId] * rewardPerAttention;
-            contentViews.totalReward += rewardPerLog;
-          }
-        }
-      });
-      return contentViews;
-    } catch (err) {
-      return null;
-    }
-  }
-
-  /**
    * Get top contents of user
    * @returns Array of user contents
    */
@@ -125,27 +70,6 @@ export class Web extends Common {
     const path = ADDR_BUNDLER_TOP;
     const topContents = await getCacheData(path);
     return topContents;
-  }
-
-  // Private functions
-
-  /**
-   *
-   * @returns
-   */
-  private async _retrieveAllContent(): Promise<any> {
-    const state = await this.getContractState();
-    const registerRecords = state.registeredRecord;
-    const txIdArr = Object.keys(registerRecords);
-    const contentViewPromises = txIdArr.map((txId) =>
-      this.contentView(txId, state)
-    );
-    // Required any to convert PromiseSettleResult to PromiseFulfilledResult<any>
-    const contents = await Promise.all(contentViewPromises);
-    const result = contents.filter((res) => res.value !== null);
-    const clean = result.map((res) => res.value);
-
-    return clean;
   }
 }
 
