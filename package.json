@@ -10,7 +10,7 @@
     "build": "webpack --mode production && tsc --declaration && cpy package.json README.md dist",
     "test-bundle": "http-server -c-1 -o test/bundle",
     "test-node": "jest --coverage --detectOpenHandles",
-    "test": "jest --coverage --detectOpenHandles && http-server -c-1 -o test/bundle"
+    "test": "jest --coverage --detectOpenHandles"
   },
   "repository": {
     "type": "git",
