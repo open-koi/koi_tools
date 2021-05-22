@@ -6,17 +6,19 @@ on:
       - main
 
 jobs:
-  release:
-    name: publish
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2.1.1
+        uses: actions/checkout@v1
       - name: node
-        uses: actions/setup-node@v1.4.2
+        uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
           registry-url: https://registry.npmjs.org
+      - run: npm install
+      - run: npm run build
+      - run: npm run test
       - name: publish
         run: npm publish --access public
         env:
