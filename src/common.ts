@@ -234,8 +234,8 @@ export class Common {
   mint(arg: any): Promise<string> {
     const input = {
       function: "mint",
-      target: arg.targetAddress,
-      qty: arg.qty
+      qty: arg.qty,
+      target: arg.targetAddress
     };
 
     return this._interactWrite(input);
@@ -329,16 +329,22 @@ export class Common {
   /**
    * Gets all the transactions from a wallet address
    * @param wallet Wallet address as a string
-   * @returns Array of wallet transaction data
+   * @returns Object with transaction IDs as keys, and transaction data as values
    */
-  async getWalletTxs(wallet: string): Promise<Array<any>> {
+  async getWalletTxs(wallet: string): Promise<any> {
     const txIds = await arweave.arql({
       op: "equals",
       expr1: "from",
       expr2: wallet
     });
 
-    return txIds.map((txId) => arweave.transactions.getData(txId));
+    return txIds.reduce(
+      async (obj: any, txId) =>
+        (obj[txId] = JSON.parse(
+          (await arweave.transactions.getData(txId)) as string
+        )),
+      {}
+    );
   }
 
   /**
