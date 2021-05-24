@@ -1,33 +1,8 @@
-import { Common, ADDR_BUNDLER, KOI_CONTRACT, getCacheData } from "./common";
-import { JWKInterface } from "arweave/node/lib/wallet";
-import { smartweave } from "smartweave";
+import { Common, ADDR_BUNDLER, getCacheData } from "./common";
 
 const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
 
 export class Web extends Common {
-  /**
-   * Interact with contract to register data
-   * @param txId It has batchFile/value(string) and stakeamount/value(int) as properties
-   * @param owner
-   * @param arWallet
-   * @param arweaveInst Arweave client instance
-   * @returns Transaction ID
-   */
-  registerData(
-    txId: any, // Maybe string?
-    owner: any, // Maybe string?
-    arWallet: JWKInterface | "use_wallet" = "use_wallet",
-    arweaveInst: any
-  ): Promise<string> {
-    const input = {
-      function: "registerData",
-      txId: txId,
-      owner: owner
-    };
-
-    return smartweave.interactWrite(arweaveInst, arWallet, KOI_CONTRACT, input);
-  }
-
   /**
    * Get top contents of user
    * @returns Array of user contents

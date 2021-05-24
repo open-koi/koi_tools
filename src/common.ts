@@ -123,11 +123,7 @@ export class Common {
    */
   async getKoiBalance(): Promise<number> {
     const state = await getCacheData<any>(ADDR_BUNDLER_CURRENT);
-
-    if (
-      typeof this.address !== "undefined" &&
-      this.address in state.data.balances
-    )
+    if (this.address !== undefined && this.address in state.data.balances)
       return state.data.balances[this.address];
     return 0;
   }
@@ -246,6 +242,22 @@ export class Common {
   }
 
   /**
+   * Interact with contract to register data
+   * @param txId It has batchFile/value(string) and stakeamount/value(int) as properties
+   * @param ownerId String container the owner ID
+   * @returns Transaction ID
+   */
+  registerData(txId: string, ownerId = ""): Promise<string> {
+    const input = {
+      function: "registerData",
+      txId: txId,
+      owner: ownerId
+    };
+
+    return this._interactWrite(input);
+  }
+
+  /**
    * Get transaction data from Arweave
    * @param txId Transaction ID
    * @returns Transaction
@@ -319,12 +331,16 @@ export class Common {
    * @param wallet Wallet address as a string
    * @returns Array of transaction id strings
    */
-  getWalletTxs(wallet: string): Promise<Array<string>> {
-    return arweave.arql({
+  async getWalletTxs(wallet: string): Promise<Array<any>> {
+    const txIds = await arweave.arql({
       op: "equals",
       expr1: "from",
       expr2: wallet
     });
+
+    return txIds.map((txId) => arweave.transactions.getData(txId));
+
+    // https://github.com/ArweaveTeam/arweave-js#get-transaction-data
   }
 
   /**
@@ -407,16 +423,12 @@ export class Common {
     try {
       const snapshotArray = await query.limit(1).find();
       if (snapshotArray && snapshotArray.length > 0) {
-        return JSON.parse(snapshotArray[0]).state
-      } else {
-        console.log("NOTHING RETURNED FROM KYVE")
-        return smartweave.readContract(arweave, KOI_CONTRACT);
-      }
+        return JSON.parse(snapshotArray[0]).state;
+      } else console.log("NOTHING RETURNED FROM KYVE");
     } catch (e) {
-      console.log("ERROR RETRIEVING FROM KYVE", e)
-      return smartweave.readContract(arweave, KOI_CONTRACT);
-
+      console.log("ERROR RETRIEVING FROM KYVE", e);
     }
+    return smartweave.readContract(arweave, KOI_CONTRACT);
   }
 
   // Private functions
