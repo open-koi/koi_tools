@@ -200,17 +200,27 @@ export class Node extends Common {
   async proposeSlash(): Promise<void> {
     const state = await this.getContractState();
     const votes = state.votes;
-
-    for (let i = 0; i < this.receipts.length - 1; i++) {
-      const element = this.receipts[i];
-      const voteId = element.vote.vote.voteId;
-      const vote = votes[voteId];
-      if (!vote.voted.includes(this.wallet)) {
-        const input = {
-          function: "proposeSlash",
-          receipt: element
-        };
-        await this._interactWrite(input);
+    const currentTrafficLogs = state.stateUpdate.dailyTrafficLog.filter(
+      (proposedLog: {
+        block: number;
+        proposedLogs: [];
+        isRanked: boolean;
+        isDistributed: boolean;
+      }) => proposedLog.block == state.stateUpdate.tracficLogs.open
+    );
+    for (let proposedLogs of currentTrafficLogs) {
+      let currentProposedLogsVoteId = proposedLogs.voteId;
+      for (let i = 0; i < this.receipts.length - 1; i++) {
+        if (this.receipts[i].vote.vote.voteId === currentProposedLogsVoteId) {
+          const vote = votes[currentProposedLogsVoteId];
+          if (!vote.voted.includes(this.wallet)) {
+            const input = {
+              function: "proposeSlash",
+              receipt: this.receipts[i]
+            };
+            await this._interactWrite(input);
+          }
+        }
       }
     }
   }
@@ -232,8 +242,8 @@ export class Node extends Common {
    * @returns Whether data is valid
    */
   async validateData(voteId: string): Promise<boolean | null> {
-    const state: any = await getCacheData(ADDR_BUNDLER_CURRENT);
-    const trafficLogs = state.data.stateUpdate.trafficLogs;
+    const state: any = await this.getContractState();
+    const trafficLogs = state.stateUpdate.trafficLogs;
     const currentTrafficLogs = trafficLogs.dailyTrafficLog.find(
       (trafficLog: any) => trafficLog.block === trafficLogs.open
     );
