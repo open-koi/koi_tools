@@ -1,5 +1,11 @@
 {
   "tabWidth": 2,
   "singleQuote": false,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "prettier/prettier": [
+    "error",
+    {
+      "endOfLine": "auto",
+    }
+  ]
 }
