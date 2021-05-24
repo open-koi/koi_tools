@@ -329,7 +329,7 @@ export class Common {
   /**
    * Gets all the transactions from a wallet address
    * @param wallet Wallet address as a string
-   * @returns Array of transaction id strings
+   * @returns Array of wallet transaction data
    */
   async getWalletTxs(wallet: string): Promise<Array<any>> {
     const txIds = await arweave.arql({
@@ -339,8 +339,6 @@ export class Common {
     });
 
     return txIds.map((txId) => arweave.transactions.getData(txId));
-
-    // https://github.com/ArweaveTeam/arweave-js#get-transaction-data
   }
 
   /**
