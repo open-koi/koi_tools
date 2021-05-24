@@ -1,4 +1,4 @@
-import { Common, ADDR_BUNDLER, getCacheData } from "./common";
+import { Common, getCacheData, ADDR_BUNDLER } from "./common";
 
 const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
 
@@ -8,11 +8,11 @@ export class Web extends Common {
    * @returns Array of user contents
    */
   async myContent(): Promise<[any]> {
-    //const state = await this.getContractState();
-    const state: any = await getCacheData(ADDR_BUNDLER_TOP);
+    // Getting top content is faster than entire state
+    const topContent: any = await getCacheData(ADDR_BUNDLER_TOP); 
     const contents: any = [];
 
-    state.data
+    topContent.data
       .filter((item: any) => item.owner === this.address)
       .forEach((element: any, i: number) => {
         // let str_created_at = element.createdAt || "1609500000";

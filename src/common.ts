@@ -24,9 +24,10 @@ export interface BundlerPayload {
 }
 
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
-export const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
+
+const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -504,4 +505,4 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
 
-module.exports = { ADDR_BUNDLER, KOI_CONTRACT, Common, getCacheData };
+module.exports = { KOI_CONTRACT, ADDR_BUNDLER, ADDR_BUNDLER_CURRENT, Common, getCacheData };
