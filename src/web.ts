@@ -1,6 +1,4 @@
-import { Common, getCacheData, ADDR_BUNDLER } from "./common";
-
-const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
+import { Common, getCacheData, ADDR_BUNDLER_TOP } from "./common";
 
 export class Web extends Common {
   /**
@@ -9,7 +7,7 @@ export class Web extends Common {
    */
   async myContent(): Promise<[any]> {
     // Getting top content is faster than entire state
-    const topContent: any = await getCacheData(ADDR_BUNDLER_TOP); 
+    const topContent: any = await getCacheData(ADDR_BUNDLER_TOP);
     const contents: any = [];
 
     topContent.data
