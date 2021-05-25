@@ -505,4 +505,11 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
 
-module.exports = { KOI_CONTRACT, ADDR_BUNDLER, ADDR_BUNDLER_CURRENT, Common, getCacheData };
+module.exports = {
+  KOI_CONTRACT,
+  ADDR_BUNDLER,
+  ADDR_BUNDLER_CURRENT,
+  arweave,
+  Common,
+  getCacheData
+};
