@@ -208,8 +208,8 @@ export class Node extends Common {
         isDistributed: boolean;
       }) => proposedLog.block == state.stateUpdate.tracficLogs.open
     );
-    for (let proposedLogs of currentTrafficLogs) {
-      let currentProposedLogsVoteId = proposedLogs.voteId;
+    for (const proposedLogs of currentTrafficLogs) {
+      const currentProposedLogsVoteId = proposedLogs.voteId;
       for (let i = 0; i < this.receipts.length - 1; i++) {
         if (this.receipts[i].vote.vote.voteId === currentProposedLogsVoteId) {
           const vote = votes[currentProposedLogsVoteId];
@@ -257,7 +257,7 @@ export class Node extends Common {
     // lets assume we have one gateway id for now.
     //let gateWayUrl = proposedLog.gatWayId;
 
-    if (proposedLog === null) return null;
+    if (proposedLog === undefined || proposedLog === null) return null;
 
     const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(ADDR_LOGS);
     const gatewayTrafficLogsHash = await this._hashData(
