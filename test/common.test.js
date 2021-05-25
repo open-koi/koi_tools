@@ -59,3 +59,13 @@ test("Get wallet transactions", async () => {
   const transactions = await ktools.getWalletTxs(ktools.address);
   expect(transactions).toBeTruthy();
 });
+
+test("Get nft reward null", async () => {
+  const reward = await kcommon.getNftReward("asdf");
+  expect(reward).toBe(null);
+});
+
+test("Get nft reward", async () => {
+  const reward = await kcommon.getNftReward("1UDe0Wqh51-O03efPzoc_HhsUPrmgBR2ziUfaI7CpZk");
+  expect(reward).toBeGreaterThan(1600);
+});
