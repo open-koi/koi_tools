@@ -17,7 +17,7 @@ const arweave = Arweave.init({
  * @param {Object} payload -
  * @returns {Boolean} promise
  */
-class KoiUtils {
+export class KoiUtils {
   static async verifySignature(payload: any): Promise<any> {
     const rawSignature = ArweaveUtils.b64UrlToBuffer(payload.signature);
     const dataInString = JSON.stringify(payload.vote);
@@ -30,4 +30,4 @@ class KoiUtils {
     return valid;
   }
 }
-export default KoiUtils;
+// export default KoiUtils;
