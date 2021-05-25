@@ -24,9 +24,10 @@ export interface BundlerPayload {
 }
 
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
-export const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
+
+const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -123,11 +124,7 @@ export class Common {
    */
   async getKoiBalance(): Promise<number> {
     const state = await getCacheData<any>(ADDR_BUNDLER_CURRENT);
-
-    if (
-      typeof this.address !== "undefined" &&
-      this.address in state.data.balances
-    )
+    if (this.address !== undefined && this.address in state.data.balances)
       return state.data.balances[this.address];
     return 0;
   }
@@ -238,8 +235,24 @@ export class Common {
   mint(arg: any): Promise<string> {
     const input = {
       function: "mint",
-      target: arg.targetAddress,
-      qty: arg.qty
+      qty: arg.qty,
+      target: arg.targetAddress
+    };
+
+    return this._interactWrite(input);
+  }
+
+  /**
+   * Interact with contract to register data
+   * @param txId It has batchFile/value(string) and stakeamount/value(int) as properties
+   * @param ownerId String container the owner ID
+   * @returns Transaction ID
+   */
+  registerData(txId: string, ownerId = ""): Promise<string> {
+    const input = {
+      function: "registerData",
+      txId: txId,
+      owner: ownerId
     };
 
     return this._interactWrite(input);
@@ -317,14 +330,21 @@ export class Common {
   /**
    * Gets all the transactions from a wallet address
    * @param wallet Wallet address as a string
-   * @returns Array of transaction id strings
+   * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  getWalletTxs(wallet: string): Promise<Array<string>> {
-    return arweave.arql({
+  async getWalletTxs(wallet: string): Promise<any> {
+    const txIds = await arweave.arql({
       op: "equals",
       expr1: "from",
       expr2: wallet
     });
+
+    return txIds.reduce(
+      async (obj: any, txId) => (
+        (obj[txId] = await arweave.transactions.getData(txId)), obj
+      ),
+      {}
+    );
   }
 
   /**
@@ -407,16 +427,12 @@ export class Common {
     try {
       const snapshotArray = await query.limit(1).find();
       if (snapshotArray && snapshotArray.length > 0) {
-        return JSON.parse(snapshotArray[0]).state
-      } else {
-        console.log("NOTHING RETURNED FROM KYVE")
-        return smartweave.readContract(arweave, KOI_CONTRACT);
-      }
+        return JSON.parse(snapshotArray[0]).state;
+      } else console.log("NOTHING RETURNED FROM KYVE");
     } catch (e) {
-      console.log("ERROR RETRIEVING FROM KYVE", e)
-      return smartweave.readContract(arweave, KOI_CONTRACT);
-
+      console.log("ERROR RETRIEVING FROM KYVE", e);
     }
+    return smartweave.readContract(arweave, KOI_CONTRACT);
   }
 
   // Private functions
@@ -489,4 +505,11 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
 
-module.exports = { ADDR_BUNDLER, KOI_CONTRACT, Common, getCacheData };
+module.exports = {
+  KOI_CONTRACT,
+  ADDR_BUNDLER,
+  ADDR_BUNDLER_CURRENT,
+  arweave,
+  Common,
+  getCacheData
+};

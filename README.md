@@ -1,10 +1,10 @@
 # Koi JavaScript SDK
 
-The Koi.js library enables node.js and typescript applications to easily interact with the open Koi network.
+The Koi.js library enables node.js and javascript/typescript applications to easily interact with the open Koi network.
 
 ## Steps to Interact with the SDK in your Project
 
-1. Add the Koi-tools module to your node script and then initialize the koi class.
+1. Add the Koi-tools module to your script and then initialize the koi class.
 
    ```
    import { Web } from "koi_tools/web";
@@ -14,6 +14,12 @@ The Koi.js library enables node.js and typescript applications to easily interac
    ```
    const kweb = require("koi_tools/web");
    const ktools = new kweb.Web();
+   ```
+   or using the bundle
+   ```
+   <script src="koi_tools.js"></script>
+   ...
+   const kweb = new koi_tools.koi_web.Web();
    ```
 
 Note: This library changes often, so if `npm i koi-tools` does not work, check for beta releases on NPM under the versions section or manually build the package. See [#Build](#Build) section below.

@@ -1,6 +1,6 @@
 {
   "name": "@_koi/sdk",
-  "version": "2.1.16-beta.13",
+  "version": "2.1.16-beta.19",
   "description": "",
   "main": "./node/node.js",
   "browser": "./web/web.js",
@@ -9,7 +9,6 @@
     "compile": "tsc --declaration",
     "build": "webpack --mode production && tsc --declaration && cpy package.json README.md dist",
     "test-bundle": "http-server -c-1 -o test/bundle",
-    "test-node": "jest --coverage --detectOpenHandles",
     "test": "jest --coverage --detectOpenHandles"
   },
   "repository": {
