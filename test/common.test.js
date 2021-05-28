@@ -22,7 +22,7 @@ test("Get block height", async () => {
 test("Mint", async () => {
   const submission = {
     targetAddress: "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo",
-    qty: 50
+    qty: 5
   };
   const txId = await ktools.mint(submission);
   expect(typeof txId).toBe("string");

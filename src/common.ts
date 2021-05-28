@@ -29,7 +29,7 @@ export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
 export const arweave = Arweave.init({
-  host: "arweave.net",
+  host: "amplify.host",
   protocol: "https",
   port: 443
 });
@@ -255,6 +255,25 @@ export class Common {
     };
 
     return this._interactWrite(input);
+  }
+
+  /**
+    * sign transaction
+    * @param tx It is transaction
+    
+    * @returns signed Transaction
+    */
+  async signTransaction(tx: Transaction): Promise<any> {
+    try {
+      //const wallet = this.wallet;
+      // Now we sign the transaction
+      await arweave.transactions.sign(tx, this.wallet);
+      // After is signed, we send the transaction
+      //await exports.arweave.transactions.post(transaction);
+      return tx;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**
