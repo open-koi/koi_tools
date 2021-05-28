@@ -17,7 +17,7 @@ The Koi.js library enables node.js and javascript/typescript applications to eas
    ```
    or using the bundle
    ```
-   <script src="../../dist/bundle/koi_tools.js"></script>
+   <script src="koi_tools.js"></script>
    ...
    const kweb = new koi_tools.koi_web.Web();
    ```

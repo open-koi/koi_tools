@@ -24,9 +24,11 @@ export interface BundlerPayload {
 }
 
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
-export const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
+export const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
+
+const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export const arweave = Arweave.init({
   host: "amplify.host",
@@ -516,6 +518,17 @@ export function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
 }
 
 /**
+ * Get Koi rewards earned from an NFT
+ * @param txId The transaction id to process
+ * @returns Koi rewards earned or null if the transaction is not a valid Koi NFT
+ */
+export async function getNftReward(txId: string): Promise<number | null> {
+  const topContent = await getCacheData<any>(ADDR_BUNDLER_TOP);
+  const nft = topContent.data.find((nft: any) => nft.txIdContent === txId);
+  return nft === undefined ? null : nft.totalReward;
+}
+
+/**
  * Get info from Arweave net
  * @returns Axios response with info
  */
@@ -523,4 +536,13 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
   return axios.get(ADDR_ARWEAVE_INFO);
 }
 
-module.exports = { ADDR_BUNDLER, KOI_CONTRACT, Common, getCacheData };
+module.exports = {
+  KOI_CONTRACT,
+  ADDR_BUNDLER,
+  ADDR_BUNDLER_CURRENT,
+  ADDR_BUNDLER_TOP,
+  arweave,
+  Common,
+  getCacheData,
+  getNftReward
+};
