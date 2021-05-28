@@ -26,7 +26,6 @@ export interface BundlerPayload {
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
-export const ADDR_BUNDLER_TOP = ADDR_BUNDLER + "/state/getTopContent/";
 
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
@@ -48,7 +47,7 @@ export class Common {
 
   constructor() {
     console.log(
-      "Initialized a Koi Node with smart contract: ",
+      "Initialized a Koi Node with smart contract:",
       this.contractAddress
     );
   }
@@ -403,6 +402,18 @@ export class Common {
     return allContents;
   }
 
+  /**
+   * Get Koi rewards earned from an NFT
+   * @param txId The transaction id to process
+   * @returns Koi rewards earned or null if the transaction is not a valid Koi NFT
+   */
+  async getNftReward(txId: string): Promise<number | null> {
+    const state = await this.getContractState();
+    if (!(txId in state.registeredRecord)) return null;
+    const nft = await this.contentView(txId, state);
+    return nft.totalReward;
+  }
+
   // Protected functions
 
   /**
@@ -427,9 +438,9 @@ export class Common {
     // finding latest transactions
     try {
       const snapshotArray = await query.limit(1).find();
-      if (snapshotArray && snapshotArray.length > 0) {
+      if (snapshotArray && snapshotArray.length > 0)
         return JSON.parse(snapshotArray[0]).state;
-      } else console.log("NOTHING RETURNED FROM KYVE");
+      else console.log("NOTHING RETURNED FROM KYVE");
     } catch (e) {
       console.log("ERROR RETRIEVING FROM KYVE", e);
     }
@@ -499,17 +510,6 @@ export function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
 }
 
 /**
- * Get Koi rewards earned from an NFT
- * @param txId The transaction id to process
- * @returns Koi rewards earned or null if the transaction is not a valid Koi NFT
- */
-export async function getNftReward(txId: string): Promise<number | null> {
-  const topContent = await getCacheData<any>(ADDR_BUNDLER_TOP);
-  const nft = topContent.data.find((nft: any) => nft.txIdContent === txId);
-  return nft === undefined ? null : nft.totalReward;
-}
-
-/**
  * Get info from Arweave net
  * @returns Axios response with info
  */
@@ -521,9 +521,7 @@ module.exports = {
   KOI_CONTRACT,
   ADDR_BUNDLER,
   ADDR_BUNDLER_CURRENT,
-  ADDR_BUNDLER_TOP,
   arweave,
   Common,
-  getCacheData,
-  getNftReward
+  getCacheData
 };

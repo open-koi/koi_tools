@@ -546,10 +546,6 @@ function getRedisClient(): RedisClient {
     client.on("error", function (error) {
       console.error(error);
     });
-
-    client.on("connect", function () {
-      console.log("connected to redis!!");
-    });
   }
   return client;
 }
