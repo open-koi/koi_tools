@@ -61,13 +61,13 @@ test("Get wallet transactions", async () => {
 });
 
 test("Get NFT reward null", async () => {
-  jest.setTimeout(10000)
+  jest.setTimeout(15000)
   const reward = await ktools.getNftReward("asdf");
   expect(reward).toBe(null);
 });
 
 test("Get NFT reward", async () => {
-  jest.setTimeout(10000)
+  jest.setTimeout(15000)
   const reward = await ktools.getNftReward("1UDe0Wqh51-O03efPzoc_HhsUPrmgBR2ziUfaI7CpZk");
   expect(reward).toBeGreaterThan(1600);
 });
