@@ -11,7 +11,7 @@ import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
 import * as crypto from "libp2p-crypto";
 
 export interface Vote {
-  voteId: number;
+  voteId: string;
   direct?: string;
   userVote?: string;
 }
