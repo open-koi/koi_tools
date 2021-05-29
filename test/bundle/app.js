@@ -81,15 +81,6 @@ async function testMyContent() {
   }
 }
 
-async function testGetTopContent() {
-  console.log("Testing getTopContent");
-  const contents = await kweb.getTopContent();
-  console.log(contents.data);
-  if (typeof contents === "undefined" || contents === null) {
-    throw Error("Failed while attempting to verify");
-  }
-}
-
 async function testNftTransactionData() {
   console.log("Testing nftTransactionData");
   const txData = await kweb.nftTransactionData(
