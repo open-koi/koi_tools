@@ -8,16 +8,13 @@ export class Web extends Common {
   async myContent(): Promise<Array<any>> {
     // Get nft records
     const state: any = await this.getContractState();
-    const registerRecords = state.registeredRecord;
+    const registerRecords: Map<string, string> = state.registeredRecord;
 
     // Get array of my awaitable NFTs
-    const contentViewProms = registerRecords.reduce(
-      (accu: any[], txId: string) => {
-        if (registerRecords[txId] === this.address)
-          accu.push(this.contentView(txId, state));
-      },
-      []
-    );
+    const contentViewProms = [];
+    for (const [txId, addr] of Object.entries(registerRecords))
+      if (addr === this.address)
+        contentViewProms.push(this.contentView(txId, state));
 
     // Process NFTs simultaneously then return
     return await Promise.all(contentViewProms);
