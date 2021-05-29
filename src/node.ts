@@ -241,36 +241,29 @@ export class Node extends Common {
    * @param voteId Vote id which is belongs for specific proposalLog
    * @returns Whether data is valid
    */
-  async validateData(voteId: string): Promise<boolean | null> {
+  async validateData(voteId: number): Promise<boolean | null> {
     const state: any = await this.getContractState();
     const trafficLogs = state.stateUpdate.trafficLogs;
     const currentTrafficLogs = trafficLogs.dailyTrafficLog.find(
       (trafficLog: any) => trafficLog.block === trafficLogs.open
     );
     const proposedLogs = currentTrafficLogs.proposedLogs;
-    let proposedLog: any | null;
-    proposedLogs.forEach((element: any) => {
-      if (element.voteId === voteId) {
-        proposedLog = element;
-      }
-    });
+    const proposedLog = proposedLogs.find((log: any) => log.voteId === voteId);
     // lets assume we have one gateway id for now.
     //let gateWayUrl = proposedLog.gatWayId;
 
-    if (proposedLog === undefined || proposedLog === null) return null;
+    if (proposedLog === undefined) return null;
 
     const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(ADDR_LOGS);
     const gatewayTrafficLogsHash = await this._hashData(
       gatewayTrafficLogs.data.summary
     );
 
-    let bundledTrafficLogs = await arweave.transactions.getData(
+    const bundledTrafficLogs = (await arweave.transactions.getData(
       proposedLog.TLTxId,
       { decode: true, string: true }
-    );
+    )) as string;
 
-    if (typeof bundledTrafficLogs !== "string")
-      bundledTrafficLogs = new TextDecoder("utf-8").decode(bundledTrafficLogs);
     const bundledTrafficLogsParsed = JSON.parse(bundledTrafficLogs);
     const bundledTrafficLogsParsedHash = await this._hashData(
       bundledTrafficLogsParsed
