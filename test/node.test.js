@@ -11,9 +11,9 @@ test("Test loading", () => {
 /*
 // These tests must be disabled when publishing as CI doesn't have Redis
 let ktools = new knode.Node();
-test("Test validate data false", async () => {
+test("Test validate data null", async () => {
   jest.setTimeout(20000)
   const res = await ktools.validateData(39);
-  expect(res).toBe(false);
+  expect(res).toBe(null);
 })
 */
