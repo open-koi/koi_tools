@@ -5,7 +5,6 @@
 let kcommon = require("../dist/common");
 
 const ktools = new kcommon.Common();
-console.log(kcommon);
 
 test("Generate wallet", async () => {
   expect(await ktools.generateWallet()).toBe(true);
@@ -79,7 +78,7 @@ test("sign transaction", async () => {
       data: Buffer.from('Some data', 'utf8')
     }
   );
-  console.log(transaction);
   const signedTransaction = await ktools.signTransaction(transaction);
-  expect(signedTransaction).toHaveProperty(signature);
+  expect(typeof signedTransaction.signature).toBe("string");
+  expect(signedTransaction.signature.trim()).not.toHaveLength(0);
 });
