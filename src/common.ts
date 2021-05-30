@@ -17,10 +17,11 @@ export interface Vote {
 }
 
 export interface BundlerPayload {
-  vote: Vote;
+  data?: any;
   senderAddress: string;
   signature?: string;
   owner?: string;
+  vote?:Vote;
 }
 
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
@@ -273,11 +274,12 @@ export class Common {
    * @param payload Payload to sign
    * @returns Signed payload with signature
    */
+
   async signPayload(payload: BundlerPayload): Promise<BundlerPayload | null> {
     if (this.wallet === undefined) return null;
     const jwk = this.wallet;
     const publicModulus = jwk.n;
-    const dataInString = JSON.stringify(payload.vote);
+    const dataInString = JSON.stringify(payload.data);
     const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     const rawSignature = await arweave.crypto.sign(jwk, dataIn8Array);
     payload.signature = arweaveUtils.bufferTob64Url(rawSignature);
@@ -292,7 +294,7 @@ export class Common {
    */
   async verifySignature(payload: any): Promise<boolean> {
     const rawSignature = arweaveUtils.b64UrlToBuffer(payload.signature);
-    const dataInString = JSON.stringify(payload.vote);
+    const dataInString = JSON.stringify(payload.data);
     const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     return await arweave.crypto.verify(
       payload.owner,
