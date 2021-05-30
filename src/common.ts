@@ -30,7 +30,7 @@ export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 
 export const arweave = Arweave.init({
-  host: "amplify.host",
+  host: "arweave.net",
   protocol: "https",
   port: 443
 });
