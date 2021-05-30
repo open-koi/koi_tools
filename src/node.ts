@@ -95,7 +95,7 @@ export class Node extends Common {
    * @returns Transaction ID
    */
   async vote(arg: Vote): Promise<any> {
-    const userVote = await this.validateData(arg.voteId);
+    const userVote: any = await this.validateData(arg.voteId);
     if (userVote == null) {
       this.totalVoted += 1;
       await this._db();
@@ -105,7 +105,7 @@ export class Node extends Common {
     const input = {
       function: "vote",
       voteId: arg.voteId,
-      userVote: userVote.toString()
+      userVote: userVote
     };
 
     let receipt;
@@ -113,6 +113,9 @@ export class Node extends Common {
     if (arg.direct) tx = await this._interactWrite(input);
     else {
       const caller = await this.getWalletAddress();
+
+      // Vote must be a string when indirect voting through bundler
+      input.userVote = userVote.toString();
 
       const payload: BundlerPayload = {
         vote: input,

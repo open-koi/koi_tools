@@ -13,11 +13,10 @@ import * as crypto from "libp2p-crypto";
 export interface Vote {
   voteId: number;
   direct?: string;
-  userVote?: string;
 }
 
 export interface BundlerPayload {
-  vote: Vote;
+  vote: any;
   senderAddress: string;
   signature?: string;
   owner?: string;
