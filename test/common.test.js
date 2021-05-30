@@ -5,6 +5,7 @@
 let kcommon = require("../dist/common");
 
 const ktools = new kcommon.Common();
+console.log(kcommon);
 
 test("Generate wallet", async () => {
   expect(await ktools.generateWallet()).toBe(true);
@@ -70,4 +71,15 @@ test("Get NFT reward", async () => {
   jest.setTimeout(15000)
   const reward = await ktools.getNftReward("1UDe0Wqh51-O03efPzoc_HhsUPrmgBR2ziUfaI7CpZk");
   expect(reward).toBeGreaterThan(1600);
+});
+
+test("sign transaction", async () => {
+  const transaction = await kcommon.arweave.createTransaction(
+    {
+      data: Buffer.from('Some data', 'utf8')
+    }
+  );
+  console.log(transaction);
+  const signedTransaction = await ktools.signTransaction(transaction);
+  expect(signedTransaction).toHaveProperty(signature);
 });
