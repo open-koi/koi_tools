@@ -22,7 +22,7 @@ test("Get block height", async () => {
 test("Mint", async () => {
   const submission = {
     targetAddress: "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo",
-    qty: 50
+    qty: 5
   };
   const txId = await ktools.mint(submission);
   expect(typeof txId).toBe("string");
@@ -61,13 +61,24 @@ test("Get wallet transactions", async () => {
 });
 
 test("Get NFT reward null", async () => {
-  jest.setTimeout(10000)
+  jest.setTimeout(15000)
   const reward = await ktools.getNftReward("asdf");
   expect(reward).toBe(null);
 });
 
 test("Get NFT reward", async () => {
-  jest.setTimeout(10000)
+  jest.setTimeout(15000)
   const reward = await ktools.getNftReward("1UDe0Wqh51-O03efPzoc_HhsUPrmgBR2ziUfaI7CpZk");
   expect(reward).toBeGreaterThan(1600);
+});
+
+test("sign transaction", async () => {
+  const transaction = await kcommon.arweave.createTransaction(
+    {
+      data: Buffer.from('Some data', 'utf8')
+    }
+  );
+  const signedTransaction = await ktools.signTransaction(transaction);
+  expect(typeof signedTransaction.signature).toBe("string");
+  expect(signedTransaction.signature.trim()).not.toHaveLength(0);
 });
