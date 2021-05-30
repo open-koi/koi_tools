@@ -259,6 +259,25 @@ export class Common {
   }
 
   /**
+    * sign transaction
+    * @param tx It is transaction
+    
+    * @returns signed Transaction
+    */
+  async signTransaction(tx: Transaction): Promise<any> {
+    try {
+      //const wallet = this.wallet;
+      // Now we sign the transaction
+      await arweave.transactions.sign(tx, this.wallet);
+      // After is signed, we send the transaction
+      //await exports.arweave.transactions.post(transaction);
+      return tx;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
    * Get transaction data from Arweave
    * @param txId Transaction ID
    * @returns Transaction
