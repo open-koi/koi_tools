@@ -11,10 +11,8 @@ async function test() {
   await testGenerateWallet();
   await testGetKoiBalance();
   await testGetWalletBalance();
-  //await testRetrieveTopContent(); // Test failing
   await testMint();
   await testMyContent();
-  await testGetTopContent();
   await testNftTransactionData();
 
   return true;
@@ -34,14 +32,6 @@ async function testGetKoiBalance() {
 async function testGetWalletBalance() {
   console.log("Testing getWalletBalance");
   console.log(await kweb.getWalletBalance());
-}
-
-async function testRetrieveTopContent() {
-  console.log("Testing retrieveTopContent");
-  const result = await kweb.retrieveTopContent();
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned " + result);
-  }
 }
 
 async function testGetKoiBalance() {
