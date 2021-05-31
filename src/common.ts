@@ -259,6 +259,25 @@ export class Common {
   }
 
   /**
+    * sign transaction
+    * @param tx It is transaction
+    
+    * @returns signed Transaction
+    */
+  async signTransaction(tx: Transaction): Promise<any> {
+    try {
+      //const wallet = this.wallet;
+      // Now we sign the transaction
+      await arweave.transactions.sign(tx, this.wallet);
+      // After is signed, we send the transaction
+      //await exports.arweave.transactions.post(transaction);
+      return tx;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
    * Get transaction data from Arweave
    * @param txId Transaction ID
    * @returns Transaction
@@ -332,19 +351,17 @@ export class Common {
    * @param wallet Wallet address as a string
    * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  async getWalletTxs(wallet: string): Promise<any> {
+  async getWalletTxs(wallet: string): Promise<Array<any>> {
     const txIds = await arweave.arql({
       op: "equals",
       expr1: "from",
       expr2: wallet
     });
 
-    return txIds.reduce(
-      async (obj: any, txId) => (
-        (obj[txId] = await arweave.transactions.getData(txId)), obj
-      ),
-      {}
-    );
+    const txProms = txIds.map((txId) => {
+      return arweave.transactions.get(txId);
+    });
+    return Promise.all(txProms);
   }
 
   /**
