@@ -363,7 +363,7 @@ export class Node extends Common {
    */
   protected async _readContract(): Promise<any> {
     if (this.redisClient) {
-      // First Attempt to retrive the ContractPredictedState from redis
+      // First Attempt to retrieve the ContractPredictedState from redis
       const state = await redisGetAsync(
         "ContractPredictedState",
         this.redisClient
@@ -387,7 +387,7 @@ export class Node extends Common {
       console.log("ERROR RETRIEVING FROM KYVE", e);
     }
 
-    // Next Attempt to retrive ContractCurrentState from redis (Stored when data was successfully retrieved from KYVE)
+    // Next Attempt to retrieve ContractCurrentState from redis (Stored when data was successfully retrieved from KYVE)
     if (this.redisClient) {
       const state = await redisGetAsync(
         "ContractCurrentState",
