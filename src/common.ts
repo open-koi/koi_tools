@@ -20,7 +20,7 @@ export interface BundlerPayload {
   senderAddress: string;
   signature?: string;
   owner?: string;
-  vote?:Vote;
+  vote?: Vote; //@deprecated // Use data instead
 }
 
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
@@ -215,7 +215,7 @@ export class Common {
   /**
    * Interact with contract to transfer koi
    * @param qty Quantity to transfer
-   * @param target Reciever address
+   * @param target Receiver address
    * @returns Transaction ID
    */
   transfer(qty: number, target: string): Promise<string> {
@@ -230,7 +230,7 @@ export class Common {
 
   /**
    * Mint koi
-   * @param arg object arg.targetAddress(reciever address) and arg.qty(amount to mint)
+   * @param arg object arg.targetAddress(receiver address) and arg.qty(amount to mint)
    * @returns Transaction ID
    */
   mint(arg: any): Promise<string> {
@@ -245,7 +245,7 @@ export class Common {
 
   /**
    * Interact with contract to register data
-   * @param txId It has batchFile/value(string) and stakeamount/value(int) as properties
+   * @param txId It has batchFile/value(string) and stake amount/value(int) as properties
    * @param ownerId String container the owner ID
    * @returns Transaction ID
    */

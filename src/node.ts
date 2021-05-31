@@ -16,6 +16,7 @@ import axios, { AxiosResponse } from "axios";
 import * as arweaveUtils from "arweave/node/lib/utils";
 import { smartweave } from "smartweave";
 import redis, { RedisClient } from "redis";
+import { Query } from "@kyve/query";
 
 /*
 Koi Node Operation: {
@@ -287,6 +288,121 @@ export class Node extends Common {
     }
   }
 
+  // Protected functions
+
+  /**
+   * internal function, writes to contract. Overrides common._interactWrite, uses redis
+   * @param input
+   * @returns
+   */
+  protected async _interactWrite(input: any): Promise<string> {
+    const redisClient = this.redisClient;
+
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
+    if (this.redisClient !== null && this.redisClient !== undefined) {
+      // Adding the dryRun logic
+      let pendingStateArray = await redisGetAsync(
+        "pendingStateArray",
+        redisClient
+      );
+      if (!pendingStateArray) pendingStateArray = [];
+      else pendingStateArray = JSON.parse(pendingStateArray);
+      // get leteststate
+      // let latestContractState=await smartweave.readContract(arweave, KOI_CONTRACT)
+      let latestContractState = await redisGetAsync(
+        "currentState",
+        redisClient
+      );
+      latestContractState = JSON.parse(latestContractState);
+
+      return new Promise(function (resolve, reject) {
+        smartweave
+          .interactWrite(arweave, wallet, KOI_CONTRACT, input)
+          .then(async (txId) => {
+            pendingStateArray.push({
+              status: "pending",
+              txId: txId,
+              input: input
+              // dryRunState:response.state,
+            });
+
+            await redisSetAsync(
+              "pendingStateArray",
+              JSON.stringify(pendingStateArray),
+              redisClient
+            );
+            await recalculatePredictedState(
+              wallet,
+              latestContractState,
+              redisClient
+            );
+
+            resolve(txId);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
+    } else {
+      return new Promise(function (resolve, reject) {
+        smartweave
+          .interactWrite(arweave, wallet, KOI_CONTRACT, input)
+          .then((txId) => {
+            resolve(txId);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
+    }
+  }
+
+  /**
+   * Read contract latest state
+   * @returns Contract
+   */
+  protected async _readContract(): Promise<any> {
+    if (this.redisClient) {
+      // First Attempt to retrieve the ContractPredictedState from redis
+      const state = await redisGetAsync(
+        "ContractPredictedState",
+        this.redisClient
+      );
+      const jsonState = JSON.parse(state);
+      const balances = jsonState["balances"];
+      const validState = balances !== undefined && balances !== null;
+      if (validState) return jsonState;
+    }
+
+    // Second, get state from Kyve
+    const poolID = 4;
+    const query = new Query(poolID);
+    // finding latest transactions
+    try {
+      const snapshotArray = await query.limit(1).find();
+      if (snapshotArray && snapshotArray.length > 0)
+        return JSON.parse(snapshotArray[0]).state;
+      else console.log("NOTHING RETURNED FROM KYVE");
+    } catch (e) {
+      console.log("ERROR RETRIEVING FROM KYVE", e);
+    }
+
+    // Next Attempt to retrieve ContractCurrentState from redis (Stored when data was successfully retrieved from KYVE)
+    if (this.redisClient) {
+      const state = await redisGetAsync(
+        "ContractCurrentState",
+        this.redisClient
+      );
+      const jsonState = JSON.parse(state);
+      const balances = jsonState["balances"];
+      const validState = balances !== undefined && balances !== null;
+      if (validState) return jsonState;
+    }
+
+    // Fallback to smartweave
+    return smartweave.readContract(arweave, KOI_CONTRACT);
+  }
+
   // Private functions
 
   /**
@@ -358,73 +474,6 @@ export class Node extends Common {
       .map((b) => b.toString(16).padStart(2, "0"))
       .join(""); // convert bytes to hex string
     return hashHex;
-  }
-
-  /**
-   * internal function, writes to contract. Overrides common._interactWrite, uses redis
-   * @param input
-   * @returns
-   */
-  protected async _interactWrite(input: any): Promise<string> {
-    const redisClient = this.redisClient;
-
-    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
-    if (this.redisClient !== null && this.redisClient !== undefined) {
-      // Adding the dryRun logic
-      let pendingStateArray = await redisGetAsync(
-        "pendingStateArray",
-        redisClient
-      );
-      if (!pendingStateArray) pendingStateArray = [];
-      else pendingStateArray = JSON.parse(pendingStateArray);
-      // get leteststate
-      // let latestContractState=await smartweave.readContract(arweave, KOI_CONTRACT)
-      let latestContractState = await redisGetAsync(
-        "currentState",
-        redisClient
-      );
-      latestContractState = JSON.parse(latestContractState);
-
-      return new Promise(function (resolve, reject) {
-        smartweave
-          .interactWrite(arweave, wallet, KOI_CONTRACT, input)
-          .then(async (txId) => {
-            pendingStateArray.push({
-              status: "pending",
-              txId: txId,
-              input: input
-              // dryRunState:response.state,
-            });
-
-            await redisSetAsync(
-              "pendingStateArray",
-              JSON.stringify(pendingStateArray),
-              redisClient
-            );
-            await recalculatePredictedState(
-              wallet,
-              latestContractState,
-              redisClient
-            );
-
-            resolve(txId);
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      });
-    } else {
-      return new Promise(function (resolve, reject) {
-        smartweave
-          .interactWrite(arweave, wallet, KOI_CONTRACT, input)
-          .then((txId) => {
-            resolve(txId);
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      });
-    }
   }
 }
 
