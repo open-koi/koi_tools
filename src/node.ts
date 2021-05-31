@@ -7,9 +7,7 @@ import {
   BundlerPayload,
   arweave,
   ADDR_BUNDLER,
-  ADDR_BUNDLER_CURRENT,
-  KOI_CONTRACT,
-  getCacheData
+  KOI_CONTRACT
 } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import * as fs from "fs";
@@ -36,12 +34,7 @@ export class Node extends Common {
   db?: Datastore;
   totalVoted = -1;
   receipts: Array<any> = [];
-  redisClient: RedisClient;
-
-  constructor() {
-    super();
-    this.redisClient = getRedisClient();
-  }
+  redisClient?: RedisClient;
 
   /**
    * Asynchronously load a wallet from a UTF8 JSON file
@@ -273,6 +266,25 @@ export class Node extends Common {
     );
 
     return gatewayTrafficLogsHash === bundledTrafficLogsParsedHash;
+  }
+
+  /**
+   * Loads redis client
+   */
+  loadRedisClient(): void {
+    if (!process.env.REDIS_IP || !process.env.REDIS_PORT) {
+      throw Error("CANNOT READ REDIS IP OR PORT FROM ENV");
+    } else {
+      this.redisClient = redis.createClient({
+        host: process.env.REDIS_IP,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD
+      });
+
+      this.redisClient.on("error", function (error) {
+        console.error(error);
+      });
+    }
   }
 
   // Private functions
@@ -526,24 +538,6 @@ async function checkPendingTransactionStatus(redisClient: any): Promise<any> {
     JSON.stringify(pendingStateArray),
     redisClient
   );
-}
-
-function getRedisClient(): RedisClient {
-  let client = null;
-  if (!process.env.REDIS_IP || !process.env.REDIS_PORT) {
-    throw Error("CANNOT READ REDIS IP OR PORT FROM ENV");
-  } else {
-    client = redis.createClient({
-      host: process.env.REDIS_IP,
-      port: parseInt(process.env.REDIS_PORT),
-      password: process.env.REDIS_PASSWORD
-    });
-
-    client.on("error", function (error) {
-      console.error(error);
-    });
-  }
-  return client;
 }
 
 module.exports = { Node };
