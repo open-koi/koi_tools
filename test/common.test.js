@@ -55,8 +55,17 @@ test("Verify signature", async () => {
   expect(await ktools.verifySignature(signedPayload)).toBe(true);
 });
 
+test("Arweave GQL", async () => {
+  jest.setTimeout(15000)
+  const query = "query { transactions(block: {min: 0, max: 10}) { edges { node { id } } } }";
+  const request = JSON.stringify({query});
+  const res = await ktools.gql(request);
+  expect(res).toBeTruthy();
+});
+
 test("Get wallet transactions", async () => {
-  const transactions = await ktools.getWalletTxs(ktools.address);
+  jest.setTimeout(15000)
+  const transactions = await ktools.getWalletTxs("ou-OUmrWuT0hnSiUMoyhGEbd3s5b_ce8QK0vhNwmno4");
   expect(transactions).toBeTruthy();
 });
 

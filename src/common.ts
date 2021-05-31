@@ -27,6 +27,7 @@ export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
+const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -350,17 +351,31 @@ export class Common {
    * @param wallet Wallet address as a string
    * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  async getWalletTxs(wallet: string): Promise<Array<any>> {
-    const txIds = await arweave.arql({
-      op: "equals",
-      expr1: "from",
-      expr2: wallet
-    });
-
-    const txProms = txIds.map((txId) => {
-      return arweave.transactions.get(txId);
-    });
-    return Promise.all(txProms);
+  getWalletTxs(wallet: string): Promise<any> {
+    const blockTemplate = `
+      edges {
+        node {
+          id anchor signature recipient
+          owner { address key }
+          fee { winston ar }
+          quantity { winston ar }
+          data { size type }
+          tags { name value }
+          block { id timestamp height previous }
+          parent { id }
+        }
+      }`;
+    const query = `
+      query {
+        ownedTxs: transactions(owners:["${wallet}"]) {
+          ${blockTemplate}
+        }
+        recipientTxs: transactions(recipients:["${wallet}"]) {
+          ${blockTemplate}
+        }
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
   }
 
   /**
@@ -428,6 +443,13 @@ export class Common {
     if (!(txId in state.registeredRecord)) return null;
     const nft = await this.contentView(txId, state);
     return nft.totalReward;
+  }
+
+  async gql(request: string): Promise<any> {
+    const { data } = await axios.post(ADDR_ARWEAVE_GQL, request, {
+      headers: { "content-type": "application/json" }
+    });
+    return data;
   }
 
   // Protected functions
