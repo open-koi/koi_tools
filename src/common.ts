@@ -13,7 +13,6 @@ import * as crypto from "libp2p-crypto";
 export interface Vote {
   voteId: number;
   direct?: string;
-  userVote?: string;
 }
 
 export interface BundlerPayload {
@@ -29,6 +28,7 @@ export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
+const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -260,6 +260,25 @@ export class Common {
   }
 
   /**
+    * sign transaction
+    * @param tx It is transaction
+    
+    * @returns signed Transaction
+    */
+  async signTransaction(tx: Transaction): Promise<any> {
+    try {
+      //const wallet = this.wallet;
+      // Now we sign the transaction
+      await arweave.transactions.sign(tx, this.wallet);
+      // After is signed, we send the transaction
+      //await exports.arweave.transactions.post(transaction);
+      return tx;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
    * Get transaction data from Arweave
    * @param txId Transaction ID
    * @returns Transaction
@@ -336,19 +355,31 @@ export class Common {
    * @param wallet Wallet address as a string
    * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  async getWalletTxs(wallet: string): Promise<any> {
-    const txIds = await arweave.arql({
-      op: "equals",
-      expr1: "from",
-      expr2: wallet
-    });
-
-    return txIds.reduce(
-      async (obj: any, txId) => (
-        (obj[txId] = await arweave.transactions.getData(txId)), obj
-      ),
-      {}
-    );
+  getWalletTxs(wallet: string): Promise<any> {
+    const blockTemplate = `
+      edges {
+        node {
+          id anchor signature recipient
+          owner { address key }
+          fee { winston ar }
+          quantity { winston ar }
+          data { size type }
+          tags { name value }
+          block { id timestamp height previous }
+          parent { id }
+        }
+      }`;
+    const query = `
+      query {
+        ownedTxs: transactions(owners:["${wallet}"]) {
+          ${blockTemplate}
+        }
+        recipientTxs: transactions(recipients:["${wallet}"]) {
+          ${blockTemplate}
+        }
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
   }
 
   /**
@@ -416,6 +447,13 @@ export class Common {
     if (!(txId in state.registeredRecord)) return null;
     const nft = await this.contentView(txId, state);
     return nft.totalReward;
+  }
+
+  async gql(request: string): Promise<any> {
+    const { data } = await axios.post(ADDR_ARWEAVE_GQL, request, {
+      headers: { "content-type": "application/json" }
+    });
+    return data;
   }
 
   // Protected functions

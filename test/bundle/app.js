@@ -11,10 +11,8 @@ async function test() {
   await testGenerateWallet();
   await testGetKoiBalance();
   await testGetWalletBalance();
-  //await testRetrieveTopContent(); // Test failing
   await testMint();
   await testMyContent();
-  await testGetTopContent();
   await testNftTransactionData();
 
   return true;
@@ -34,14 +32,6 @@ async function testGetKoiBalance() {
 async function testGetWalletBalance() {
   console.log("Testing getWalletBalance");
   console.log(await kweb.getWalletBalance());
-}
-
-async function testRetrieveTopContent() {
-  console.log("Testing retrieveTopContent");
-  const result = await kweb.retrieveTopContent();
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned " + result);
-  }
 }
 
 async function testGetKoiBalance() {
@@ -78,15 +68,6 @@ async function testMyContent() {
   console.log(txId);
   if (typeof txId === "undefined" || txId === null) {
     throw Error("The address function returned " + txId);
-  }
-}
-
-async function testGetTopContent() {
-  console.log("Testing getTopContent");
-  const contents = await kweb.getTopContent();
-  console.log(contents.data);
-  if (typeof contents === "undefined" || contents === null) {
-    throw Error("Failed while attempting to verify");
   }
 }
 

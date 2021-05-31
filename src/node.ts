@@ -7,9 +7,7 @@ import {
   BundlerPayload,
   arweave,
   ADDR_BUNDLER,
-  ADDR_BUNDLER_CURRENT,
-  KOI_CONTRACT,
-  getCacheData
+  KOI_CONTRACT
 } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import * as fs from "fs";
@@ -36,12 +34,7 @@ export class Node extends Common {
   db?: Datastore;
   totalVoted = -1;
   receipts: Array<any> = [];
-  redisClient: RedisClient;
-
-  constructor() {
-    super();
-    this.redisClient = getRedisClient();
-  }
+  redisClient?: RedisClient;
 
   /**
    * Asynchronously load a wallet from a UTF8 JSON file
@@ -95,7 +88,7 @@ export class Node extends Common {
    * @returns Transaction ID
    */
   async vote(arg: Vote): Promise<any> {
-    const userVote = await this.validateData(arg.voteId);
+    const userVote: any = await this.validateData(arg.voteId);
     if (userVote == null) {
       this.totalVoted += 1;
       await this._db();
@@ -105,7 +98,7 @@ export class Node extends Common {
     const input = {
       function: "vote",
       voteId: arg.voteId,
-      userVote: userVote.toString()
+      userVote: userVote
     };
 
     let receipt;
@@ -113,6 +106,9 @@ export class Node extends Common {
     if (arg.direct) tx = await this._interactWrite(input);
     else {
       const caller = await this.getWalletAddress();
+
+      // Vote must be a string when indirect voting through bundler
+      input.userVote = userVote.toString();
 
       const payload: BundlerPayload = {
         vote: input,
@@ -270,6 +266,25 @@ export class Node extends Common {
     );
 
     return gatewayTrafficLogsHash === bundledTrafficLogsParsedHash;
+  }
+
+  /**
+   * Loads redis client
+   */
+  loadRedisClient(): void {
+    if (!process.env.REDIS_IP || !process.env.REDIS_PORT) {
+      throw Error("CANNOT READ REDIS IP OR PORT FROM ENV");
+    } else {
+      this.redisClient = redis.createClient({
+        host: process.env.REDIS_IP,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD
+      });
+
+      this.redisClient.on("error", function (error) {
+        console.error(error);
+      });
+    }
   }
 
   // Private functions
@@ -523,24 +538,6 @@ async function checkPendingTransactionStatus(redisClient: any): Promise<any> {
     JSON.stringify(pendingStateArray),
     redisClient
   );
-}
-
-function getRedisClient(): RedisClient {
-  let client = null;
-  if (!process.env.REDIS_IP || !process.env.REDIS_PORT) {
-    throw Error("CANNOT READ REDIS IP OR PORT FROM ENV");
-  } else {
-    client = redis.createClient({
-      host: process.env.REDIS_IP,
-      port: parseInt(process.env.REDIS_PORT),
-      password: process.env.REDIS_PASSWORD
-    });
-
-    client.on("error", function (error) {
-      console.error(error);
-    });
-  }
-  return client;
 }
 
 module.exports = { Node };
