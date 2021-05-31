@@ -298,7 +298,7 @@ export class Common {
     const data = payload.data || payload.vote || null;
     const jwk = this.wallet;
     const publicModulus = jwk.n;
-    const dataInString = JSON.stringify(0data);
+    const dataInString = JSON.stringify(data);
     const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     const rawSignature = await arweave.crypto.sign(jwk, dataIn8Array);
     payload.signature = arweaveUtils.bufferTob64Url(rawSignature);
