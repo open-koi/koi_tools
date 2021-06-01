@@ -10,7 +10,7 @@ import {
   KOI_CONTRACT
 } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
-import * as fs from "fs";
+import { readFile } from "fs/promises";
 import Datastore from "nedb-promises";
 import axios, { AxiosResponse } from "axios";
 import * as arweaveUtils from "arweave/node/lib/utils";
@@ -42,13 +42,9 @@ export class Node extends Common {
    * @param file Path of the file to be loaded
    * @returns JSON representation of the object
    */
-  loadFile(file: string): Promise<any> {
-    return new Promise(function (resolve, reject) {
-      fs.readFile(file, "utf8", (err: Error | null, data: string) => {
-        if (err !== null) reject(err);
-        resolve(JSON.parse(data));
-      });
-    });
+  async loadFile(file: string): Promise<any> {
+    const data = await readFile(file, "utf8");
+    return JSON.parse(data);
   }
 
   /**
