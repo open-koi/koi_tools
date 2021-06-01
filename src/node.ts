@@ -532,7 +532,10 @@ async function recalculatePredictedState(
         pendingStateArray[i].input,
         latestContractState,
         from,
-        contract
+        contract,
+        null,
+        null,
+        null
       );
       console.timeEnd("Time this");
     } else {
@@ -545,7 +548,10 @@ async function recalculatePredictedState(
         pendingStateArray[i].input,
         finalState.state,
         from,
-        contract
+        contract,
+        null,
+        null,
+        null
       );
       console.timeEnd("Time this");
     }
