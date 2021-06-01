@@ -369,9 +369,10 @@ export class Node extends Common {
         this.redisClient
       );
       const jsonState = JSON.parse(state);
-      const balances = jsonState["balances"];
-      const validState = balances !== undefined && balances !== null;
-      if (validState) return jsonState;
+      if (jsonState) {
+        const balances = jsonState["balances"];
+        if (balances !== undefined && balances !== null) return jsonState;
+      }
     }
 
     // Second, get state from Kyve
@@ -394,9 +395,10 @@ export class Node extends Common {
         this.redisClient
       );
       const jsonState = JSON.parse(state);
-      const balances = jsonState["balances"];
-      const validState = balances !== undefined && balances !== null;
-      if (validState) return jsonState;
+      if (jsonState) {
+        const balances = jsonState["balances"];
+        if (balances !== undefined && balances !== null) return jsonState;
+      }
     }
 
     // Fallback to smartweave
