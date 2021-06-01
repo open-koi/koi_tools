@@ -6,14 +6,14 @@ var walletKeyLocation = process.env.WALLET_LOCATION;
 //const redisClient = require("../helpers/redis");
 
 start();
-const Arweave = require("arweave/node");
-const smartweave = require("smartweave");
+// const Arweave = require("arweave/node");
+// const smartweave = require("smartweave");
 
-const arweave = Arweave.init({
-  host: "arweave.net",
-  protocol: "https",
-  port: 443,
-});
+// const arweave = Arweave.init({
+//   host: "arweave.net",
+//   protocol: "https",
+//   port: 443,
+// });
 async function start() {
   //console.log("running async block", ktools);
 
@@ -59,7 +59,7 @@ async function start() {
   // test passed
   //await testMyContent();
   // test passed
-  await testRetrieveTopContent();
+  //await testRetrieveTopContent();
   // test passed
   // await testReadSate();
   // await testNftTransactionData()
@@ -71,28 +71,25 @@ async function start() {
   //await testRetrieveTopContent();
   //await testSubmitTrafficLog();
   // test
+  //await testDeregitserTask();
+  //await testRegisterTask();
   //await testUserState();
   //await testStake();
   //await testGetKoiBalnace();
   //await testMyContent();
+  //await testReadTags();
+  await testReadContract();
   // } catch (err) {
   //   throw Error(err);
   // }
 }
-async function testGetContractState() {
-  const result = await ktools.getContractState();
-  console.log(result);
-}
-async function testRetrieveTopContent() {
-  const result = await ktools.retrieveTopContent();
-  console.log("Array", result);
-  if (typeof result === "undefined" || result === null) {
-    throw Error("The address function returned ", result);
-  }
+async function testReadContract() {
+  const beforeTransaction = await ktools._readContract();
+  console.log(`Before interact write: ${JSON.stringify(beforeTransaction)}`);
 }
 async function testStake() {
   // test 4 - test create stake
-  var qty = 1;
+  var qty = 5;
 
   var result = await ktools.stake(qty);
 
@@ -102,31 +99,37 @@ async function testStake() {
     throw Error("Failed while attempting to stake");
   }
 }
-/*
-async function testMyContent() {
-  const txId = await ktools.myContent();
-  console.log(txId);
-  if (typeof txId === "undefined" || txId === null) {
-    throw Error("The address function returned ", txId);
-  }
+async function testRankProposal() {
+  var tx = await ktools.rankProposal();
+  console.log(tx);
 }
 async function testVote() {
   const arg = {
-    voteId: 35,
-    direct: true,
+    voteId: 40,
+    direct: false,
   };
   const result = await ktools.vote(arg);
   console.log("result", result.message);
 }
 async function testDistributeDailyRewards() {
   let tx = await ktools.distributeDailyRewards();
-  console.log(tx);
+  console.log("distribute", tx);
 }
-async function testRankProposal() {
-  var tx = await ktools.rankProposal();
-  console.log(tx);
+async function testDeregitserTask() {
+  let taskId = 3744187114055679;
+  const txId = await ktools.deregisterTask(taskId);
+  console.log(txId);
 }
-
+async function testRegisterTask() {
+  let arg = {
+    taskId: Math.floor(Math.random() * 1e16),
+    taskName: "AttentionReward",
+    taskTxId: "ldW53WDyrRSWWXge2G3PKG8Z3ldiRXHXo8306ewr-QQ",
+    koiReward: 300,
+  };
+  const txId = await ktools.registerTask(arg);
+  console.log("result", txId);
+}
 async function testSubmitTrafficLog() {
   // test 11 - input a batch action to arweave
   //let txid =  'KznQBSG-PRPwygFt0E_LfB3hdlqsdmz_O5Q62Nx2rK8'
@@ -142,6 +145,46 @@ async function testSubmitTrafficLog() {
     throw Error("Failed while attempting to vote");
   }
 }
+/*
+async function testReadTags() {
+  const txId = "EKW3AApL4mdLc6sIhVr3Cn8VN7N9VAQUp2BNALHXFtQ";
+  const tags = await ktools.readTags(txId);
+  console.log("resultTags", tags);
+}
+
+
+
+
+
+async function testGetContractState() {
+  const result = await ktools.getContractState();
+  console.log(result);
+}
+async function testRetrieveTopContent() {
+  const result = await ktools.retrieveTopContent();
+  console.log("Array", result);
+  if (typeof result === "undefined" || result === null) {
+    throw Error("The address function returned ", result);
+  }
+}
+
+
+
+async function testMyContent() {
+  const txId = await ktools.myContent();
+  console.log(txId);
+  if (typeof txId === "undefined" || txId === null) {
+    throw Error("The address function returned ", txId);
+  }
+}
+
+async function testDistributeDailyRewards() {
+  let tx = await ktools.distributeDailyRewards();
+  console.log(tx);
+}
+
+
+
 
 
 
