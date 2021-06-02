@@ -121,22 +121,28 @@ export class Node extends Common {
       return { message: "justVoted" };
     }
 
-    if (receipt) {
-      if (this.db !== undefined && receipt.status === 200) {
+    if (!receipt) return null;
+
+    if (this.db !== undefined && receipt.status === 200) {
+      if (receipt.data.message == "success") {
         this.totalVoted += 1;
         const data = receipt.data.receipt;
         const id = await this._db();
         await this.db.update({ _id: id }, { $push: { receipt: data } });
         this.receipts.push(data);
         return { message: "success" };
+      } else if (receipt.data.message == "duplicate") {
+        this.totalVoted += 1;
+        await this._db();
+        return { message: "duplicatedVote" };
       }
-
-      console.log(receipt);
+    } else {
       this.totalVoted += 1;
       await this._db();
-      return { message: "duplicatedVote" };
+      return { message: receipt.data.message };
     }
 
+    // Status 200, but message doesn't match.
     return null;
   }
 
