@@ -285,7 +285,7 @@ export class Node extends Common {
       });
 
       this.redisClient.on("error", function (error) {
-        console.error(error);
+        console.error("redisClient " + error);
       });
     }
   }
