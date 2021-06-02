@@ -12,7 +12,7 @@ test("Generate wallet", async () => {
 });
 
 test("Get wallet balance", async () => {
-  expect(await ktools.getWalletBalance()).toBe("0.000000000000");
+  expect(await ktools.getWalletBalance()).toBeLessThan(1);
 });
 
 test("Get block height", async () => {

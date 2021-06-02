@@ -115,13 +115,13 @@ export class Common {
    * Get and set arweave balance
    * @returns Balance as a string if wallet exists, else undefined
    */
-  async getWalletBalance(): Promise<string | null> {
+  async getWalletBalance(): Promise<number | null> {
     let winston = "";
     let ar = "";
     if (this.address) {
       winston = await arweave.wallets.getBalance(this.address);
       ar = arweave.ar.winstonToAr(winston);
-      return ar;
+      return parseFloat(ar);
     } else {
       return null;
     }
