@@ -13,21 +13,37 @@ import * as crypto from "libp2p-crypto";
 export interface Vote {
   voteId: number;
   direct?: string;
-  userVote?: string;
 }
 
 export interface BundlerPayload {
-  vote: Vote;
+  data?: any;
   senderAddress: string;
   signature?: string;
   owner?: string;
+  vote?: Vote; //@deprecated // Use data instead
 }
 
-export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
+export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
+const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
+
+const BLOCK_TEMPLATE = `
+  edges {
+    cursor
+    node {
+      id anchor signature recipient
+      owner { address key }
+      fee { winston ar }
+      quantity { winston ar }
+      data { size type }
+      tags { name value }
+      block { id timestamp height previous }
+      parent { id }
+    }
+  }`;
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -40,7 +56,6 @@ export const arweave = Arweave.init({
  */
 export class Common {
   wallet?: JWKInterface;
-  myBookmarks: Map<string, string> = new Map();
   contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
@@ -114,8 +129,16 @@ export class Common {
    * Get and set arweave balance
    * @returns Balance as a string if wallet exists, else undefined
    */
-  getWalletBalance(): Promise<string> | void {
-    if (this.address) return arweave.wallets.getBalance(this.address);
+  async getWalletBalance(): Promise<number> {
+    let winston = "";
+    let ar = "";
+    if (this.address) {
+      winston = await arweave.wallets.getBalance(this.address);
+      ar = arweave.ar.winstonToAr(winston);
+      return parseFloat(ar);
+    } else {
+      return 0;
+    }
   }
 
   /**
@@ -164,22 +187,6 @@ export class Common {
   }
 
   /**
-   * Adds content to bookmarks
-   * @param arTxId Arweave transaction ID
-   * @param ref Content stored in transaction
-   */
-  addToBookmarks(arTxId: string, ref: string): void {
-    if (this.myBookmarks.has(arTxId)) {
-      throw Error(
-        `cannot assign a bookmark to ${arTxId} since it already has a note ${ref}`
-      );
-    }
-
-    this.myBookmarks.set(arTxId, ref);
-    //this.myBookmarks[ref] = arTxId; // I don't see why we should do this
-  }
-
-  /**
    * Interact with contract to stake
    * @param qty Quantity to stake
    * @returns Transaction ID
@@ -214,7 +221,7 @@ export class Common {
   /**
    * Interact with contract to transfer koi
    * @param qty Quantity to transfer
-   * @param target Reciever address
+   * @param target Receiver address
    * @returns Transaction ID
    */
   transfer(qty: number, target: string): Promise<string> {
@@ -229,7 +236,7 @@ export class Common {
 
   /**
    * Mint koi
-   * @param arg object arg.targetAddress(reciever address) and arg.qty(amount to mint)
+   * @param arg object arg.targetAddress(receiver address) and arg.qty(amount to mint)
    * @returns Transaction ID
    */
   mint(arg: any): Promise<string> {
@@ -244,7 +251,7 @@ export class Common {
 
   /**
    * Interact with contract to register data
-   * @param txId It has batchFile/value(string) and stakeamount/value(int) as properties
+   * @param txId It has batchFile/value(string) and stake amount/value(int) as properties
    * @param ownerId String container the owner ID
    * @returns Transaction ID
    */
@@ -256,6 +263,25 @@ export class Common {
     };
 
     return this._interactWrite(input);
+  }
+
+  /**
+    * sign transaction
+    * @param tx It is transaction
+    
+    * @returns signed Transaction
+    */
+  async signTransaction(tx: Transaction): Promise<any> {
+    try {
+      //const wallet = this.wallet;
+      // Now we sign the transaction
+      await arweave.transactions.sign(tx, this.wallet);
+      // After is signed, we send the transaction
+      //await exports.arweave.transactions.post(transaction);
+      return tx;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**
@@ -272,11 +298,13 @@ export class Common {
    * @param payload Payload to sign
    * @returns Signed payload with signature
    */
+
   async signPayload(payload: BundlerPayload): Promise<BundlerPayload | null> {
     if (this.wallet === undefined) return null;
+    const data = payload.data || payload.vote || null;
     const jwk = this.wallet;
     const publicModulus = jwk.n;
-    const dataInString = JSON.stringify(payload.vote);
+    const dataInString = JSON.stringify(data);
     const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     const rawSignature = await arweave.crypto.sign(jwk, dataIn8Array);
     payload.signature = arweaveUtils.bufferTob64Url(rawSignature);
@@ -290,8 +318,9 @@ export class Common {
    * @returns Verification result
    */
   async verifySignature(payload: any): Promise<boolean> {
+    const data = payload.data || payload.vote || null;
     const rawSignature = arweaveUtils.b64UrlToBuffer(payload.signature);
-    const dataInString = JSON.stringify(payload.vote);
+    const dataInString = JSON.stringify(data);
     const dataIn8Array = arweaveUtils.stringToBuffer(dataInString);
     return await arweave.crypto.verify(
       payload.owner,
@@ -328,23 +357,47 @@ export class Common {
   }
 
   /**
-   * Gets all the transactions from a wallet address
+   * Gets all the transactions where the wallet is the owner
    * @param wallet Wallet address as a string
+   * @param count The number of results to return
+   * @param cursorId Cursor ID after which to query results, from data.transactions.edges[n].cursor
    * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  async getWalletTxs(wallet: string): Promise<any> {
-    const txIds = await arweave.arql({
-      op: "equals",
-      expr1: "from",
-      expr2: wallet
-    });
+  getOwnedTxs(wallet: string, count?: number, cursorId?: string): Promise<any> {
+    const countStr = count !== undefined ? `, first: ${count}` : "";
+    const afterStr = cursorId !== undefined ? `, after: "${cursorId}"` : "";
+    const query = `
+      query {
+        transactions(owners:["${wallet}"]${countStr}${afterStr}) {
+          ${BLOCK_TEMPLATE}
+        }
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
+  }
 
-    return txIds.reduce(
-      async (obj: any, txId) => (
-        (obj[txId] = await arweave.transactions.getData(txId)), obj
-      ),
-      {}
-    );
+  /**
+   * Gets all the transactions where the wallet is the recipient
+   * @param wallet Wallet address as a string
+   * @param count The number of results to return
+   * @param cursorId Cursor ID after which to query results, from data.transactions.edges[n].cursor
+   * @returns Object with transaction IDs as keys, and transaction data strings as values
+   */
+  getRecipientTxs(
+    wallet: string,
+    count?: number,
+    cursorId?: string
+  ): Promise<any> {
+    const countStr = count !== undefined ? `, first: ${count}` : "";
+    const afterStr = cursorId !== undefined ? `, after: "${cursorId}"` : "";
+    const query = `
+      query {
+        transactions(recipients:["${wallet}"]${countStr}${afterStr}) {
+          ${BLOCK_TEMPLATE}
+        }
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
   }
 
   /**
@@ -412,6 +465,13 @@ export class Common {
     if (!(txId in state.registeredRecord)) return null;
     const nft = await this.contentView(txId, state);
     return nft.totalReward;
+  }
+
+  async gql(request: string): Promise<any> {
+    const { data } = await axios.post(ADDR_ARWEAVE_GQL, request, {
+      headers: { "content-type": "application/json" }
+    });
+    return data;
   }
 
   // Protected functions
