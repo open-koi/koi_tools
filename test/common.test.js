@@ -16,11 +16,12 @@ test("Get wallet balance", async () => {
 });
 
 test("Get block height", async () => {
+  jest.setTimeout(15000);
   expect(await ktools.getBlockHeight()).toBeGreaterThan(0);
 });
 
 test("Mint", async () => {
-  jest.setTimeout(15000)
+  jest.setTimeout(15000);
   const submission = {
     targetAddress: "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo",
     qty: 5
@@ -57,7 +58,7 @@ test("Verify signature", async () => {
 });
 
 test("Arweave GQL", async () => {
-  jest.setTimeout(15000)
+  jest.setTimeout(15000);
   const query = "query { transactions(block: {min: 0, max: 10}) { edges { node { id } } } }";
   const request = JSON.stringify({query});
   const res = await ktools.gql(request);
@@ -65,25 +66,25 @@ test("Arweave GQL", async () => {
 });
 
 test("Get owned transactions", async () => {
-  jest.setTimeout(15000)
+  jest.setTimeout(15000);
   const transactions = await ktools.getOwnedTxs("ou-OUmrWuT0hnSiUMoyhGEbd3s5b_ce8QK0vhNwmno4", 2);
   expect(transactions.data.transactions.edges.length).toBe(2);
 });
 
 test("Get recipient transactions", async () => {
-  jest.setTimeout(15000)
+  jest.setTimeout(15000);
   const transactions = await ktools.getRecipientTxs("ou-OUmrWuT0hnSiUMoyhGEbd3s5b_ce8QK0vhNwmno4", 3);
   expect(transactions.data.transactions.edges.length).toBe(3);
 });
 
 test("Get NFT reward null", async () => {
-  jest.setTimeout(15000)
+  jest.setTimeout(15000);
   const reward = await ktools.getNftReward("asdf");
   expect(reward).toBe(null);
 });
 
 test("Get NFT reward", async () => {
-  jest.setTimeout(15000)
+  jest.setTimeout(15000);
   const reward = await ktools.getNftReward("1UDe0Wqh51-O03efPzoc_HhsUPrmgBR2ziUfaI7CpZk");
   expect(reward).toBeGreaterThan(1600);
 });
