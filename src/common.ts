@@ -23,7 +23,7 @@ export interface BundlerPayload {
   vote?: Vote; //@deprecated // Use data instead
 }
 
-export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
+export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
@@ -114,8 +114,16 @@ export class Common {
    * Get and set arweave balance
    * @returns Balance as a string if wallet exists, else undefined
    */
-  getWalletBalance(): Promise<string> | void {
-    if (this.address) return arweave.wallets.getBalance(this.address);
+  async getWalletBalance(): Promise<number> {
+    let winston = "";
+    let ar = "";
+    if (this.address) {
+      winston = await arweave.wallets.getBalance(this.address);
+      ar = arweave.ar.winstonToAr(winston);
+      return parseFloat(ar);
+    } else {
+      return 0;
+    }
   }
 
   /**
