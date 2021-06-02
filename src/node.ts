@@ -64,7 +64,7 @@ export class Node extends Common {
     const count = await this.db.count({});
     if (count == 0) {
       const data = {
-        totalVoted: 32,
+        totalVoted: -1,
         receipt: []
       };
 
@@ -131,7 +131,7 @@ export class Node extends Common {
         return { message: "success" };
       }
 
-      console.log(receipt);
+      
       this.totalVoted += 1;
       await this._db();
       return { message: "duplicatedVote" };
