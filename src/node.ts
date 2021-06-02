@@ -420,7 +420,7 @@ export class Node extends Common {
    * @param state
    * @returns
    */
-  async registerDataDryRun(txId: any, owner: any, tx: any, state: any): Promise<string> {
+  async registerDataDryRun(txId: any, owner: any, tx: any, state: any): Promise<any> {
     console.log("I AM CALLED")
     let input = {
       function: 'registerData',
@@ -484,9 +484,9 @@ export class Node extends Common {
           wallet,
           KOI_CONTRACT,
           pendingStateArray[i].input,
-          null,
-          null,
-          null,
+          undefined,
+          undefined,
+          undefined,
           latestContractState,
           from,
           contract
@@ -503,9 +503,9 @@ export class Node extends Common {
           wallet,
           KOI_CONTRACT,
           pendingStateArray[i].input,
-          null,
-          null,
-          null,
+          undefined,
+          undefined,
+          undefined,
           finalState.state,
           from,
           contract
