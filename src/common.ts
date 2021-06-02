@@ -32,6 +32,7 @@ const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
 
 const BLOCK_TEMPLATE = `
   edges {
+    cursor
     node {
       id anchor signature recipient
       owner { address key }

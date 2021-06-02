@@ -20,6 +20,7 @@ test("Get block height", async () => {
 });
 
 test("Mint", async () => {
+  jest.setTimeout(15000)
   const submission = {
     targetAddress: "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo",
     qty: 5
