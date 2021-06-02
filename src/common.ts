@@ -41,7 +41,6 @@ export const arweave = Arweave.init({
  */
 export class Common {
   wallet?: JWKInterface;
-  myBookmarks: Map<string, string> = new Map();
   contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
@@ -170,22 +169,6 @@ export class Common {
    */
   async readNftState(txId: string): Promise<any> {
     return smartweave.readContract(arweave, txId);
-  }
-
-  /**
-   * Adds content to bookmarks
-   * @param arTxId Arweave transaction ID
-   * @param ref Content stored in transaction
-   */
-  addToBookmarks(arTxId: string, ref: string): void {
-    if (this.myBookmarks.has(arTxId)) {
-      throw Error(
-        `cannot assign a bookmark to ${arTxId} since it already has a note ${ref}`
-      );
-    }
-
-    this.myBookmarks.set(arTxId, ref);
-    //this.myBookmarks[ref] = arTxId; // I don't see why we should do this
   }
 
   /**
