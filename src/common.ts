@@ -584,6 +584,7 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
 module.exports = {
   KOI_CONTRACT,
   BUNDLER_CURRENT,
+  BUNDLER_NODES,
   arweave,
   Common,
   getCacheData
