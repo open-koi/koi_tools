@@ -24,8 +24,6 @@ export interface BundlerPayload {
 }
 
 export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
-export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
-export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
@@ -51,20 +49,21 @@ export const arweave = Arweave.init({
   port: 443
 });
 
+export const BUNDLER_CURRENT = "/state/current";
+export const BUNDLER_NODES = "/nodes";
+
 /**
  * Tools for interacting with the koi network
  */
 export class Common {
   wallet?: JWKInterface;
-  contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
+  bundler_addr: string;
 
-  constructor() {
-    console.log(
-      "Initialized a Koi Node with smart contract:",
-      this.contractAddress
-    );
+  constructor(bundler_addr = "https://bundler.openkoi.com:8888") {
+    this.bundler_addr = bundler_addr;
+    console.log("Initialized a Koi Node with smart contract:", KOI_CONTRACT);
   }
 
   /**
@@ -146,9 +145,9 @@ export class Common {
    * @returns Balance as a number
    */
   async getKoiBalance(): Promise<number> {
-    const state = await getCacheData<any>(ADDR_BUNDLER_CURRENT);
-    if (this.address !== undefined && this.address in state.data.balances)
-      return state.data.balances[this.address];
+    const state = await this.getContractState();
+    if (this.address !== undefined && this.address in state)
+      return state.balances[this.address];
     return 0;
   }
 
@@ -474,6 +473,11 @@ export class Common {
     return data;
   }
 
+  async getNodes(): Promise<any> {
+    const res = await getCacheData(this.bundler_addr + BUNDLER_NODES);
+    return res.data;
+  }
+
   // Protected functions
 
   /**
@@ -579,8 +583,7 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
 
 module.exports = {
   KOI_CONTRACT,
-  ADDR_BUNDLER,
-  ADDR_BUNDLER_CURRENT,
+  BUNDLER_CURRENT,
   arweave,
   Common,
   getCacheData

@@ -1,14 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import {
-  Common,
-  Vote,
-  BundlerPayload,
-  arweave,
-  ADDR_BUNDLER,
-  KOI_CONTRACT
-} from "./common";
+import { Common, Vote, BundlerPayload, arweave, KOI_CONTRACT } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { readFile } from "fs/promises";
 import Datastore from "nedb-promises";
@@ -29,7 +22,7 @@ Koi Node Operation: {
 */
 
 const ADDR_LOGS = "https://arweave.dev/logs";
-const ADDR_BUNDLER_NODES = ADDR_BUNDLER + "/submitVote/";
+const BUNDLER_SUBMIT = "/submitVote";
 
 export class Node extends Common {
   db?: Datastore;
@@ -439,7 +432,7 @@ export class Node extends Common {
   ): Promise<AxiosResponse<any> | null> {
     const sigResult = await this.signPayload(payload);
     return sigResult !== null
-      ? await axios.post(ADDR_BUNDLER_NODES, sigResult)
+      ? await axios.post(this.bundler_addr + BUNDLER_SUBMIT, sigResult)
       : null;
   }
 
