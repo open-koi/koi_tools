@@ -64,7 +64,7 @@ export class Node extends Common {
     const count = await this.db.count({});
     if (count == 0) {
       const data = {
-        totalVoted: 32,
+        totalVoted: -1,
         receipt: []
       };
 
@@ -121,22 +121,28 @@ export class Node extends Common {
       return { message: "justVoted" };
     }
 
-    if (receipt) {
-      if (this.db !== undefined && receipt.status === 200) {
+    if (!receipt) return null;
+
+    if (this.db !== undefined && receipt.status === 200) {
+      if (receipt.data.message == "success") {
         this.totalVoted += 1;
         const data = receipt.data.receipt;
         const id = await this._db();
         await this.db.update({ _id: id }, { $push: { receipt: data } });
         this.receipts.push(data);
         return { message: "success" };
+      } else if (receipt.data.message == "duplicate") {
+        this.totalVoted += 1;
+        await this._db();
+        return { message: "duplicatedVote" };
       }
-
-      console.log(receipt);
+    } else {
       this.totalVoted += 1;
       await this._db();
-      return { message: "duplicatedVote" };
+      return { message: receipt.data.message };
     }
 
+    // Status 200, but message doesn't match.
     return null;
   }
 
@@ -279,9 +285,149 @@ export class Node extends Common {
       });
 
       this.redisClient.on("error", function (error) {
-        console.error(error);
+        console.error("redisClient " + error);
       });
     }
+  }
+
+  /**
+   * internal function, recalculatesThePredictedState based on the pending transactions
+   * @param wallet
+   * @param latestContractState
+   * @param redisClient
+   * @returns
+   */
+  async recalculatePredictedState(
+    wallet: any,
+    latestContractState: any,
+    redisClient: any
+  ): Promise<any> {
+    if (!redisClient) redisClient = this.redisClient;
+    if (!latestContractState) latestContractState = await this._readContract();
+    await checkPendingTransactionStatus(redisClient);
+    let pendingStateArray = await redisGetAsync(
+      "pendingStateArray",
+      redisClient
+    );
+    if (!pendingStateArray) {
+      console.error("No pending state found");
+      return;
+    }
+    pendingStateArray = JSON.parse(pendingStateArray);
+    let finalState: any;
+    const contract: any = await smartweave.loadContract(arweave, KOI_CONTRACT);
+    const from = await arweave.wallets.getAddress(wallet);
+
+    for (let i = 0; i < pendingStateArray.length; i++) {
+      console.log(`Pending Transaction ${i + 1}`, pendingStateArray[i]);
+      if (i == 0) {
+        if (pendingStateArray[i].signedTx) {
+          finalState = await this.registerDataDryRun(
+            pendingStateArray[i].txId,
+            pendingStateArray[i].owner,
+            pendingStateArray[i].signedTx,
+            latestContractState,
+            contract
+          );
+          continue;
+        }
+        finalState = await smartweave.interactWriteDryRun(
+          arweave,
+          wallet,
+          KOI_CONTRACT,
+          pendingStateArray[i].input,
+          undefined,
+          undefined,
+          undefined,
+          latestContractState,
+          from,
+          contract
+        );
+        break; //TODO: REMOVE THIS CODE
+        // console.timeEnd("Time this");
+      } else {
+        // console.time("Time this");
+        if (pendingStateArray[i].signedTx) {
+          finalState = await this.registerDataDryRun(
+            pendingStateArray[i].txId,
+            pendingStateArray[i].owner,
+            pendingStateArray[i].signedTx,
+            finalState.state,
+            contract
+          );
+          continue;
+        }
+        finalState = await smartweave.interactWriteDryRun(
+          arweave,
+          wallet,
+          KOI_CONTRACT,
+          pendingStateArray[i].input,
+          undefined,
+          undefined,
+          undefined,
+          finalState.state,
+          from,
+          contract
+        );
+        // console.timeEnd("Time this");
+      }
+    }
+    console.log("FINAL Predicted STATE", finalState);
+    if (finalState.state)
+      await redisSetAsync(
+        "ContractPredictedState",
+        JSON.stringify(finalState.state),
+        redisClient
+      );
+  }
+
+  /**
+   * internal function, writes to contract. Used explictly for signed transaction received from UI, uses redis
+   * @param txId
+   * @param owner
+   * @param tx
+   * @param state
+   * @returns
+   */
+  async registerDataDryRun(
+    txId: any,
+    owner: any,
+    tx: any,
+    state: any,
+    contract: any
+  ) {
+    const input = {
+      function: "registerData",
+      txId: txId,
+      owner: owner
+    };
+    const fromParam = await arweave.wallets.ownerToAddress(tx.owner);
+    // let currentFinalPredictedState=await redisGetAsync("TempPredictedState")
+    const finalState = await smartweave.interactWriteDryRunCustom(
+      arweave,
+      tx,
+      KOI_CONTRACT,
+      input,
+      state,
+      fromParam,
+      null
+    );
+    console.log(
+      "Semi FINAL Predicted STATE for registerData",
+      finalState.state ? finalState.state.registeredRecord : "NULL"
+    );
+    if (finalState.type != "exception") {
+      await redisSetAsync(
+        "ContractPredictedState",
+        JSON.stringify(finalState.state),
+        this.redisClient
+      );
+      return finalState;
+    } else {
+      console.error("EXCEPTION", finalState);
+    }
+    return state;
+    // this._interactWrite(input)
   }
 
   // Protected functions
@@ -305,16 +451,12 @@ export class Node extends Common {
       else pendingStateArray = JSON.parse(pendingStateArray);
       // get leteststate
       // let latestContractState=await smartweave.readContract(arweave, KOI_CONTRACT)
-      let latestContractState = await redisGetAsync(
-        "currentState",
-        redisClient
-      );
-      latestContractState = JSON.parse(latestContractState);
+      const latestContractState = await this._readContract();
 
       return new Promise(function (resolve, reject) {
         smartweave
           .interactWrite(arweave, wallet, KOI_CONTRACT, input)
-          .then(async (txId) => {
+          .then(async function (this: any, txId: any) {
             pendingStateArray.push({
               status: "pending",
               txId: txId,
@@ -327,7 +469,7 @@ export class Node extends Common {
               JSON.stringify(pendingStateArray),
               redisClient
             );
-            await recalculatePredictedState(
+            await this.recalculatePredictedState(
               wallet,
               latestContractState,
               redisClient
@@ -335,7 +477,7 @@ export class Node extends Common {
 
             resolve(txId);
           })
-          .catch((err) => {
+          .catch((err: any) => {
             reject(err);
           });
       });
@@ -343,10 +485,10 @@ export class Node extends Common {
       return new Promise(function (resolve, reject) {
         smartweave
           .interactWrite(arweave, wallet, KOI_CONTRACT, input)
-          .then((txId) => {
+          .then((txId: string) => {
             resolve(txId);
           })
-          .catch((err) => {
+          .catch((err: string) => {
             reject(err);
           });
       });
@@ -492,75 +634,6 @@ function redisGetAsync(arg1: any, arg2: any): Promise<any> {
     });
   });
   // return promisify(this.redisClient.get).bind(this.redisClient);
-}
-
-/**
- * internal function, recalculatesThePredictedState based on the pending transactions
- * @param wallet
- * @param latestContractState
- * @param redisClient
- * @returns
- */
-async function recalculatePredictedState(
-  wallet: any,
-  latestContractState: any,
-  redisClient: any
-): Promise<any> {
-  await checkPendingTransactionStatus(redisClient);
-  let pendingStateArray = await redisGetAsync("pendingStateArray", redisClient);
-  if (!pendingStateArray) {
-    console.error("No pending state found");
-    return;
-  }
-  pendingStateArray = JSON.parse(pendingStateArray);
-  let finalState: any;
-  const contract: any = await smartweave.loadContract(arweave, KOI_CONTRACT);
-  const from = await arweave.wallets.getAddress(wallet);
-
-  for (let i = 0; i < pendingStateArray.length; i++) {
-    console.log(`Pending Transaction ${i + 1}`, pendingStateArray[i]);
-
-    if (i == 0) {
-      console.time("Time this");
-
-      finalState = await smartweave.interactWriteDryRun(
-        arweave,
-        wallet,
-        KOI_CONTRACT,
-        pendingStateArray[i].input,
-        latestContractState,
-        from,
-        contract,
-        null,
-        null,
-        null
-      );
-      console.timeEnd("Time this");
-    } else {
-      console.time("Time this");
-
-      finalState = await smartweave.interactWriteDryRun(
-        arweave,
-        wallet,
-        KOI_CONTRACT,
-        pendingStateArray[i].input,
-        finalState.state,
-        from,
-        contract,
-        null,
-        null,
-        null
-      );
-      console.timeEnd("Time this");
-    }
-  }
-  console.log("FINAL Predicted STATE", finalState);
-  if (finalState)
-    await redisSetAsync(
-      "predictedState",
-      JSON.stringify(finalState),
-      redisClient
-    );
 }
 
 /**

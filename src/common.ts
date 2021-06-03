@@ -30,6 +30,21 @@ export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
 const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
 
+const BLOCK_TEMPLATE = `
+  edges {
+    cursor
+    node {
+      id anchor signature recipient
+      owner { address key }
+      fee { winston ar }
+      quantity { winston ar }
+      data { size type }
+      tags { name value }
+      block { id timestamp height previous }
+      parent { id }
+    }
+  }`;
+
 export const arweave = Arweave.init({
   host: "arweave.net",
   protocol: "https",
@@ -41,7 +56,6 @@ export const arweave = Arweave.init({
  */
 export class Common {
   wallet?: JWKInterface;
-  myBookmarks: Map<string, string> = new Map();
   contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
@@ -170,22 +184,6 @@ export class Common {
    */
   async readNftState(txId: string): Promise<any> {
     return smartweave.readContract(arweave, txId);
-  }
-
-  /**
-   * Adds content to bookmarks
-   * @param arTxId Arweave transaction ID
-   * @param ref Content stored in transaction
-   */
-  addToBookmarks(arTxId: string, ref: string): void {
-    if (this.myBookmarks.has(arTxId)) {
-      throw Error(
-        `cannot assign a bookmark to ${arTxId} since it already has a note ${ref}`
-      );
-    }
-
-    this.myBookmarks.set(arTxId, ref);
-    //this.myBookmarks[ref] = arTxId; // I don't see why we should do this
   }
 
   /**
@@ -376,31 +374,43 @@ export class Common {
   }
 
   /**
-   * Gets all the transactions from a wallet address
+   * Gets all the transactions where the wallet is the owner
    * @param wallet Wallet address as a string
+   * @param count The number of results to return
+   * @param cursorId Cursor ID after which to query results, from data.transactions.edges[n].cursor
    * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  getWalletTxs(wallet: string): Promise<any> {
-    const blockTemplate = `
-      edges {
-        node {
-          id anchor signature recipient
-          owner { address key }
-          fee { winston ar }
-          quantity { winston ar }
-          data { size type }
-          tags { name value }
-          block { id timestamp height previous }
-          parent { id }
-        }
-      }`;
+  getOwnedTxs(wallet: string, count?: number, cursorId?: string): Promise<any> {
+    const countStr = count !== undefined ? `, first: ${count}` : "";
+    const afterStr = cursorId !== undefined ? `, after: "${cursorId}"` : "";
     const query = `
       query {
-        ownedTxs: transactions(owners:["${wallet}"]) {
-          ${blockTemplate}
+        transactions(owners:["${wallet}"]${countStr}${afterStr}) {
+          ${BLOCK_TEMPLATE}
         }
-        recipientTxs: transactions(recipients:["${wallet}"]) {
-          ${blockTemplate}
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
+  }
+
+  /**
+   * Gets all the transactions where the wallet is the recipient
+   * @param wallet Wallet address as a string
+   * @param count The number of results to return
+   * @param cursorId Cursor ID after which to query results, from data.transactions.edges[n].cursor
+   * @returns Object with transaction IDs as keys, and transaction data strings as values
+   */
+  getRecipientTxs(
+    wallet: string,
+    count?: number,
+    cursorId?: string
+  ): Promise<any> {
+    const countStr = count !== undefined ? `, first: ${count}` : "";
+    const afterStr = cursorId !== undefined ? `, after: "${cursorId}"` : "";
+    const query = `
+      query {
+        transactions(recipients:["${wallet}"]${countStr}${afterStr}) {
+          ${BLOCK_TEMPLATE}
         }
       }`;
     const request = JSON.stringify({ query });
