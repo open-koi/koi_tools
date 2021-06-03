@@ -10,3 +10,7 @@ test("Test validate data null", async () => {
   const res = await ktools.validateData(39);
   expect(res).toBe(null);
 })
+
+
+
+
