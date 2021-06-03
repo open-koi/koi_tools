@@ -21,8 +21,8 @@ Koi Node Operation: {
 }
 */
 
-const ADDR_LOGS = "https://arweave.dev/logs";
-const BUNDLER_SUBMIT = "/submitVote";
+const URL_LOGS = "https://arweave.dev/logs";
+const SERVICE_SUBMIT = "/submitVote";
 
 export class Node extends Common {
   db?: Datastore;
@@ -246,7 +246,7 @@ export class Node extends Common {
 
     if (proposedLog === undefined) return null;
 
-    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(ADDR_LOGS);
+    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(URL_LOGS);
     const gatewayTrafficLogsHash = await this._hashData(
       gatewayTrafficLogs.data.summary
     );
@@ -432,7 +432,7 @@ export class Node extends Common {
   ): Promise<AxiosResponse<any> | null> {
     const sigResult = await this.signPayload(payload);
     return sigResult !== null
-      ? await axios.post(this.bundler_addr + BUNDLER_SUBMIT, sigResult)
+      ? await axios.post(this.bundler_url + SERVICE_SUBMIT, sigResult)
       : null;
   }
 

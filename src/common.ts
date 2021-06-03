@@ -23,10 +23,19 @@ export interface BundlerPayload {
   vote?: Vote; //@deprecated // Use data instead
 }
 
+export interface NodeRegistration {
+  data: {
+    url: string;
+    timestamp: number;
+  };
+  publicModulus: string;
+  signature: Uint8Array;
+}
+
 export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
 
-const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
-const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
+const URL_ARWEAVE_INFO = "https://arweave.net/info";
+const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
 
 const BLOCK_TEMPLATE = `
   edges {
@@ -59,10 +68,10 @@ export class Common {
   wallet?: JWKInterface;
   mnemonic?: string;
   address?: string;
-  bundler_addr: string;
+  bundler_url: string;
 
-  constructor(bundler_addr = "https://bundler.openkoi.com:8888") {
-    this.bundler_addr = bundler_addr;
+  constructor(bundler_url = "https://bundler.openkoi.com:8888") {
+    this.bundler_url = bundler_url;
     console.log("Initialized a Koi Node with smart contract:", KOI_CONTRACT);
   }
 
@@ -466,16 +475,28 @@ export class Common {
     return nft.totalReward;
   }
 
+  /**
+   *
+   * @param request
+   * @returns
+   */
   async gql(request: string): Promise<any> {
-    const { data } = await axios.post(ADDR_ARWEAVE_GQL, request, {
+    const { data } = await axios.post(URL_ARWEAVE_GQL, request, {
       headers: { "content-type": "application/json" }
     });
     return data;
   }
 
-  async getNodes(): Promise<any> {
-    const res = await getCacheData(this.bundler_addr + BUNDLER_NODES);
-    return res.data;
+  /**
+   * Gets an array of service nodes
+   * @param url URL of the service node to retrieve the array from a known service node
+   * @returns Set
+   */
+  async getNodes(
+    url: string = this.bundler_url
+  ): Promise<Array<NodeRegistration>> {
+    const res: any = await getCacheData(url + BUNDLER_NODES);
+    return JSON.parse(res.data);
   }
 
   // Protected functions
@@ -578,7 +599,7 @@ export function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
  * @returns Axios response with info
  */
 function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
-  return axios.get(ADDR_ARWEAVE_INFO);
+  return axios.get(URL_ARWEAVE_INFO);
 }
 
 module.exports = {
