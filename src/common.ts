@@ -224,14 +224,31 @@ export class Common {
    * @param target Receiver address
    * @returns Transaction ID
    */
-  transfer(qty: number, target: string): Promise<string> {
+  async transfer(qty: number, target: string, token: string): Promise<string> {
     const input = {
       function: "transfer",
       qty: qty,
       target: target
     };
+    switch (token) {
+      case "AR": {
+        const transaction = await arweave.createTransaction(
+          { target: target, quantity: arweave.ar.arToWinston(qty.toString()) },
+          this.wallet
+        );
+        await arweave.transactions.sign(transaction, this.wallet);
+        await arweave.transactions.post(transaction);
+        return transaction.id;
+      }
+      case "KOI": {
+        const txid = await this._interactWrite(input);
+        return txid;
+      }
 
-    return this._interactWrite(input);
+      default: {
+        throw Error("token or coin ticker doesnt exist");
+      }
+    }
   }
 
   /**
