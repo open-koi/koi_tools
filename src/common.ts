@@ -146,9 +146,9 @@ export class Common {
    * @returns Balance as a number
    */
   async getKoiBalance(): Promise<number> {
-    const state = await getCacheData<any>(ADDR_BUNDLER_CURRENT);
-    if (this.address !== undefined && this.address in state.data.balances)
-      return state.data.balances[this.address];
+    const state = await this.getContractState();
+    if (this.address !== undefined && this.address in state.balances)
+      return state.balances[this.address];
     return 0;
   }
 
