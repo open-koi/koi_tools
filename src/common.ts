@@ -23,7 +23,7 @@ export interface BundlerPayload {
   vote?: Vote; //@deprecated // Use data instead
 }
 
-export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
+export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
 export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
 export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
 
