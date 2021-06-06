@@ -23,13 +23,9 @@ export interface BundlerPayload {
   vote?: Vote; //@deprecated // Use data instead
 }
 
-export interface NodeRegistration {
-  data: {
-    url: string;
-    timestamp: number;
-  };
-  publicModulus: string;
-  signature: Uint8Array;
+export interface RegistrationData {
+  url: string;
+  timestamp: number;
 }
 
 export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
@@ -494,7 +490,7 @@ export class Common {
    */
   async getNodes(
     url: string = this.bundler_url
-  ): Promise<Array<NodeRegistration>> {
+  ): Promise<Array<BundlerPayload>> {
     const res: any = await getCacheData(url + BUNDLER_NODES);
     return JSON.parse(res.data);
   }
