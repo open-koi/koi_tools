@@ -10,27 +10,32 @@ import { Query } from "@kyve/query";
 import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
 import * as crypto from "libp2p-crypto";
 
+export interface BundlerPayload {
+  data?: any;
+  signature?: string; // Data signed with private key
+  owner?: string; // Public modulus, can be used to verifiably derive address
+  senderAddress?: string; //@deprecated // Use owner instead
+  vote?: Vote; //@deprecated // Use data instead
+}
+
 export interface Vote {
   voteId: number;
   direct?: string;
 }
 
-export interface BundlerPayload {
-  data?: any;
-  senderAddress: string;
-  signature?: string;
-  owner?: string;
-  vote?: Vote; //@deprecated // Use data instead
+export interface RegistrationData {
+  url: string;
+  timestamp: number;
 }
 
 export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
-export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
-export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
-
-const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
-const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
+const URL_ARWEAVE_INFO = "https://arweave.net/info";
+const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
 
 const BLOCK_TEMPLATE = `
+  pageInfo {
+    hasNextPage
+  }
   edges {
     cursor
     node {
@@ -51,20 +56,21 @@ export const arweave = Arweave.init({
   port: 443
 });
 
+export const BUNDLER_CURRENT = "/state/current";
+export const BUNDLER_NODES = "/nodes";
+
 /**
  * Tools for interacting with the koi network
  */
 export class Common {
   wallet?: JWKInterface;
-  contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
+  bundlerUrl: string;
 
-  constructor() {
-    console.log(
-      "Initialized a Koi Node with smart contract:",
-      this.contractAddress
-    );
+  constructor(bundlerUrl = "https://bundler.openkoi.com:8888") {
+    this.bundlerUrl = bundlerUrl;
+    console.log("Initialized a Koi Node with smart contract:", KOI_CONTRACT);
   }
 
   /**
@@ -484,11 +490,28 @@ export class Common {
     return nft.totalReward;
   }
 
+  /**
+   *
+   * @param request
+   * @returns
+   */
   async gql(request: string): Promise<any> {
-    const { data } = await axios.post(ADDR_ARWEAVE_GQL, request, {
+    const { data } = await axios.post(URL_ARWEAVE_GQL, request, {
       headers: { "content-type": "application/json" }
     });
     return data;
+  }
+
+  /**
+   * Gets an array of service nodes
+   * @param url URL of the service node to retrieve the array from a known service node
+   * @returns Set
+   */
+  async getNodes(
+    url: string = this.bundlerUrl
+  ): Promise<Array<BundlerPayload>> {
+    const res: any = await getCacheData(url + BUNDLER_NODES);
+    return JSON.parse(res.data);
   }
 
   // Protected functions
@@ -591,13 +614,13 @@ export function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
  * @returns Axios response with info
  */
 function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
-  return axios.get(ADDR_ARWEAVE_INFO);
+  return axios.get(URL_ARWEAVE_INFO);
 }
 
 module.exports = {
   KOI_CONTRACT,
-  ADDR_BUNDLER,
-  ADDR_BUNDLER_CURRENT,
+  BUNDLER_CURRENT,
+  BUNDLER_NODES,
   arweave,
   Common,
   getCacheData
