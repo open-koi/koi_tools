@@ -257,17 +257,18 @@ export class Common {
     }
   }
 
-  /** 
-   * Sign Transaction
+  /**
+   * Signs a transaction using window.arweavewallet with a fallback to this.wallet
+   * @param transaction Transaction to be signed
    */
-  async koiSignTx () {
-        if ( !this.wallet ) {
-          console.error('window.arweaveWallet does not exist')
-          await arweave.transactions.sign(transaction); // implicitly uses window.arweavewallet if exists, otherwise fails
-          // tmp note: https://github.com/ArweaveTeam/arweave-js/blob/80daf64712d93aa3d6ea9ee875a11343c7649d5b/src/common/transactions.ts#L192
-        } else {
-          await arweave.transactions.sign(transaction, this.wallet); // this will fail when the chrome extension is being used
-        }
+  async koiSignTx(transaction: Transaction): Promise<void> {
+    if (!this.wallet) {
+      console.error("window.arweaveWallet does not exist");
+      await arweave.transactions.sign(transaction); // implicitly uses window.arweavewallet if exists, otherwise fails
+      // tmp note: https://github.com/ArweaveTeam/arweave-js/blob/80daf64712d93aa3d6ea9ee875a11343c7649d5b/src/common/transactions.ts#L192
+    } else {
+      await arweave.transactions.sign(transaction, this.wallet); // this will fail when the chrome extension is being used
+    }
   }
 
   /**
@@ -311,7 +312,7 @@ export class Common {
     try {
       //const wallet = this.wallet;
       // Now we sign the transaction
-      await this.koiSignTx(transaction)
+      await this.koiSignTx(tx);
       // After is signed, we send the transaction
       //await exports.arweave.transactions.post(transaction);
       return tx;
