@@ -33,6 +33,9 @@ const URL_ARWEAVE_INFO = "https://arweave.net/info";
 const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
 
 const BLOCK_TEMPLATE = `
+  pageInfo {
+    hasNextPage
+  }
   edges {
     cursor
     node {

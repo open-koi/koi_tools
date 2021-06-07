@@ -552,7 +552,7 @@ export class Node extends Common {
   ): Promise<AxiosResponse<any> | null> {
     const sigResult = await this.signPayload(payload);
     return sigResult !== null
-      ? await axios.post(this.bundler_url + SERVICE_SUBMIT, sigResult)
+      ? await axios.post(this.bundlerUrl + SERVICE_SUBMIT, sigResult)
       : null;
   }
 
