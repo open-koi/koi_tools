@@ -10,25 +10,45 @@ import { Query } from "@kyve/query";
 import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
 import * as crypto from "libp2p-crypto";
 
+export interface BundlerPayload {
+  data?: any;
+  signature?: string; // Data signed with private key
+  owner?: string; // Public modulus, can be used to verifiably derive address
+  senderAddress?: string; //@deprecated // Use owner instead
+  vote?: Vote; //@deprecated // Use data instead
+}
+
 export interface Vote {
   voteId: number;
   direct?: string;
 }
 
-export interface BundlerPayload {
-  data?: any;
-  senderAddress: string;
-  signature?: string;
-  owner?: string;
-  vote?: Vote; //@deprecated // Use data instead
+export interface RegistrationData {
+  url: string;
+  timestamp: number;
 }
 
 export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
-export const ADDR_BUNDLER = "https://bundler.openkoi.com:8888";
-export const ADDR_BUNDLER_CURRENT = ADDR_BUNDLER + "/state/current";
+const URL_ARWEAVE_INFO = "https://arweave.net/info";
+const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
 
-const ADDR_ARWEAVE_INFO = "https://arweave.net/info";
-const ADDR_ARWEAVE_GQL = "https://arweave.net/graphql";
+const BLOCK_TEMPLATE = `
+  pageInfo {
+    hasNextPage
+  }
+  edges {
+    cursor
+    node {
+      id anchor signature recipient
+      owner { address key }
+      fee { winston ar }
+      quantity { winston ar }
+      data { size type }
+      tags { name value }
+      block { id timestamp height previous }
+      parent { id }
+    }
+  }`;
 
 export const arweave = Arweave.init({
   host: "arweave.net",
@@ -36,21 +56,21 @@ export const arweave = Arweave.init({
   port: 443
 });
 
+export const BUNDLER_CURRENT = "/state/current";
+export const BUNDLER_NODES = "/nodes";
+
 /**
  * Tools for interacting with the koi network
  */
 export class Common {
   wallet?: JWKInterface;
-  myBookmarks: Map<string, string> = new Map();
-  contractAddress = KOI_CONTRACT;
   mnemonic?: string;
   address?: string;
+  bundlerUrl: string;
 
-  constructor() {
-    console.log(
-      "Initialized a Koi Node with smart contract:",
-      this.contractAddress
-    );
+  constructor(bundlerUrl = "https://bundler.openkoi.com:8888") {
+    this.bundlerUrl = bundlerUrl;
+    console.log("Initialized a Koi Node with smart contract:", KOI_CONTRACT);
   }
 
   /**
@@ -132,9 +152,9 @@ export class Common {
    * @returns Balance as a number
    */
   async getKoiBalance(): Promise<number> {
-    const state = await getCacheData<any>(ADDR_BUNDLER_CURRENT);
-    if (this.address !== undefined && this.address in state.data.balances)
-      return state.data.balances[this.address];
+    const state = await this.getContractState();
+    if (this.address !== undefined && this.address in state.balances)
+      return state.balances[this.address];
     return 0;
   }
 
@@ -170,22 +190,6 @@ export class Common {
    */
   async readNftState(txId: string): Promise<any> {
     return smartweave.readContract(arweave, txId);
-  }
-
-  /**
-   * Adds content to bookmarks
-   * @param arTxId Arweave transaction ID
-   * @param ref Content stored in transaction
-   */
-  addToBookmarks(arTxId: string, ref: string): void {
-    if (this.myBookmarks.has(arTxId)) {
-      throw Error(
-        `cannot assign a bookmark to ${arTxId} since it already has a note ${ref}`
-      );
-    }
-
-    this.myBookmarks.set(arTxId, ref);
-    //this.myBookmarks[ref] = arTxId; // I don't see why we should do this
   }
 
   /**
@@ -376,31 +380,43 @@ export class Common {
   }
 
   /**
-   * Gets all the transactions from a wallet address
+   * Gets all the transactions where the wallet is the owner
    * @param wallet Wallet address as a string
+   * @param count The number of results to return
+   * @param cursorId Cursor ID after which to query results, from data.transactions.edges[n].cursor
    * @returns Object with transaction IDs as keys, and transaction data strings as values
    */
-  getWalletTxs(wallet: string): Promise<any> {
-    const blockTemplate = `
-      edges {
-        node {
-          id anchor signature recipient
-          owner { address key }
-          fee { winston ar }
-          quantity { winston ar }
-          data { size type }
-          tags { name value }
-          block { id timestamp height previous }
-          parent { id }
-        }
-      }`;
+  getOwnedTxs(wallet: string, count?: number, cursorId?: string): Promise<any> {
+    const countStr = count !== undefined ? `, first: ${count}` : "";
+    const afterStr = cursorId !== undefined ? `, after: "${cursorId}"` : "";
     const query = `
       query {
-        ownedTxs: transactions(owners:["${wallet}"]) {
-          ${blockTemplate}
+        transactions(owners:["${wallet}"]${countStr}${afterStr}) {
+          ${BLOCK_TEMPLATE}
         }
-        recipientTxs: transactions(recipients:["${wallet}"]) {
-          ${blockTemplate}
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
+  }
+
+  /**
+   * Gets all the transactions where the wallet is the recipient
+   * @param wallet Wallet address as a string
+   * @param count The number of results to return
+   * @param cursorId Cursor ID after which to query results, from data.transactions.edges[n].cursor
+   * @returns Object with transaction IDs as keys, and transaction data strings as values
+   */
+  getRecipientTxs(
+    wallet: string,
+    count?: number,
+    cursorId?: string
+  ): Promise<any> {
+    const countStr = count !== undefined ? `, first: ${count}` : "";
+    const afterStr = cursorId !== undefined ? `, after: "${cursorId}"` : "";
+    const query = `
+      query {
+        transactions(recipients:["${wallet}"]${countStr}${afterStr}) {
+          ${BLOCK_TEMPLATE}
         }
       }`;
     const request = JSON.stringify({ query });
@@ -474,11 +490,28 @@ export class Common {
     return nft.totalReward;
   }
 
+  /**
+   *
+   * @param request
+   * @returns
+   */
   async gql(request: string): Promise<any> {
-    const { data } = await axios.post(ADDR_ARWEAVE_GQL, request, {
+    const { data } = await axios.post(URL_ARWEAVE_GQL, request, {
       headers: { "content-type": "application/json" }
     });
     return data;
+  }
+
+  /**
+   * Gets an array of service nodes
+   * @param url URL of the service node to retrieve the array from a known service node
+   * @returns Set
+   */
+  async getNodes(
+    url: string = this.bundlerUrl
+  ): Promise<Array<BundlerPayload>> {
+    const res: any = await getCacheData(url + BUNDLER_NODES);
+    return JSON.parse(res.data);
   }
 
   // Protected functions
@@ -581,13 +614,13 @@ export function getCacheData<T>(path: string): Promise<AxiosResponse<T>> {
  * @returns Axios response with info
  */
 function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
-  return axios.get(ADDR_ARWEAVE_INFO);
+  return axios.get(URL_ARWEAVE_INFO);
 }
 
 module.exports = {
   KOI_CONTRACT,
-  ADDR_BUNDLER,
-  ADDR_BUNDLER_CURRENT,
+  BUNDLER_CURRENT,
+  BUNDLER_NODES,
   arweave,
   Common,
   getCacheData
