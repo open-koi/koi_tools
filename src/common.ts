@@ -242,7 +242,7 @@ export class Common {
           { target: target, quantity: arweave.ar.arToWinston(qty.toString()) },
           this.wallet
         );
-        await arweave.transactions.sign(transaction, this.wallet);
+        await this.koiSignTx(transaction);
         await arweave.transactions.post(transaction);
         return transaction.id;
       }
@@ -255,6 +255,19 @@ export class Common {
         throw Error("token or coin ticker doesnt exist");
       }
     }
+  }
+
+  /** 
+   * Sign Transaction
+   */
+  async koiSignTx () {
+        if ( !this.wallet ) {
+          console.error('window.arweaveWallet does not exist')
+          await arweave.transactions.sign(transaction); // implicitly uses window.arweavewallet if exists, otherwise fails
+          // tmp note: https://github.com/ArweaveTeam/arweave-js/blob/80daf64712d93aa3d6ea9ee875a11343c7649d5b/src/common/transactions.ts#L192
+        } else {
+          await arweave.transactions.sign(transaction, this.wallet); // this will fail when the chrome extension is being used
+        }
   }
 
   /**
@@ -298,7 +311,7 @@ export class Common {
     try {
       //const wallet = this.wallet;
       // Now we sign the transaction
-      await arweave.transactions.sign(tx, this.wallet);
+      await this.koiSignTx(transaction)
       // After is signed, we send the transaction
       //await exports.arweave.transactions.post(transaction);
       return tx;
@@ -368,7 +381,7 @@ export class Common {
     );
 
     // Now we sign the transaction
-    await arweave.transactions.sign(transaction, wallet);
+    await this.koiSignTx(transaction);
     const txId = transaction.id;
 
     // After is signed, we send the transaction
