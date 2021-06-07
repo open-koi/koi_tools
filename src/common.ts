@@ -63,10 +63,10 @@ export class Common {
   wallet?: JWKInterface;
   mnemonic?: string;
   address?: string;
-  bundler_url: string;
+  bundlerUrl: string;
 
-  constructor(bundler_url = "https://bundler.openkoi.com:8888") {
-    this.bundler_url = bundler_url;
+  constructor(bundlerUrl = "https://bundler.openkoi.com:8888") {
+    this.bundlerUrl = bundlerUrl;
     console.log("Initialized a Koi Node with smart contract:", KOI_CONTRACT);
   }
 
@@ -505,7 +505,7 @@ export class Common {
    * @returns Set
    */
   async getNodes(
-    url: string = this.bundler_url
+    url: string = this.bundlerUrl
   ): Promise<Array<BundlerPayload>> {
     const res: any = await getCacheData(url + BUNDLER_NODES);
     return JSON.parse(res.data);
