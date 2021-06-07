@@ -10,17 +10,17 @@ import { Query } from "@kyve/query";
 import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
 import * as crypto from "libp2p-crypto";
 
+export interface BundlerPayload {
+  data?: any;
+  signature?: string; // Data signed with private key
+  owner?: string; // Public modulus, can be used to verifiably derive address
+  senderAddress?: string; //@deprecated // Use owner instead
+  vote?: Vote; //@deprecated // Use data instead
+}
+
 export interface Vote {
   voteId: number;
   direct?: string;
-}
-
-export interface BundlerPayload {
-  data?: any;
-  senderAddress: string;
-  signature?: string;
-  owner?: string;
-  vote?: Vote; //@deprecated // Use data instead
 }
 
 export interface RegistrationData {
