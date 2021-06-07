@@ -28,7 +28,7 @@ export interface RegistrationData {
   timestamp: number;
 }
 
-export const KOI_CONTRACT = "ljy4rdr6vKS6-jLgduBz_wlcad4GuKPEuhrRVaUd8tg";
+export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
 const URL_ARWEAVE_INFO = "https://arweave.net/info";
 const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
 
