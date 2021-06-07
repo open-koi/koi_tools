@@ -125,9 +125,7 @@ export class Common {
    */
   async getWalletAddress(): Promise<string> {
     if (typeof this.address !== "string")
-      this.address = (await arweave.wallets.jwkToAddress(
-        this.wallet
-      )) as string;
+      this.address = await arweave.wallets.jwkToAddress(this.wallet);
     return this.address;
   }
 
@@ -136,15 +134,10 @@ export class Common {
    * @returns Balance as a string if wallet exists, else undefined
    */
   async getWalletBalance(): Promise<number> {
-    let winston = "";
-    let ar = "";
-    if (this.address) {
-      winston = await arweave.wallets.getBalance(this.address);
-      ar = arweave.ar.winstonToAr(winston);
-      return parseFloat(ar);
-    } else {
-      return 0;
-    }
+    if (!this.address) return 0;
+    const winston = await arweave.wallets.getBalance(this.address);
+    const ar = arweave.ar.winstonToAr(winston);
+    return parseFloat(ar);
   }
 
   /**
