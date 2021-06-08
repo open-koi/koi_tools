@@ -65,7 +65,7 @@ export class Common {
   wallet?: JWKInterface;
   mnemonic?: string;
   address?: string;
-  contractTx: string;
+  contractId: string;
   bundlerUrl: string;
 
   constructor(
@@ -73,8 +73,8 @@ export class Common {
     contractTx = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc"
   ) {
     this.bundlerUrl = bundlerUrl;
-    this.contractTx = contractTx;
-    console.log("Initialized a Koi Node with smart contract:", this.contractTx);
+    this.contractId = contractTx;
+    console.log("Initialized a Koi Node with smart contract:", this.contractId);
   }
 
   /**
@@ -521,7 +521,7 @@ export class Common {
   protected _interactWrite(input: any): Promise<string> {
     const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
-    return smartweave.interactWrite(arweave, wallet, this.contractTx, input);
+    return smartweave.interactWrite(arweave, wallet, this.contractId, input);
   }
 
   /**
@@ -529,7 +529,7 @@ export class Common {
    * @returns Contract
    */
   protected async _readContract(): Promise<any> {
-    // return smartweave.readContract(arweave, this.contractTx);
+    // return smartweave.readContract(arweave, this.contractId);
     const poolID = 4;
     const query = new Query(poolID);
     // finding latest transactions
@@ -541,7 +541,7 @@ export class Common {
     } catch (e) {
       console.log("ERROR RETRIEVING FROM KYVE", e);
     }
-    return smartweave.readContract(arweave, this.contractTx);
+    return smartweave.readContract(arweave, this.contractId);
   }
 
   // Private functions

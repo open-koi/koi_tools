@@ -311,7 +311,7 @@ export class Node extends Common {
     let finalState: any;
     const contract: any = await smartweave.loadContract(
       arweave,
-      this.contractTx
+      this.contractId
     );
     const from = await arweave.wallets.getAddress(wallet);
 
@@ -331,7 +331,7 @@ export class Node extends Common {
         finalState = await smartweave.interactWriteDryRun(
           arweave,
           wallet,
-          this.contractTx,
+          this.contractId,
           pendingStateArray[i].input,
           undefined,
           undefined,
@@ -357,7 +357,7 @@ export class Node extends Common {
         finalState = await smartweave.interactWriteDryRun(
           arweave,
           wallet,
-          this.contractTx,
+          this.contractId,
           pendingStateArray[i].input,
           undefined,
           undefined,
@@ -403,7 +403,7 @@ export class Node extends Common {
     const finalState = await smartweave.interactWriteDryRunCustom(
       arweave,
       tx,
-      this.contractTx,
+      this.contractId,
       input,
       state,
       fromParam,
@@ -438,7 +438,7 @@ export class Node extends Common {
     const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
     if (!this.redisClient)
-      return smartweave.interactWrite(arweave, wallet, this.contractTx, input);
+      return smartweave.interactWrite(arweave, wallet, this.contractId, input);
 
     // Adding the dryRun logic
     let pendingStateArray = await redisGetAsync(
@@ -453,7 +453,7 @@ export class Node extends Common {
     const txId = await smartweave.interactWrite(
       arweave,
       wallet,
-      this.contractTx,
+      this.contractId,
       input
     );
     pendingStateArray.push({
@@ -521,7 +521,7 @@ export class Node extends Common {
     }
 
     // Fallback to smartweave
-    return smartweave.readContract(arweave, this.contractTx);
+    return smartweave.readContract(arweave, this.contractId);
   }
 
   // Private functions
