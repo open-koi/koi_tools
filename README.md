@@ -4,27 +4,36 @@ The Koi.js library enables node.js and javascript/typescript applications to eas
 
 ## Steps to Interact with the SDK in your Project
 
-1. Add the Koi-tools module to your script and then initialize the koi class.
+1. Add the sdk to your project
+
+   You can use either npm or yarn
+   ```
+   npm i @_koi/sdk
+   yarn add @_koi/sdk
+   ```
+
+2. Add the Koi-tools module to your script and then initialize the koi class.
 
    ```
-   import { Web } from "koi_tools/web";
+   import { Web } from "@_koi/sdk/web";
    const ktools = new Web();
    ```
    or with CommonJS
    ```
-   const kweb = require("koi_tools/web");
+   const kweb = require("@_koi/sdk/web");
    const ktools = new kweb.Web();
    ```
    or using the bundle
    ```
    <script src="koi_tools.js"></script>
    ...
-   const kweb = new koi_tools.koi_web.Web();
+   const kweb = koi_tools.koi_web;
+   const ktools = new kweb.Web();
    ```
 
 Note: This library changes often, so if `npm i koi-tools` does not work, check for beta releases on NPM under the versions section or manually build the package. See [#Build](#Build) section below.
 
-2. Optional - Add the Arweave module to your project if your app plans to directly transact with the permaweb outside of using the Koi-tools library
+3. Optional - Add the Arweave module to your project if your app plans to directly transact with the permaweb outside of using the Koi-tools library
 
    ```
    const Arweave = require('arweave/node')
@@ -35,7 +44,7 @@ Note: This library changes often, so if `npm i koi-tools` does not work, check f
    });
    ```
 
-3. Create an RSA Wallet Key
+4. Create an RSA Wallet Key
 
    Note that the wallet address should not be held inside of your project when you check the project into GitHub
 
@@ -44,8 +53,7 @@ Note: This library changes often, so if `npm i koi-tools` does not work, check f
    ```
 
    If you don't have a wallet, you can get one from the faucet at [koi.rocks](https://koi.rocks/) or the Arweave faucet at [faucet.arweave.org](https://faucet.arweave.org/).
-
-4. Define a function to bootstrap your app and utilize the koi-tools library `loadWallet` method to be returned the address of your wallet from the permaweb.
+5. Define a function to bootstrap your app and utilize the koi-tools library `loadWallet` method to be returned the address of your wallet from the permaweb.
 
    ```
    async function start() {
@@ -68,7 +76,7 @@ Note: This library changes often, so if `npm i koi-tools` does not work, check f
 
    If you are just testing with a local bundler, you can also use `await ktools.generateWallet()` to create a custom key file just for that runtime. (TODO: Expand support for 12 word seed phrase).
 
-5. Check out the test.js file held in this library with examples of how to interact with koi-tools.
+6. Check out the test.js file held in this library with examples of how to interact with koi-tools.
 
 ## Content Rewards
 
