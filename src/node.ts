@@ -192,14 +192,15 @@ export class Node extends Common {
   async proposeSlash(): Promise<void> {
     const state = await this.getContractState();
     const votes = state.votes;
-    const currentTrafficLogs = state.stateUpdate.dailyTrafficLog.filter(
-      (proposedLog: {
-        block: number;
-        proposedLogs: [];
-        isRanked: boolean;
-        isDistributed: boolean;
-      }) => proposedLog.block == state.stateUpdate.tracficLogs.open
-    );
+    const currentTrafficLogs =
+      state.stateUpdate.trafficLogs.dailyTrafficLog.filter(
+        (proposedLog: {
+          block: number;
+          proposedLogs: [];
+          isRanked: boolean;
+          isDistributed: boolean;
+        }) => proposedLog.block == state.stateUpdate.trafficLogs.open
+      );
     for (const proposedLogs of currentTrafficLogs) {
       const currentProposedLogsVoteId = proposedLogs.voteId;
       for (let i = 0; i < this.receipts.length - 1; i++) {
