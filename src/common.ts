@@ -28,7 +28,6 @@ export interface RegistrationData {
   timestamp: number;
 }
 
-export const KOI_CONTRACT = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc";
 const URL_ARWEAVE_INFO = "https://arweave.net/info";
 const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
 
@@ -66,11 +65,16 @@ export class Common {
   wallet?: JWKInterface;
   mnemonic?: string;
   address?: string;
+  contractTx: string;
   bundlerUrl: string;
 
-  constructor(bundlerUrl = "https://bundler.openkoi.com:8888") {
+  constructor(
+    bundlerUrl = "https://bundler.openkoi.com:8888",
+    contractTx = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc"
+  ) {
     this.bundlerUrl = bundlerUrl;
-    console.log("Initialized a Koi Node with smart contract:", KOI_CONTRACT);
+    this.contractTx = contractTx;
+    console.log("Initialized a Koi Node with smart contract:", this.contractTx);
   }
 
   /**
@@ -517,7 +521,7 @@ export class Common {
   protected _interactWrite(input: any): Promise<string> {
     const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
-    return smartweave.interactWrite(arweave, wallet, KOI_CONTRACT, input);
+    return smartweave.interactWrite(arweave, wallet, this.contractTx, input);
   }
 
   /**
@@ -525,7 +529,7 @@ export class Common {
    * @returns Contract
    */
   protected async _readContract(): Promise<any> {
-    // return smartweave.readContract(arweave, KOI_CONTRACT);
+    // return smartweave.readContract(arweave, this.contractTx);
     const poolID = 4;
     const query = new Query(poolID);
     // finding latest transactions
@@ -537,7 +541,7 @@ export class Common {
     } catch (e) {
       console.log("ERROR RETRIEVING FROM KYVE", e);
     }
-    return smartweave.readContract(arweave, KOI_CONTRACT);
+    return smartweave.readContract(arweave, this.contractTx);
   }
 
   // Private functions
@@ -611,7 +615,6 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
 }
 
 module.exports = {
-  KOI_CONTRACT,
   BUNDLER_CURRENT,
   BUNDLER_NODES,
   arweave,

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Common, Vote, BundlerPayload, arweave, KOI_CONTRACT } from "./common";
+import { Common, Vote, BundlerPayload, arweave } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { readFile } from "fs/promises";
 import Datastore from "nedb-promises";
@@ -309,7 +309,10 @@ export class Node extends Common {
     }
     pendingStateArray = JSON.parse(pendingStateArray);
     let finalState: any;
-    const contract: any = await smartweave.loadContract(arweave, KOI_CONTRACT);
+    const contract: any = await smartweave.loadContract(
+      arweave,
+      this.contractTx
+    );
     const from = await arweave.wallets.getAddress(wallet);
 
     for (let i = 0; i < pendingStateArray.length; i++) {
@@ -328,7 +331,7 @@ export class Node extends Common {
         finalState = await smartweave.interactWriteDryRun(
           arweave,
           wallet,
-          KOI_CONTRACT,
+          this.contractTx,
           pendingStateArray[i].input,
           undefined,
           undefined,
@@ -354,7 +357,7 @@ export class Node extends Common {
         finalState = await smartweave.interactWriteDryRun(
           arweave,
           wallet,
-          KOI_CONTRACT,
+          this.contractTx,
           pendingStateArray[i].input,
           undefined,
           undefined,
@@ -400,7 +403,7 @@ export class Node extends Common {
     const finalState = await smartweave.interactWriteDryRunCustom(
       arweave,
       tx,
-      KOI_CONTRACT,
+      this.contractTx,
       input,
       state,
       fromParam,
@@ -435,7 +438,7 @@ export class Node extends Common {
     const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
     if (!this.redisClient)
-      return smartweave.interactWrite(arweave, wallet, KOI_CONTRACT, input);
+      return smartweave.interactWrite(arweave, wallet, this.contractTx, input);
 
     // Adding the dryRun logic
     let pendingStateArray = await redisGetAsync(
@@ -450,7 +453,7 @@ export class Node extends Common {
     const txId = await smartweave.interactWrite(
       arweave,
       wallet,
-      KOI_CONTRACT,
+      this.contractTx,
       input
     );
     pendingStateArray.push({
@@ -518,7 +521,7 @@ export class Node extends Common {
     }
 
     // Fallback to smartweave
-    return smartweave.readContract(arweave, KOI_CONTRACT);
+    return smartweave.readContract(arweave, this.contractTx);
   }
 
   // Private functions
