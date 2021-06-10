@@ -309,7 +309,7 @@ export class Node extends Common {
       return;
     }
     pendingStateArray = JSON.parse(pendingStateArray);
-    let finalState: any;
+    let finalState={"state":latestContractState};
     const contract: any = await smartweave.loadContract(
       arweave,
       this.contractId
