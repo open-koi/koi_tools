@@ -297,6 +297,7 @@ export class Node extends Common {
     redisClient: any
   ): Promise<any> {
     if (!redisClient) redisClient = this.redisClient;
+    if(!wallet) wallet = this.wallet
     if (!latestContractState) latestContractState = await super._readContract();
     await checkPendingTransactionStatus(redisClient);
     let pendingStateArray = await redisGetAsync(
