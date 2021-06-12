@@ -21,7 +21,7 @@ Koi Node Operation: {
 }
 */
 
-const URL_LOGS = "https://arweave.dev/logs";
+const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
 const SERVICE_SUBMIT = "/submitVote";
 
 export class Node extends Common {
