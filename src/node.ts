@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Common, Vote, BundlerPayload, arweave, KOI_CONTRACT } from "./common";
+import { Common, Vote, BundlerPayload, arweave } from "./common";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { readFile } from "fs/promises";
 import Datastore from "nedb-promises";
@@ -192,14 +192,15 @@ export class Node extends Common {
   async proposeSlash(): Promise<void> {
     const state = await this.getContractState();
     const votes = state.votes;
-    const currentTrafficLogs = state.stateUpdate.dailyTrafficLog.filter(
-      (proposedLog: {
-        block: number;
-        proposedLogs: [];
-        isRanked: boolean;
-        isDistributed: boolean;
-      }) => proposedLog.block == state.stateUpdate.tracficLogs.open
-    );
+    const currentTrafficLogs =
+      state.stateUpdate.trafficLogs.dailyTrafficLog.filter(
+        (proposedLog: {
+          block: number;
+          proposedLogs: [];
+          isRanked: boolean;
+          isDistributed: boolean;
+        }) => proposedLog.block == state.stateUpdate.trafficLogs.open
+      );
     for (const proposedLogs of currentTrafficLogs) {
       const currentProposedLogsVoteId = proposedLogs.voteId;
       for (let i = 0; i < this.receipts.length - 1; i++) {
@@ -296,7 +297,8 @@ export class Node extends Common {
     redisClient: any
   ): Promise<any> {
     if (!redisClient) redisClient = this.redisClient;
-    if (!latestContractState) latestContractState = await this._readContract();
+    if(!wallet) wallet = this.wallet
+    if (!latestContractState) latestContractState = await super._readContract();
     await checkPendingTransactionStatus(redisClient);
     let pendingStateArray = await redisGetAsync(
       "pendingStateArray",
@@ -307,8 +309,11 @@ export class Node extends Common {
       return;
     }
     pendingStateArray = JSON.parse(pendingStateArray);
-    let finalState: any;
-    const contract: any = await smartweave.loadContract(arweave, KOI_CONTRACT);
+    let finalState={"state":latestContractState};
+    const contract: any = await smartweave.loadContract(
+      arweave,
+      this.contractId
+    );
     const from = await arweave.wallets.getAddress(wallet);
 
     for (let i = 0; i < pendingStateArray.length; i++) {
@@ -327,7 +332,7 @@ export class Node extends Common {
         finalState = await smartweave.interactWriteDryRun(
           arweave,
           wallet,
-          KOI_CONTRACT,
+          this.contractId,
           pendingStateArray[i].input,
           undefined,
           undefined,
@@ -353,7 +358,7 @@ export class Node extends Common {
         finalState = await smartweave.interactWriteDryRun(
           arweave,
           wallet,
-          KOI_CONTRACT,
+          this.contractId,
           pendingStateArray[i].input,
           undefined,
           undefined,
@@ -399,7 +404,7 @@ export class Node extends Common {
     const finalState = await smartweave.interactWriteDryRunCustom(
       arweave,
       tx,
-      KOI_CONTRACT,
+      this.contractId,
       input,
       state,
       fromParam,
@@ -434,7 +439,7 @@ export class Node extends Common {
     const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
     if (!this.redisClient)
-      return smartweave.interactWrite(arweave, wallet, KOI_CONTRACT, input);
+      return smartweave.interactWrite(arweave, wallet, this.contractId, input);
 
     // Adding the dryRun logic
     let pendingStateArray = await redisGetAsync(
@@ -449,7 +454,7 @@ export class Node extends Common {
     const txId = await smartweave.interactWrite(
       arweave,
       wallet,
-      KOI_CONTRACT,
+      this.contractId,
       input
     );
     pendingStateArray.push({
@@ -517,7 +522,7 @@ export class Node extends Common {
     }
 
     // Fallback to smartweave
-    return smartweave.readContract(arweave, KOI_CONTRACT);
+    return smartweave.readContract(arweave, this.contractId);
   }
 
   // Private functions
