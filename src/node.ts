@@ -21,7 +21,7 @@ Koi Node Operation: {
 }
 */
 
-const URL_LOGS = "https://arweave.dev/logs";
+const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
 const SERVICE_SUBMIT = "/submitVote";
 
 export class Node extends Common {
@@ -297,7 +297,8 @@ export class Node extends Common {
     redisClient: any
   ): Promise<any> {
     if (!redisClient) redisClient = this.redisClient;
-    if (!latestContractState) latestContractState = await this._readContract();
+    if(!wallet) wallet = this.wallet
+    if (!latestContractState) latestContractState = await super._readContract();
     await checkPendingTransactionStatus(redisClient);
     let pendingStateArray = await redisGetAsync(
       "pendingStateArray",
@@ -308,7 +309,7 @@ export class Node extends Common {
       return;
     }
     pendingStateArray = JSON.parse(pendingStateArray);
-    let finalState: any;
+    let finalState={"state":latestContractState};
     const contract: any = await smartweave.loadContract(
       arweave,
       this.contractId
