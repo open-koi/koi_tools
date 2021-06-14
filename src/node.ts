@@ -21,6 +21,18 @@ Koi Node Operation: {
 }
 */
 
+interface VoteState {
+  id: number;
+  type: string;
+  voted: [];
+  stakeAmount: number;
+  yays: number;
+  nays: number;
+  bundlers: any;
+  start: number;
+  end: number;
+}
+
 const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
 const SERVICE_SUBMIT = "/submitVote";
 
@@ -547,6 +559,7 @@ export class Node extends Common {
     );
     return id;
   }
+
   /**
    * Get the latest state
    * @returns  Active vote Id
@@ -554,20 +567,11 @@ export class Node extends Common {
   private async _activeVote(): Promise<number> {
     const state = await this.getContractState();
     const activeVotes = state.votes.find(
-      (vote: {
-        id: number;
-        type: string;
-        voted: [];
-        stakeAmount: number;
-        yays: number;
-        nays: number;
-        bundlers: {};
-        start: number;
-        end: number;
-      }) => vote.end == state.stateUpdate.trafficLogs.close
+      (vote: VoteState) => vote.end == state.stateUpdate.trafficLogs.close
     );
     return activeVotes.id - 1;
   }
+
   /**
    * Submits a payload to server
    * @param payload Payload to be submitted
