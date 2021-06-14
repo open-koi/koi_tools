@@ -70,10 +70,10 @@ export class Common {
 
   constructor(
     bundlerUrl = "https://bundler.openkoi.com:8888",
-    contractTx = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc"
+    contractId = "cETTyJQYxJLVQ6nC3VxzsZf1x2-6TW2LFkGZa91gUWc"
   ) {
     this.bundlerUrl = bundlerUrl;
-    this.contractId = contractTx;
+    this.contractId = contractId;
     console.log("Initialized a Koi Node with smart contract:", this.contractId);
   }
 

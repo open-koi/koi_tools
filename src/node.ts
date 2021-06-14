@@ -21,6 +21,18 @@ Koi Node Operation: {
 }
 */
 
+interface VoteState {
+  id: number;
+  type: string;
+  voted: [];
+  stakeAmount: number;
+  yays: number;
+  nays: number;
+  bundlers: any;
+  start: number;
+  end: number;
+}
+
 const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
 const SERVICE_SUBMIT = "/submitVote";
 
@@ -50,6 +62,7 @@ export class Node extends Common {
   ): Promise<JWKInterface | undefined> {
     const jwk = await this.loadFile(walletFileLocation);
     await this.loadWallet(jwk);
+    const voteId = await this._activeVote();
     this.db = Datastore.create({
       filename: "my-db.db",
       autoload: true
@@ -57,7 +70,7 @@ export class Node extends Common {
     const count = await this.db.count({});
     if (count == 0) {
       const data = {
-        totalVoted: -1,
+        totalVoted: voteId,
         receipt: []
       };
 
@@ -297,7 +310,7 @@ export class Node extends Common {
     redisClient: any
   ): Promise<any> {
     if (!redisClient) redisClient = this.redisClient;
-    if(!wallet) wallet = this.wallet
+    if (!wallet) wallet = this.wallet;
     if (!latestContractState) latestContractState = await super._readContract();
     await checkPendingTransactionStatus(redisClient);
     let pendingStateArray = await redisGetAsync(
@@ -309,7 +322,7 @@ export class Node extends Common {
       return;
     }
     pendingStateArray = JSON.parse(pendingStateArray);
-    let finalState={"state":latestContractState};
+    let finalState = { state: latestContractState };
     const contract: any = await smartweave.loadContract(
       arweave,
       this.contractId
@@ -545,6 +558,18 @@ export class Node extends Common {
       }
     );
     return id;
+  }
+
+  /**
+   * Get the latest state
+   * @returns  Active vote Id
+   */
+  private async _activeVote(): Promise<number> {
+    const state = await this.getContractState();
+    const activeVotes = state.votes.find(
+      (vote: VoteState) => vote.end == state.stateUpdate.trafficLogs.close
+    );
+    return activeVotes.id - 1;
   }
 
   /**
