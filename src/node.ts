@@ -436,7 +436,13 @@ export class Node extends Common {
     // this._interactWrite(input)
   }
 
-  redisSetAsync(key: any, value: any): Promise<void> {
+  /**
+   * Store data in Redis async
+   * @param key Redis key of data
+   * @param value String to store in redis
+   * @returns
+   */
+  redisSetAsync(key: any, value: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.redisClient === undefined) reject("Redis not connected");
       else
@@ -446,7 +452,12 @@ export class Node extends Common {
     });
   }
 
-  redisGetAsync(key: any): Promise<any> {
+  /**
+   * Get data from Redis async
+   * @param key Redis key of data
+   * @returns Data as a string, null if no such key exists
+   */
+  redisGetAsync(key: any): Promise<string | null> {
     return new Promise((resolve, reject) => {
       if (this.redisClient === undefined) reject("Redis not connected");
       else
