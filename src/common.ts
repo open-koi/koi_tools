@@ -508,7 +508,11 @@ export class Common {
     url: string = this.bundlerUrl
   ): Promise<Array<BundlerPayload>> {
     const res: any = await getCacheData(url + BUNDLER_NODES);
-    return JSON.parse(res.data);
+    try {
+      return JSON.parse(res.data);
+    } catch (_e) {
+      return [];
+    }
   }
 
   // Protected functions

@@ -312,7 +312,7 @@ export class Node extends Common {
     if (!redisClient) redisClient = this.redisClient;
     if (!wallet) wallet = this.wallet;
     if (!latestContractState) latestContractState = await super._readContract();
-    await checkPendingTransactionStatus(redisClient,latestContractState);
+    await checkPendingTransactionStatus(redisClient, latestContractState);
     let pendingStateArray = await redisGetAsync(
       "pendingStateArray",
       redisClient
@@ -648,9 +648,14 @@ function redisGetAsync(arg1: any, arg2: any): Promise<any> {
  * @param redisClient
  * @returns
  */
-async function checkPendingTransactionStatus(redisClient: any,latestContractState: any): Promise<any> {
-  let registeredRecords=latestContractState?latestContractState.registeredRecord:{}
-  console.log(Object.keys(registeredRecords))
+async function checkPendingTransactionStatus(
+  redisClient: any,
+  latestContractState: any
+): Promise<any> {
+  const registeredRecords = latestContractState
+    ? latestContractState.registeredRecord
+    : {};
+  console.log(Object.keys(registeredRecords));
   let pendingStateArray = await redisGetAsync("pendingStateArray", redisClient);
   if (!pendingStateArray) {
     console.error("No pending state found");
@@ -661,7 +666,10 @@ async function checkPendingTransactionStatus(redisClient: any,latestContractStat
     const arweaveTxStatus = await arweave.transactions.getStatus(
       pendingStateArray[i].txId
     );
-    if (arweaveTxStatus.status != 202 && Object.keys(registeredRecords).includes(pendingStateArray[i].txId)) {
+    if (
+      arweaveTxStatus.status != 202 &&
+      pendingStateArray[i].txId in registeredRecords
+    ) {
       pendingStateArray[i].status = "Not pending";
     }
   }
