@@ -1,6 +1,6 @@
 {
   "name": "@_koi/sdk",
-  "version": "2.1.16-beta.51",
+  "version": "2.1.16-beta.52",
   "description": "",
   "main": "./node/node.js",
   "browser": "./web/web.js",
@@ -31,8 +31,7 @@
     "nedb-promises": "^4.1.5",
     "node-polyfill-webpack-plugin": "^1.1.1",
     "redis": "^3.1.2",
-    "smartweave": "^0.4.29",
-    "underscore": "1.12.1"
+    "smartweave": "^0.4.29"
   },
   "devDependencies": {
     "@types/redis": "^2.8.28",
