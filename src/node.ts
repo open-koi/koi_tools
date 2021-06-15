@@ -313,12 +313,12 @@ export class Node extends Common {
     if (!wallet) wallet = this.wallet;
     if (!latestContractState) latestContractState = await super._readContract();
     await this._checkPendingTransactionStatus(latestContractState);
-    let pendingStateArray = await this.redisGetAsync("pendingStateArray");
-    if (!pendingStateArray) {
+    const pendingStateArrayStr = await this.redisGetAsync("pendingStateArray");
+    if (!pendingStateArrayStr) {
       console.error("No pending state found");
       return;
     }
-    pendingStateArray = JSON.parse(pendingStateArray);
+    const pendingStateArray = JSON.parse(pendingStateArrayStr);
     let finalState = { state: latestContractState };
     const contract: any = await smartweave.loadContract(
       arweave,
@@ -481,9 +481,10 @@ export class Node extends Common {
       return smartweave.interactWrite(arweave, wallet, this.contractId, input);
 
     // Adding the dryRun logic
-    let pendingStateArray = await this.redisGetAsync("pendingStateArray");
-    if (!pendingStateArray) pendingStateArray = [];
-    else pendingStateArray = JSON.parse(pendingStateArray);
+    const pendingStateArrayStr = await this.redisGetAsync("pendingStateArray");
+    const pendingStateArray = !pendingStateArrayStr
+      ? []
+      : JSON.parse(pendingStateArrayStr);
 
     const latestContractState = await this._readContract();
 
@@ -519,11 +520,13 @@ export class Node extends Common {
   protected async _readContract(): Promise<any> {
     if (this.redisClient) {
       // First Attempt to retrieve the ContractPredictedState from redis
-      const state = await this.redisGetAsync("ContractPredictedState");
-      const jsonState = JSON.parse(state);
-      if (jsonState) {
-        const balances = jsonState["balances"];
-        if (balances !== undefined && balances !== null) return jsonState;
+      const stateStr = await this.redisGetAsync("ContractPredictedState");
+      if (stateStr !== null) {
+        const state = JSON.parse(stateStr);
+        if (state) {
+          const balances = state["balances"];
+          if (balances !== undefined && balances !== null) return state;
+        }
       }
     }
 
@@ -542,11 +545,13 @@ export class Node extends Common {
 
     // Next Attempt to retrieve ContractCurrentState from redis (Stored when data was successfully retrieved from KYVE)
     if (this.redisClient) {
-      const state = await this.redisGetAsync("ContractCurrentState");
-      const jsonState = JSON.parse(state);
-      if (jsonState) {
-        const balances = jsonState["balances"];
-        if (balances !== undefined && balances !== null) return jsonState;
+      const stateStr = await this.redisGetAsync("ContractCurrentState");
+      if (stateStr !== null) {
+        const state = JSON.parse(stateStr);
+        if (state) {
+          const balances = state["balances"];
+          if (balances !== undefined && balances !== null) return state;
+        }
       }
     }
 
@@ -651,12 +656,12 @@ export class Node extends Common {
       ? latestContractState.registeredRecord
       : {};
     console.log(Object.keys(registeredRecords));
-    let pendingStateArray = await this.redisGetAsync("pendingStateArray");
-    if (!pendingStateArray) {
+    const pendingStateArrayStr = await this.redisGetAsync("pendingStateArray");
+    if (!pendingStateArrayStr) {
       console.error("No pending state found");
       return;
     }
-    pendingStateArray = JSON.parse(pendingStateArray);
+    let pendingStateArray = JSON.parse(pendingStateArrayStr);
     for (let i = 0; i < pendingStateArray.length; i++) {
       const arweaveTxStatus = await arweave.transactions.getStatus(
         pendingStateArray[i].txId
