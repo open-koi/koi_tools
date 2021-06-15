@@ -312,11 +312,8 @@ export class Node extends Common {
     if (!redisClient) redisClient = this.redisClient;
     if (!wallet) wallet = this.wallet;
     if (!latestContractState) latestContractState = await super._readContract();
-    await checkPendingTransactionStatus(redisClient, latestContractState);
-    let pendingStateArray = await redisGetAsync(
-      "pendingStateArray",
-      redisClient
-    );
+    await this._checkPendingTransactionStatus(latestContractState);
+    let pendingStateArray = await this.redisGetAsync("pendingStateArray");
     if (!pendingStateArray) {
       console.error("No pending state found");
       return;
@@ -385,10 +382,9 @@ export class Node extends Common {
     }
     console.log("FINAL Predicted STATE", finalState);
     if (finalState.state)
-      await redisSetAsync(
+      await this.redisSetAsync(
         "ContractPredictedState",
-        JSON.stringify(finalState.state),
-        redisClient
+        JSON.stringify(finalState.state)
       );
   }
 
@@ -428,10 +424,9 @@ export class Node extends Common {
       finalState.state ? finalState.state.registeredRecord : "NULL"
     );
     if (finalState.type != "exception") {
-      await redisSetAsync(
+      await this.redisSetAsync(
         "ContractPredictedState",
-        JSON.stringify(finalState.state),
-        this.redisClient
+        JSON.stringify(finalState.state)
       );
       return finalState;
     } else {
@@ -439,6 +434,26 @@ export class Node extends Common {
     }
     return state;
     // this._interactWrite(input)
+  }
+
+  redisSetAsync(key: any, value: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.redisClient === undefined) reject("Redis not connected");
+      else
+        this.redisClient.set(key, value, (err) => {
+          err ? reject(err) : resolve();
+        });
+    });
+  }
+
+  redisGetAsync(key: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.redisClient === undefined) reject("Redis not connected");
+      else
+        this.redisClient.get(key, (err, res) => {
+          err ? reject(err) : resolve(res);
+        });
+    });
   }
 
   // Protected functions
@@ -455,10 +470,7 @@ export class Node extends Common {
       return smartweave.interactWrite(arweave, wallet, this.contractId, input);
 
     // Adding the dryRun logic
-    let pendingStateArray = await redisGetAsync(
-      "pendingStateArray",
-      this.redisClient
-    );
+    let pendingStateArray = await this.redisGetAsync("pendingStateArray");
     if (!pendingStateArray) pendingStateArray = [];
     else pendingStateArray = JSON.parse(pendingStateArray);
 
@@ -476,10 +488,9 @@ export class Node extends Common {
       input: input
       // dryRunState:response.state,
     });
-    await redisSetAsync(
+    await this.redisSetAsync(
       "pendingStateArray",
-      JSON.stringify(pendingStateArray),
-      this.redisClient
+      JSON.stringify(pendingStateArray)
     );
     await this.recalculatePredictedState(
       wallet,
@@ -497,10 +508,7 @@ export class Node extends Common {
   protected async _readContract(): Promise<any> {
     if (this.redisClient) {
       // First Attempt to retrieve the ContractPredictedState from redis
-      const state = await redisGetAsync(
-        "ContractPredictedState",
-        this.redisClient
-      );
+      const state = await this.redisGetAsync("ContractPredictedState");
       const jsonState = JSON.parse(state);
       if (jsonState) {
         const balances = jsonState["balances"];
@@ -523,10 +531,7 @@ export class Node extends Common {
 
     // Next Attempt to retrieve ContractCurrentState from redis (Stored when data was successfully retrieved from KYVE)
     if (this.redisClient) {
-      const state = await redisGetAsync(
-        "ContractCurrentState",
-        this.redisClient
-      );
+      const state = await this.redisGetAsync("ContractCurrentState");
       const jsonState = JSON.parse(state);
       if (jsonState) {
         const balances = jsonState["balances"];
@@ -622,65 +627,44 @@ export class Node extends Common {
       .join(""); // convert bytes to hex string
     return hashHex;
   }
-}
 
-function redisSetAsync(arg1: any, arg2: any, arg3: any): Promise<any> {
-  const redisClient = arg3;
-  return new Promise(function (resolve, _reject) {
-    resolve(redisClient.set(arg1, arg2));
-  });
-  //return promisify(this.redisClient.set).bind(this.redisClient);
-}
-
-function redisGetAsync(arg1: any, arg2: any): Promise<any> {
-  const redisClient = arg2;
-  return new Promise(function (resolve, reject) {
-    redisClient.get(arg1, (err: any, val: any) => {
-      resolve(val);
-      reject(err);
-    });
-  });
-  // return promisify(this.redisClient.get).bind(this.redisClient);
-}
-
-/**
- *
- * @param redisClient
- * @returns
- */
-async function checkPendingTransactionStatus(
-  redisClient: any,
-  latestContractState: any
-): Promise<any> {
-  const registeredRecords = latestContractState
-    ? latestContractState.registeredRecord
-    : {};
-  console.log(Object.keys(registeredRecords));
-  let pendingStateArray = await redisGetAsync("pendingStateArray", redisClient);
-  if (!pendingStateArray) {
-    console.error("No pending state found");
-    return;
-  }
-  pendingStateArray = JSON.parse(pendingStateArray);
-  for (let i = 0; i < pendingStateArray.length; i++) {
-    const arweaveTxStatus = await arweave.transactions.getStatus(
-      pendingStateArray[i].txId
-    );
-    if (
-      arweaveTxStatus.status != 202 &&
-      pendingStateArray[i].txId in registeredRecords
-    ) {
-      pendingStateArray[i].status = "Not pending";
+  /**
+   *
+   * @param redisClient
+   * @returns
+   */
+  private async _checkPendingTransactionStatus(
+    latestContractState: any
+  ): Promise<any> {
+    const registeredRecords = latestContractState
+      ? latestContractState.registeredRecord
+      : {};
+    console.log(Object.keys(registeredRecords));
+    let pendingStateArray = await this.redisGetAsync("pendingStateArray");
+    if (!pendingStateArray) {
+      console.error("No pending state found");
+      return;
     }
+    pendingStateArray = JSON.parse(pendingStateArray);
+    for (let i = 0; i < pendingStateArray.length; i++) {
+      const arweaveTxStatus = await arweave.transactions.getStatus(
+        pendingStateArray[i].txId
+      );
+      if (
+        arweaveTxStatus.status != 202 &&
+        pendingStateArray[i].txId in registeredRecords
+      ) {
+        pendingStateArray[i].status = "Not pending";
+      }
+    }
+    pendingStateArray = pendingStateArray.filter((e: any) => {
+      return e.status == "pending";
+    });
+    await this.redisSetAsync(
+      "pendingStateArray",
+      JSON.stringify(pendingStateArray)
+    );
   }
-  pendingStateArray = pendingStateArray.filter((e: any) => {
-    return e.status == "pending";
-  });
-  await redisSetAsync(
-    "pendingStateArray",
-    JSON.stringify(pendingStateArray),
-    redisClient
-  );
 }
 
 module.exports = { Node };
