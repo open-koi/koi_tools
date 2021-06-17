@@ -99,3 +99,8 @@ test("sign transaction", async () => {
   expect(typeof signedTransaction.signature).toBe("string");
   expect(signedTransaction.signature.trim()).not.toHaveLength(0);
 });
+
+test("generate mnemonic", async () => {
+  jest.setTimeout(60000);
+  expect(await ktools.generateWallet(true)).toBeTruthy();
+});
