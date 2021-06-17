@@ -8,7 +8,8 @@ import { Query } from "@kyve/query";
 
 //@ts-ignore // Needed to allow implicit any here
 import { generateKeyPair, getKeyPairFromMnemonic } from "human-crypto-keys";
-import * as crypto from "libp2p-crypto";
+//@ts-ignore
+import { pem2jwk } from "pem-jwk";
 
 export interface BundlerPayload {
   data?: any;
@@ -575,7 +576,7 @@ export class Common {
     );
 
     //@ts-ignore Need to access private attribute
-    const privateKey = (await crypto.keys.import(keyPair.privateKey, ""))._key;
+    const privateKey = pem2jwk(keyPair.privateKey);
     delete privateKey.alg;
     delete privateKey.key_ops;
     return privateKey;
