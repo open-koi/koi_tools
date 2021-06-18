@@ -538,9 +538,9 @@ export class Node extends Common {
       const snapshotArray = await query.limit(1).find();
       if (snapshotArray && snapshotArray.length > 0)
         return JSON.parse(snapshotArray[0]).state;
-      else console.log("NOTHING RETURNED FROM KYVE");
+      else console.error("NOTHING RETURNED FROM KYVE");
     } catch (e) {
-      console.log("ERROR RETRIEVING FROM KYVE", e);
+      console.error("ERROR RETRIEVING FROM KYVE", e);
     }
 
     // Next Attempt to retrieve ContractCurrentState from redis (Stored when data was successfully retrieved from KYVE)
