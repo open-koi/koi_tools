@@ -655,7 +655,6 @@ export class Node extends Common {
     const registeredRecords = latestContractState
       ? latestContractState.registeredRecord
       : {};
-    console.log(Object.keys(registeredRecords));
     const pendingStateArrayStr = await this.redisGetAsync("pendingStateArray");
     if (!pendingStateArrayStr) {
       console.error("No pending state found");
