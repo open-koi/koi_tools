@@ -385,8 +385,8 @@ export class Node extends Common {
     }
     console.log(
       "Final predicted state:",
-      finalState.state.type,
-      finalState.state.result
+      (finalState as any).type,
+      (finalState as any).result
     );
     if (finalState.state)
       await this.redisSetAsync(
