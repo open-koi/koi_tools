@@ -327,7 +327,10 @@ export class Node extends Common {
     const from = await arweave.wallets.getAddress(wallet);
 
     for (let i = 0; i < pendingStateArray.length; i++) {
-      console.log(`Pending Transaction ${i + 1}`, pendingStateArray[i]);
+      const pendingTx = pendingStateArray[i];
+      console.log(
+        `Pending transaction ${i + 1} (${pendingTx.status}) ${pendingTx.txId}`
+      );
       if (i == 0) {
         if (pendingStateArray[i].signedTx) {
           finalState = await this.registerDataDryRun(
@@ -380,7 +383,11 @@ export class Node extends Common {
         // console.timeEnd("Time this");
       }
     }
-    console.log("FINAL Predicted STATE", finalState);
+    console.log(
+      "Final predicted state:",
+      finalState.state.type,
+      finalState.state.result
+    );
     if (finalState.state)
       await this.redisSetAsync(
         "ContractPredictedState",
@@ -389,7 +396,7 @@ export class Node extends Common {
   }
 
   /**
-   * internal function, writes to contract. Used explictly for signed transaction received from UI, uses redis
+   * internal function, writes to contract. Used explicitly for signed transaction received from UI, uses redis
    * @param txId
    * @param owner
    * @param tx
