@@ -34,7 +34,7 @@ interface VoteState {
 }
 
 const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
-const SERVICE_SUBMIT = "/submitVote";
+const SERVICE_SUBMIT = "/submit-vote";
 
 export class Node extends Common {
   db?: Datastore;
