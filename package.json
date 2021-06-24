@@ -1,6 +1,6 @@
 {
   "name": "@_koi/sdk",
-  "version": "2.1.17-beta.0",
+  "version": "2.1.17",
   "description": "",
   "main": "./node/node.js",
   "browser": "./web/web.js",
