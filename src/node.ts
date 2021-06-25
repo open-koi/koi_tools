@@ -33,7 +33,7 @@ interface VoteState {
   end: number;
 }
 
-const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
+const URL_LOGS = "https://gateway.koi.rocks/logs/";
 const SERVICE_SUBMIT = "/submitVote";
 
 export class Node extends Common {
