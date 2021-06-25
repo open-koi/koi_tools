@@ -51,7 +51,7 @@ const BLOCK_TEMPLATE = `
   }`;
 
 export const arweave = Arweave.init({
-  host: "arweave.net",
+  host: "gateway.koi.rocks",
   protocol: "https",
   port: 443
 });
