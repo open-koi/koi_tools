@@ -33,7 +33,7 @@ interface VoteState {
   end: number;
 }
 
-const URL_LOGS = "https://gateway-n2.amplify.host/logs/";
+const URL_GATEWAY_LOGS = "https://gateway.koi.rocks/logs/";
 const SERVICE_SUBMIT = "/submit-vote";
 
 export class Node extends Common {
@@ -260,7 +260,9 @@ export class Node extends Common {
 
     if (proposedLog === undefined) return null;
 
-    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(URL_LOGS);
+    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(
+      URL_GATEWAY_LOGS
+    );
     const gatewayTrafficLogsHash = await this._hashData(
       gatewayTrafficLogs.data.summary
     );
@@ -320,67 +322,71 @@ export class Node extends Common {
     }
     const pendingStateArray = JSON.parse(pendingStateArrayStr);
     let finalState = { state: latestContractState };
-    const contract: any = await smartweave.loadContract(
-      arweave,
-      this.contractId
-    );
-    const from = await arweave.wallets.getAddress(wallet);
-
+    let contract = null;
+    let from = null;
+    try {
+      contract = await smartweave.loadContract(arweave, this.contractId);
+      from = await arweave.wallets.getAddress(wallet);
+    } catch (e) {
+      console.error(e);
+    }
     for (let i = 0; i < pendingStateArray.length; i++) {
-      const pendingTx = pendingStateArray[i];
-      console.log(
-        `Pending transaction ${i + 1} (${pendingTx.status}) ${pendingTx.txId}`
-      );
-      if (i == 0) {
-        if (pendingStateArray[i].signedTx) {
-          finalState = await this.registerDataDryRun(
-            pendingStateArray[i].txId,
-            pendingStateArray[i].owner,
-            pendingStateArray[i].signedTx,
+      try {
+        const pendingTx = pendingStateArray[i];
+        console.log(
+          `Pending transaction ${i + 1} (${pendingTx.status}) ${pendingTx.txId}`
+        );
+        if (i == 0) {
+          if (pendingStateArray[i].signedTx) {
+            finalState = await this.registerDataDryRun(
+              pendingStateArray[i].txId,
+              pendingStateArray[i].owner,
+              pendingStateArray[i].signedTx,
+              latestContractState,
+              contract
+            );
+            continue;
+          }
+          finalState = await smartweave.interactWriteDryRun(
+            arweave,
+            wallet,
+            this.contractId,
+            pendingStateArray[i].input,
+            undefined,
+            undefined,
+            undefined,
             latestContractState,
+            from,
             contract
           );
-          continue;
-        }
-        finalState = await smartweave.interactWriteDryRun(
-          arweave,
-          wallet,
-          this.contractId,
-          pendingStateArray[i].input,
-          undefined,
-          undefined,
-          undefined,
-          latestContractState,
-          from,
-          contract
-        );
-        break; //TODO: REMOVE THIS CODE
-        // console.timeEnd("Time this");
-      } else {
-        // console.time("Time this");
-        if (pendingStateArray[i].signedTx) {
-          finalState = await this.registerDataDryRun(
-            pendingStateArray[i].txId,
-            pendingStateArray[i].owner,
-            pendingStateArray[i].signedTx,
+          break;
+        } else {
+          if (pendingStateArray[i].signedTx) {
+            finalState = await this.registerDataDryRun(
+              pendingStateArray[i].txId,
+              pendingStateArray[i].owner,
+              pendingStateArray[i].signedTx,
+              finalState.state,
+              contract
+            );
+            continue;
+          }
+          finalState = await smartweave.interactWriteDryRun(
+            arweave,
+            wallet,
+            this.contractId,
+            pendingStateArray[i].input,
+            undefined,
+            undefined,
+            undefined,
             finalState.state,
+            from,
             contract
           );
-          continue;
+          // console.timeEnd("Time this");
         }
-        finalState = await smartweave.interactWriteDryRun(
-          arweave,
-          wallet,
-          this.contractId,
-          pendingStateArray[i].input,
-          undefined,
-          undefined,
-          undefined,
-          finalState.state,
-          from,
-          contract
-        );
-        // console.timeEnd("Time this");
+      } catch (e) {
+        console.error(e);
       }
     }
     console.log(
@@ -669,13 +675,18 @@ export class Node extends Common {
     }
     let pendingStateArray = JSON.parse(pendingStateArrayStr);
     for (let i = 0; i < pendingStateArray.length; i++) {
-      const arweaveTxStatus = await arweave.transactions.getStatus(
-        pendingStateArray[i].txId
-      );
-      if (
-        arweaveTxStatus.status != 202 &&
-        pendingStateArray[i].txId in registeredRecords
-      ) {
+      try {
+        const arweaveTxStatus = await arweave.transactions.getStatus(
+          pendingStateArray[i].txId
+        );
+        if (
+          arweaveTxStatus.status != 202 &&
+          pendingStateArray[i].txId in registeredRecords
+        ) {
+          pendingStateArray[i].status = "Not pending";
+        }
+      } catch (e) {
+        console.error(e);
         pendingStateArray[i].status = "Not pending";
       }
     }
