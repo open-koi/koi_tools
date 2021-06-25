@@ -21,12 +21,13 @@ test("Get block height", async () => {
 });
 
 test("Mint", async () => {
-  jest.setTimeout(15000);
+  jest.setTimeout(60000);
   const submission = {
     targetAddress: "D3lK6_xXvBUXMUyA2RJz3soqmLlztkv-gVpEP5AlVUo",
     qty: 5
   };
   const txId = await ktools.mint(submission);
+  console.log(txId);
   expect(typeof txId).toBe("string");
   expect(txId.trim()).not.toHaveLength(0);
 });
@@ -78,13 +79,13 @@ test("Get recipient transactions", async () => {
 });
 
 test("Get NFT reward null", async () => {
-  jest.setTimeout(15000);
+  jest.setTimeout(60000);
   const reward = await ktools.getNftReward("asdf");
   expect(reward).toBe(null);
 });
 
 test("Get NFT reward", async () => {
-  jest.setTimeout(15000);
+  jest.setTimeout(60000);
   const reward = await ktools.getNftReward("1UDe0Wqh51-O03efPzoc_HhsUPrmgBR2ziUfaI7CpZk");
   expect(reward).toBeGreaterThan(1600);
 });
