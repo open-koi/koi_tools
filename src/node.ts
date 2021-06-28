@@ -33,8 +33,8 @@ interface VoteState {
   end: number;
 }
 
-const URL_LOGS = "https://gateway.koi.rocks/logs/";
-const SERVICE_SUBMIT = "/submitVote";
+const URL_GATEWAY_LOGS = "https://gateway.koi.rocks/logs/";
+const SERVICE_SUBMIT = "/submit-vote";
 
 export class Node extends Common {
   db?: Datastore;
@@ -260,7 +260,9 @@ export class Node extends Common {
 
     if (proposedLog === undefined) return null;
 
-    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(URL_LOGS);
+    const gatewayTrafficLogs = await this._getTrafficLogFromGateWay(
+      URL_GATEWAY_LOGS
+    );
     const gatewayTrafficLogsHash = await this._hashData(
       gatewayTrafficLogs.data.summary
     );
@@ -320,16 +322,13 @@ export class Node extends Common {
     }
     const pendingStateArray = JSON.parse(pendingStateArrayStr);
     let finalState = { state: latestContractState };
-    let contract = null
-    let from = null
+    let contract = null;
+    let from = null;
     try {
-      contract = await smartweave.loadContract(
-        arweave,
-        this.contractId
-      );
+      contract = await smartweave.loadContract(arweave, this.contractId);
       from = await arweave.wallets.getAddress(wallet);
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
     for (let i = 0; i < pendingStateArray.length; i++) {
       try {
@@ -360,7 +359,7 @@ export class Node extends Common {
             from,
             contract
           );
-          break; 
+          break;
         } else {
           if (pendingStateArray[i].signedTx) {
             finalState = await this.registerDataDryRun(
@@ -387,7 +386,7 @@ export class Node extends Common {
           // console.timeEnd("Time this");
         }
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
     }
     console.log(
@@ -687,7 +686,7 @@ export class Node extends Common {
           pendingStateArray[i].status = "Not pending";
         }
       } catch (e) {
-        console.error(e)
+        console.error(e);
         pendingStateArray[i].status = "Not pending";
       }
     }
