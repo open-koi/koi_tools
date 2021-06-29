@@ -603,7 +603,11 @@ export class Node extends Common {
     const activeVotes = state.votes.find(
       (vote: VoteState) => vote.end == state.stateUpdate.trafficLogs.close
     );
-    return activeVotes.id - 1;
+    if (activeVotes !== undefined) {
+      return activeVotes.id - 1;
+    } else {
+      return state.votes.length - 1;
+    }
   }
 
   /**
