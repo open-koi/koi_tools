@@ -29,8 +29,9 @@ export interface RegistrationData {
   timestamp: number;
 }
 
-const URL_ARWEAVE_INFO = "https://arweave.net/info";
-const URL_ARWEAVE_GQL = "https://arweave.net/graphql";
+const HOST_GATEWAY = "arweave.net";
+const URL_ARWEAVE_INFO = `https://${HOST_GATEWAY}/info`;
+const URL_ARWEAVE_GQL = `https://${HOST_GATEWAY}/graphql`;
 
 const BLOCK_TEMPLATE = `
   pageInfo {
@@ -51,7 +52,7 @@ const BLOCK_TEMPLATE = `
   }`;
 
 export const arweave = Arweave.init({
-  host: "gateway.koi.rocks",
+  host: HOST_GATEWAY,
   protocol: "https",
   port: 443
 });
