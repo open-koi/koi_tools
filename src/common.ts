@@ -56,6 +56,7 @@ export const arweave = Arweave.init({
   port: 443
 });
 
+export const BUNDLER_CURRENT = "/state/current";
 export const BUNDLER_NODES = "/nodes";
 
 /**
@@ -249,7 +250,7 @@ export class Common {
       }
 
       default: {
-        throw Error("token or coin ticker doesn't exist");
+        throw Error("token or coin ticker doesnt exist");
       }
     }
   }
@@ -427,6 +428,8 @@ export class Common {
    * @returns An object with {totaltViews, totalReward, 24hrsViews}
    */
   async contentView(contentTxId: any, state: any): Promise<any> {
+    // const state = await this.getContractState();
+    // const path = "https://bundler.openkoi.com/state/current/";
     const rewardReport = state.stateUpdate.trafficLogs.rewardReport;
 
     try {
@@ -617,6 +620,7 @@ function getArweaveNetInfo(): Promise<AxiosResponse<any>> {
 }
 
 module.exports = {
+  BUNDLER_CURRENT,
   BUNDLER_NODES,
   arweave,
   Common,
