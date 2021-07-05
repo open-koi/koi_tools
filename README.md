@@ -92,6 +92,16 @@ var result = await koi.registerContent(< arweaveTxId >, burnAmount ? optional)
 console.log('registered:', result)
 ```
 
+Fetch all registered records:
+
+```
+var records = koiTools.retrieveAllRegisteredContent();
+```
+This will print a full list of all registered NFTs by txID, which can then be fetched using the bundler endpoints of any koii node:
+```
+var nftdata = await fetch(`https://bundler.openkoi.com:8888/state/getNFTState?tranxId=${id}`)
+```
+
 Once this has been completed, your wallet will receive a portion of the daily KOI tokens every time your content is viewed.
 
 If you do not have a KOI balance, you cannot participate. Your KOI will be burned to register the content.
