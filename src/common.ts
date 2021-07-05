@@ -474,6 +474,13 @@ export class Common {
     return allContents;
   }
 
+  async retrieveAllRegisteredContent(): Promise<any> {
+    const state = await ktools.getContractState();
+    const registerRecords = state.registeredRecord;
+    const txIdArr = Object.keys(registerRecords);
+    return txIdArr;
+  }
+  
   /**
    * Get Koi rewards earned from an NFT
    * @param txId The transaction id to process
