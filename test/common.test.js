@@ -101,6 +101,12 @@ test("sign transaction", async () => {
   expect(signedTransaction.signature.trim()).not.toHaveLength(0);
 });
 
+test("get owner nfts", async () => {
+  const owner = "IsAUH6ruDQgbhr7SvfYUFzQJO-6MGXaRFfJ0FIyHvOQ";
+  const nfts = await ktools.getNftIdsByOwner(owner);
+  expect(nfts.length).toBeGreaterThan(4);
+});
+
 // test("generate mnemonic", async () => {
 //   jest.setTimeout(600000);
 //   expect(await ktools.generateWallet(true)).toBeTruthy();
