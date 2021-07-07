@@ -9,17 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v1
-      - name: node
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org
-      - run: npm install
-      - run: npm run build
-      - run: npm run test
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn build 
+      - run: yarn test
       - name: publish
-        run: npm publish ./dist --access public
+        run: yarn publish ./dist --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
