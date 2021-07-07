@@ -486,6 +486,19 @@ export class Common {
   }
 
   /**
+   * Get a list of NFTs by owner
+   * @param owner Wallet address of the owner
+   * @returns Array containing the NFTs
+   */
+  async getNftsByOwner(owner: string): Promise<string[]> {
+    const state = await this.getContractState();
+    const nfts = [];
+    for (const nft in state.registeredRecord)
+      if (state.registeredRecord[nft] === owner) nfts.push(nft);
+    return nfts;
+  }
+
+  /**
    * Get Koi rewards earned from an NFT
    * @param txId The transaction id to process
    * @returns Koi rewards earned or null if the transaction is not a valid Koi NFT
