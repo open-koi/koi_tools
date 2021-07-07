@@ -486,11 +486,11 @@ export class Common {
   }
 
   /**
-   * Get a list of NFTs by owner
+   * Get a list of NFT IDs by owner
    * @param owner Wallet address of the owner
    * @returns Array containing the NFTs
    */
-  async getNftsByOwner(owner: string): Promise<string[]> {
+  async getNftIdsByOwner(owner: string): Promise<string[]> {
     const state = await this.getContractState();
     const nfts = [];
     for (const nft in state.registeredRecord)

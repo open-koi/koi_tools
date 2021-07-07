@@ -103,7 +103,7 @@ test("sign transaction", async () => {
 
 test("get owner nfts", async () => {
   const owner = "IsAUH6ruDQgbhr7SvfYUFzQJO-6MGXaRFfJ0FIyHvOQ";
-  const nfts = await ktools.getNftsByOwner(owner);
+  const nfts = await ktools.getNftIdsByOwner(owner);
   expect(nfts.length).toBeGreaterThan(4);
 });
 
