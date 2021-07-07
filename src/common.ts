@@ -75,7 +75,7 @@ export class Common {
   ) {
     this.bundlerUrl = bundlerUrl;
     this.contractId = contractId;
-    console.log("Initialized a Koi Node with smart contract:", this.contractId);
+    console.log("Initialized Koii Tools for true ownership and direct communication using version ", this.contractId);
   }
 
   /**
