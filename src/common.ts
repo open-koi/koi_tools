@@ -75,7 +75,10 @@ export class Common {
   ) {
     this.bundlerUrl = bundlerUrl;
     this.contractId = contractId;
-    console.log("Initialized Koii Tools for true ownership and direct communication using version ", this.contractId);
+    console.log(
+      "Initialized Koii Tools for true ownership and direct communication using version ",
+      this.contractId
+    );
   }
 
   /**
@@ -157,6 +160,7 @@ export class Common {
   }
 
   /**
+   * Gets the current contract state
    * @returns Current KOI system state
    */
   getContractState(): Promise<any> {
@@ -182,9 +186,9 @@ export class Common {
   }
 
   /**
-   *
-   * @param txId
-   * @returns
+   * Get the NFT state from arweave, this should be the initial state
+   * @param txId Transaction ID of the NFT
+   * @returns The NFT state object
    */
   async readNftState(txId: string): Promise<any> {
     return smartweave.readContract(arweave, txId);
@@ -266,7 +270,6 @@ export class Common {
       qty: arg.qty,
       target: arg.targetAddress
     };
-
     return this._interactWrite(input);
   }
 
@@ -282,16 +285,14 @@ export class Common {
       txId: txId,
       owner: ownerId
     };
-
     return this._interactWrite(input);
   }
 
   /**
-    * sign transaction
-    * @param tx It is transaction
-    
-    * @returns signed Transaction
-    */
+   * Sign transaction
+   * @param tx Transaction to be signed
+   * @returns signed Transaction
+   */
   async signTransaction(tx: Transaction): Promise<any> {
     try {
       //const wallet = this.wallet;
@@ -319,7 +320,6 @@ export class Common {
    * @param payload Payload to sign
    * @returns Signed payload with signature
    */
-
   async signPayload(payload: BundlerPayload): Promise<BundlerPayload | null> {
     if (this.wallet === undefined) return null;
     const data = payload.data || payload.vote || null;
@@ -351,7 +351,7 @@ export class Common {
   }
 
   /**
-   * posts data on arweave.
+   * Posts data to Arweave
    * @param data
    * @returns Transaction ID
    */
@@ -422,7 +422,7 @@ export class Common {
   }
 
   /**
-   *
+   * Get the updated state of an NFT
    * @param contentTxId TxId of the content
    * @param state
    * @returns An object with {totaltViews, totalReward, 24hrsViews}
@@ -463,19 +463,7 @@ export class Common {
   }
 
   /**
-   * returns the top contents registered in Koi in array
-   * @returns
-   */
-  async retrieveTopContent(): Promise<any> {
-    const allContents = await this._retrieveAllContent();
-    allContents.sort(function (a: any, b: any) {
-      return b.totalViews - a.totalViews;
-    });
-    return allContents;
-  }
-
-  /**
-   *
+   * Get a list of all NFT IDs
    * @returns Array of transaction IDs which are registered NFTs
    */
   async retrieveAllRegisteredContent(): Promise<string[]> {
@@ -511,9 +499,9 @@ export class Common {
   }
 
   /**
-   *
-   * @param request
-   * @returns
+   * Query Arweave using GQL
+   * @param request Query string
+   * @returns Object containing the query results
    */
   async gql(request: string): Promise<any> {
     const { data } = await axios.post(URL_ARWEAVE_GQL, request, {
@@ -525,7 +513,7 @@ export class Common {
   /**
    * Gets an array of service nodes
    * @param url URL of the service node to retrieve the array from a known service node
-   * @returns Set
+   * @returns Array of service nodes
    */
   async getNodes(
     url: string = this.bundlerUrl
@@ -602,25 +590,6 @@ export class Common {
     delete privateKey.alg;
     delete privateKey.key_ops;
     return privateKey;
-  }
-
-  /**
-   *
-   * @returns
-   */
-  private async _retrieveAllContent(): Promise<any> {
-    const state = await this.getContractState();
-    const registerRecords = state.registeredRecord;
-    const txIdArr = Object.keys(registerRecords);
-    const contentViewPromises = txIdArr.map((txId) =>
-      this.contentView(txId, state)
-    );
-    // Required any to convert PromiseSettleResult to PromiseFulfilledResult<any>
-    const contents = await Promise.all(contentViewPromises);
-    const result = contents.filter((res) => res.value !== null);
-    const clean = result.map((res) => res.value);
-
-    return clean;
   }
 }
 
