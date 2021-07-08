@@ -11,16 +11,6 @@ import { smartweave } from "smartweave";
 import redis, { RedisClient } from "redis";
 import { Query } from "@kyve/query";
 
-/*
-Koi Node Operation: {
-  1. set wallet
-  2. set stake (it not already set)
-  3. check traffic logs (or other task data)
-  4. submit vote to bundler server
-  5. verify vote was added to arweave (after 24 hrs) 
-}
-*/
-
 interface VoteState {
   id: number;
   type: string;
@@ -170,8 +160,8 @@ export class Node extends Common {
   }
 
   /**
-   *
-   * @returns
+   * Triggers proposal rank in contract
+   * @returns Transaction ID
    */
   rankProposal(): Promise<string> {
     const input = {
@@ -182,7 +172,7 @@ export class Node extends Common {
 
   /**
    * Interact with contract to add the votes
-   * @param arg
+   * @param arg Batch data
    * @returns Transaction ID
    */
   batchAction(arg: any): Promise<string> {
@@ -232,8 +222,8 @@ export class Node extends Common {
   }
 
   /**
-   *
-   * @returns
+   * Triggers distribute reward function
+   * @returns Transaction ID
    */
   async distributeDailyRewards(): Promise<string> {
     const input = {
@@ -243,7 +233,7 @@ export class Node extends Common {
   }
 
   /**
-   * Validate trafficlog by comparing traffic log from gateway and arweave storage
+   * Validate traffic log by comparing traffic log from gateway and arweave storage
    * @param voteId Vote id which is belongs for specific proposalLog
    * @returns Whether data is valid
    */
@@ -300,7 +290,7 @@ export class Node extends Common {
   }
 
   /**
-   * internal function, recalculatesThePredictedState based on the pending transactions
+   * Recalculates the predicted state based on the pending transactions
    * @param wallet
    * @param latestContractState
    * @param redisClient
