@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/koii-network/tools",
   "dependencies": {
-    "@kyve/query": "^0.0.0-alpha.9",
+    "@kyve/query": "^0.0.0-alpha.19",
     "arweave": "^1.10.13",
     "axios": "^0.21.1",
     "dotenv": "^9.0.2",
