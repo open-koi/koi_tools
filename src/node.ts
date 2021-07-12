@@ -534,7 +534,7 @@ export class Node extends Common {
     }
 
     // Second, get state from Kyve
-    const poolID = 4;
+    const poolID = "4";
     const query = new Query(poolID);
     // finding latest transactions
     try {
