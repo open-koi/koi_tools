@@ -54,7 +54,8 @@ const BLOCK_TEMPLATE = `
 export const arweave = Arweave.init({
   host: HOST_GATEWAY,
   protocol: "https",
-  port: 443
+  port: 443,
+  timeout: 200000,     // Network request timeouts in milliseconds
 });
 
 export const BUNDLER_NODES = "/nodes";
@@ -551,6 +552,30 @@ export class Common {
   }
 
   /**
+     * Gets the list of all KIDs(DIDs)
+     * @param walletAddress The wallet address for the person whose DID is to be found
+     * @returns {Array} - returns a Javascript Array of object with each object representing a single KID
+     */
+  async getKIDByWalletAddress(walletAddress?: string): Promise<any> {
+
+    const query = `
+      query {
+        transactions(tags: [{
+          name: "Action",
+          values: ["KID/Create"]
+      },
+        {
+          name: "Wallet-Address",
+          values: [${walletAddress}]
+      }
+      ]) {
+          ${BLOCK_TEMPLATE}
+        }
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
+  }
+  /**
    * Creates a KID smartcontract on arweave
    * @param KIDObject - an object containing name, description, addresses and link
    * @param image - an object containing contentType and blobData
@@ -558,6 +583,66 @@ export class Common {
    */
   async createKID(KIDObject: any, image: any,): Promise<any> {
     const initialState = KIDObject
+    if (initialState && initialState.addresses && initialState.addresses.Arweave) {
+
+
+      try {
+        const tx = await arweave.createTransaction(
+          {
+            data: image.blobData,
+          },
+          this.wallet
+        );
+        tx.addTag('Content-Type', image.contentType);
+        tx.addTag('Network', 'Koii');
+        tx.addTag('Action', 'KID/Create');
+        tx.addTag('App-Name', 'SmartWeaveContract');
+        tx.addTag('App-Version', '0.1.0');
+        tx.addTag('Contract-Src', 't2jB63nGIWYUTDy2b00JPzSDtx1GQRsmKUeHtvZu1_A');
+        tx.addTag('Wallet-Address', initialState.addresses.Arweave);
+        tx.addTag('Init-State', JSON.stringify(initialState));
+        await arweave.transactions.sign(tx, this.wallet);
+        const uploader = await arweave.transactions.getUploader(tx);
+        while (!uploader.isComplete) {
+          await uploader.uploadChunk();
+          console.log(uploader.pctComplete + '% complete', uploader.uploadedChunks + '/' + uploader.totalChunks);
+        }
+        console.log("TX ID: ", tx.id)
+        return tx.id
+      } catch (err) {
+        console.log('create transaction error');
+        console.log('err-transaction', err);
+        return false;
+      }
+    } else {
+      console.log('Arweave Address missing in addresses');
+      return false;
+    }
+  }
+
+  /**
+   * Updates the state of a KID smartcontract on arweave
+   * @param KIDObject - an object containing name, description, addresses and link
+   * @param contractId - the contract Id for KID to be updated
+   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
+   */
+  async updateKID(KIDObject: any, contractId: string): Promise<any> {
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
+
+    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
+      function: 'updateKID',
+      ...KIDObject
+    });
+    return txId
+  }
+  /**
+     * Creates a KID smartcontract on arweave
+     * @param collectionObject - an object containing name, description, addresses and link
+     * @param image - an object containing contentType and blobData
+     * @returns {boolean} - returns a boolean indicating the sucess status for the creation
+     */
+  async createCollectioon(collectionObject: any, image: any,): Promise<any> {
+    const initialState = collectionObject
     try {
       const tx = await arweave.createTransaction(
         {
@@ -586,23 +671,6 @@ export class Common {
       return false;
     }
   }
-
-  /**
-   * Updates the state of a KID smartcontract on arweave
-   * @param KIDObject - an object containing name, description, addresses and link
-   * @param contractId - the contract Id for KID to be updated
-   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
-   */
-  async updateKID(KIDObject: any, contractId: string): Promise<any> {
-    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
-
-    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
-      function: 'updateKID',
-      ...KIDObject
-    });
-    return txId
-  }
-
   // Protected functions
 
   /**
