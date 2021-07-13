@@ -54,8 +54,7 @@ const BLOCK_TEMPLATE = `
 export const arweave = Arweave.init({
   host: HOST_GATEWAY,
   protocol: "https",
-  port: 443,
-  timeout: 200000,     // Network request timeouts in milliseconds
+  port: 443
 });
 
 export const BUNDLER_NODES = "/nodes";
