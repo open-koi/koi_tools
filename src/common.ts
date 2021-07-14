@@ -551,38 +551,70 @@ export class Common {
   }
 
   /**
+     * Gets the list of all KIDs(DIDs)
+     * @param walletAddress The wallet address for the person whose DID is to be found
+     * @returns {Array} - returns a Javascript Array of object with each object representing a single KID
+     */
+  async getKIDByWalletAddress(walletAddress?: string): Promise<any> {
+
+    const query = `
+      query {
+        transactions(tags: [{
+          name: "Action",
+          values: ["KID/Create"]
+      },
+        {
+          name: "Wallet-Address",
+          values: ["${walletAddress}"]
+      }
+      ]) {
+          ${BLOCK_TEMPLATE}
+        }
+      }`;
+    const request = JSON.stringify({ query });
+    return this.gql(request);
+  }
+  /**
    * Creates a KID smartcontract on arweave
    * @param KIDObject - an object containing name, description, addresses and link
    * @param image - an object containing contentType and blobData
-   * @returns {boolean} - returns a boolean indicating the sucess status for the creation
+   * @returns {txId} - returns a txId in case of success and false in case of failure
    */
   async createKID(KIDObject: any, image: any,): Promise<any> {
     const initialState = KIDObject
-    try {
-      const tx = await arweave.createTransaction(
-        {
-          data: image.blobData,
-        },
-        this.wallet
-      );
-      tx.addTag('Content-Type', image.contentType);
-      tx.addTag('Network', 'Koii');
-      tx.addTag('Action', 'KID/Create');
-      tx.addTag('App-Name', 'SmartWeaveContract');
-      tx.addTag('App-Version', '0.1.0');
-      tx.addTag('Contract-Src', 't2jB63nGIWYUTDy2b00JPzSDtx1GQRsmKUeHtvZu1_A');
-      tx.addTag('Init-State', JSON.stringify(initialState));
-      await arweave.transactions.sign(tx, this.wallet);
-      const uploader = await arweave.transactions.getUploader(tx);
-      while (!uploader.isComplete) {
-        await uploader.uploadChunk();
-        console.log(uploader.pctComplete + '% complete', uploader.uploadedChunks + '/' + uploader.totalChunks);
+    if (initialState && initialState.addresses && initialState.addresses.Arweave) {
+
+
+      try {
+        const tx = await arweave.createTransaction(
+          {
+            data: image.blobData,
+          },
+          this.wallet
+        );
+        tx.addTag('Content-Type', image.contentType);
+        tx.addTag('Network', 'Koii');
+        tx.addTag('Action', 'KID/Create');
+        tx.addTag('App-Name', 'SmartWeaveContract');
+        tx.addTag('App-Version', '0.1.0');
+        tx.addTag('Contract-Src', 't2jB63nGIWYUTDy2b00JPzSDtx1GQRsmKUeHtvZu1_A');
+        tx.addTag('Wallet-Address', initialState.addresses.Arweave);
+        tx.addTag('Init-State', JSON.stringify(initialState));
+        await arweave.transactions.sign(tx, this.wallet);
+        const uploader = await arweave.transactions.getUploader(tx);
+        while (!uploader.isComplete) {
+          await uploader.uploadChunk();
+          console.log(uploader.pctComplete + '% complete', uploader.uploadedChunks + '/' + uploader.totalChunks);
+        }
+        console.log("TX ID: ", tx.id)
+        return tx.id
+      } catch (err) {
+        console.log('create transaction error');
+        console.log('err-transaction', err);
+        return false;
       }
-      console.log("TX ID: ", tx.id)
-      return tx.id
-    } catch (err) {
-      console.log('create transaction error');
-      console.log('err-transaction', err);
+    } else {
+      console.log('Arweave Address missing in addresses');
       return false;
     }
   }
@@ -602,7 +634,121 @@ export class Common {
     });
     return txId
   }
+  /**
+     * Creates a NFT Collection smartcontract on arweave
+     * @param collectionObject - an object containing name, description, addresses and link
+     * @returns {txId} - returns a txId in case of success and false in case of failure
+     */
+  async createCollection(collectionObject: any): Promise<any> {
+    const initialState = collectionObject
+    if(!collectionObject.owner){
+      console.log("collectionObject doesn't contain an owner")
+      return false
+    }
+    try {
+      const tx = await arweave.createTransaction(
+        {
+          data: Buffer.from(collectionObject.owner, 'utf8'),
+        },
+        this.wallet
+      );
+      tx.addTag('Content-Type', 'text/plain');
+      tx.addTag('Network', 'Koii');
+      tx.addTag('Action', 'Collection/Create');
+      tx.addTag('App-Name', 'SmartWeaveContract');
+      tx.addTag('App-Version', '0.1.0');
+      tx.addTag('Contract-Src', 'NCepV_8bY831CMHK0LZQAQAVwZyNKLalmC36FlagLQE');
+      tx.addTag('Init-State', JSON.stringify(initialState));
+      await arweave.transactions.sign(tx, this.wallet);
+      const uploader = await arweave.transactions.getUploader(tx);
+      while (!uploader.isComplete) {
+        await uploader.uploadChunk();
+        console.log(uploader.pctComplete + '% complete', uploader.uploadedChunks + '/' + uploader.totalChunks);
+      }
+      console.log("TX ID: ", tx.id)
+      return tx.id
+    } catch (err) {
+      console.log('create transaction error');
+      console.log('err-transaction', err);
+      return false;
+    }
+  }
+  /**
+   * Add new NFTs to the existing collection
+   * @param nftId - The transaction id of the NFT to be added to the collection
+   * @param contractId - the contract Id for Collection to be updated
+   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
+   */
+   async addToCollection(nftId: any, contractId: string): Promise<any> {
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
 
+    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
+      function: 'addToCollection',
+      nftId
+    });
+    return txId
+  }
+
+  /**
+   * Remove NFTs from the existing collection
+   * @param index - The index of the NFT which is to be removed from the collection
+   * @param contractId - the contract Id for Collection to be updated
+   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
+   */
+   async removeFromCollection(index: any, contractId: string): Promise<any> {
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
+
+    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
+      function: 'removeFromCollection',
+      index
+    });
+    return txId
+  }
+  /**
+   * Updates the view of the existing Collection
+   * @param newView - The view you want to set for the collection to display (Initialized with 'default')
+   * @param contractId - the contract Id for Collection to be updated
+   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
+   */
+   async updateView(newView: any, contractId: string): Promise<any> {
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
+
+    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
+      function: 'updateView',
+      newView
+    });
+    return txId
+  }
+  /**
+   * Updates the index of the NFT which should be used as the preview for the collection
+   * @param imageIndex - The index of the NFT which should be used as the preview for the collection
+   * @param contractId - the contract Id for Collection to be updated
+   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
+   */
+   async updatePreviewImageIndex(imageIndex: any, contractId: string): Promise<any> {
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
+
+    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
+      function: 'updatePreviewImageIndex',
+      imageIndex
+    });
+    return txId
+  }
+  /**
+   * Updates the array of NFTs from which the collection is composed of (Can be used to reorder the NFts in the collection also)
+   * @param collection - The array of NFTs from which the collection is composed of.
+   * @param contractId - the contract Id for Collection to be updated
+   * @returns {txId} - returns a transaction id of arweave for the updateKID smartweave call
+   */
+   async updateCollection(collection: any, contractId: string): Promise<any> {
+    const wallet = this.wallet === undefined ? "use_wallet" : this.wallet;
+
+    const txId = await smartweave.interactWrite(arweave, wallet, contractId, {
+      function: 'updateCollection',
+      collection
+    });
+    return txId
+  }
   // Protected functions
 
   /**
