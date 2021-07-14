@@ -657,7 +657,7 @@ export class Common {
       tx.addTag('Action', 'Collection/Create');
       tx.addTag('App-Name', 'SmartWeaveContract');
       tx.addTag('App-Version', '0.1.0');
-      tx.addTag('Contract-Src', 'TO_BE_DEPLOYED');
+      tx.addTag('Contract-Src', 'NCepV_8bY831CMHK0LZQAQAVwZyNKLalmC36FlagLQE');
       tx.addTag('Init-State', JSON.stringify(initialState));
       await arweave.transactions.sign(tx, this.wallet);
       const uploader = await arweave.transactions.getUploader(tx);
