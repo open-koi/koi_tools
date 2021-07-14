@@ -622,7 +622,7 @@ export class Common {
    */
   protected async _readContract(): Promise<any> {
     // return smartweave.readContract(arweave, this.contractId);
-    const poolID = "4";
+    const poolID = "OFD4GqQcqp-Y_Iqh8DN_0s3a_68oMvvnekeOEu_a45I";
     const query = new Query(poolID);
     // finding latest transactions
     try {
