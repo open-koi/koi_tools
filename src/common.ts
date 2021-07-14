@@ -565,7 +565,7 @@ export class Common {
       },
         {
           name: "Wallet-Address",
-          values: [${walletAddress}]
+          values: ["${walletAddress}"]
       }
       ]) {
           ${BLOCK_TEMPLATE}
