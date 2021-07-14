@@ -694,4 +694,4 @@ export class Node extends Common {
   }
 }
 
-module.exports = { Node, URL_GATEWAY_LOGS };
+module.exports = { Node, URL_GATEWAY_LOGS, arweave };
