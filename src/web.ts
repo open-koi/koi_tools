@@ -1,4 +1,4 @@
-import { Common } from "./common";
+import { Common, arweave } from "./common";
 
 export class Web extends Common {
   /**
@@ -21,4 +21,4 @@ export class Web extends Common {
   }
 }
 
-module.exports = { Web };
+module.exports = { Web, arweave };
